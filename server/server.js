@@ -16,10 +16,7 @@ const adminAddTimeRouter = require('./routes/adminAddTime.router');
 const adminEmployeeRouter = require('./routes/adminEmployee.router');
 const adminRequestRouter = require('./routes/adminRequest.router');
 const employeeUserInfoRouter = require('./routes/employeeUserInfo.router');
-<<<<<<< HEAD
 
-=======
->>>>>>> d80603dbf43b968c51a4a1b4c4967c346bcf7182
 // Body parser middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

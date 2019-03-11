@@ -51,9 +51,30 @@ input {
     cursor: pointer;
 }
 
-/* Change font for headings */
+/* Change font for all headings */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Advent Pro', sans-serif;
     font-weight: 600;
 }
 
+/* Basic table styling */
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.2rem 20px;
+}
+
+th {
+    color: whitesmoke;
+    background-color: #222d31;
+}
+
+td {
+    border-bottom: 1px solid #ccd1ca;
+}
+
+table {
+  border-bottom: 5px solid #222d31;
+}
