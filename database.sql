@@ -1,3 +1,16 @@
+INSERT INTO "role" ("name") VALUES ('admin'),('employee'); 
+
+INSERT INTO "employee" ("email", "first_name", "last_name", "company_employee_id", "role_id", "start_date", "is_active")
+VALUES
+	('MichaelOne@gmail.com', 'Michael', 'One', '11111', 1, '2005-05-01', true),
+	('SarahDavis@gmail.com', 'Sarah', 'Davis', '12345', 2, '2015-03-23', true),
+	('JoshuaEsmay@gmail.com', 'Joshua', 'Esmay', '44444', 2, '2012-11-19', false),
+	('LeoEspinoza@gmail.com', 'Leo', 'Espinoza', '43263', 2, '2018-09-28', true),
+	('GarrettFitzgerald@gmail.com', 'Garrett', 'Fitzgerald', '89375', 2, '2010-12-02', true),
+	('AndrewGordon@gmail.com', 'Andrew', 'Gordon', '23629', 2, '2008-10-14', false),
+	('ChelseaSchmitz@gmail.com', 'Chelsea', 'Schmitz', '90285', 2, '2011-07-30', true)
+	;
+
 CREATE TABLE "person"
 (
 	"id" SERIAL PRIMARY KEY,
