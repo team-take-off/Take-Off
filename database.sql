@@ -47,11 +47,8 @@ CREATE TABLE "batch_of_requests"
 (
 	"id" SERIAL PRIMARY KEY,
 	"employee_id" INTEGER REFERENCES "employee"("id"),
-	"date_requested" TIMESTAMP
-	WITH TIME ZONE NOT NULL DEFAULT NOW
-	(),
-    "type_id" INTEGER REFERENCES "type"
-	("id"),
+	"date_requested" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    "type_id" INTEGER REFERENCES "type"("id"),
     "approved" BOOLEAN NOT NULL DEFAULT false
 );
 
