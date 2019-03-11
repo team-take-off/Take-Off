@@ -21,11 +21,34 @@ router.get('/', (req, res) => {
             console.log(errorMessage);
             res.sendStatus(500);
         });
+    } else {
+        res.sendStatus(403);
     }
 });
 
+// Route POST /api/employee/request
+// User adds requested time-off to the database
 router.post('/', (req, res) => {
-
+    // if (req.isAuthenticated()) {
+    //     const queryText = `
+    //     SELECT
+    //         "time_off_request".* 
+    //         FROM "employee" 
+    //         JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
+    //         JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
+    //         WHERE "employee"."id" = $1;
+    //     `;
+    //     pool.query(queryText, [req.user.id]).then((queryResponse) => {
+    //         res.send(queryResponse.rows);
+    //     }).catch((queryError) => {
+    //         const errorMessage = `SQL error using POST /api/employee/request, ${queryError}`;
+    //         console.log(errorMessage);
+    //         res.sendStatus(500);
+    //     });
+    // } else {
+    //     res.sendStatus(403);
+    // }
+    res.sendStatus(200);
 });
 
 module.exports = router;
