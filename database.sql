@@ -2,13 +2,14 @@ INSERT INTO "role" ("name") VALUES ('admin'),('employee');
 
 INSERT INTO "employee" ("username", "password", "email", "first_name", "last_name", "company_employee_id", "role_id", "start_date", "is_active")
 VALUES
-	('michael', 'one', 'MichaelOne@gmail.com', 'Michael', 'One', '11111', 1, '2005-05-01', true),
-	('sarah', 'davis', 'SarahDavis@gmail.com', 'Sarah', 'Davis', '12345', 2, '2015-03-23', true),
-	('joshua', 'esmay', 'JoshuaEsmay@gmail.com', 'Joshua', 'Esmay', '44444', 2, '2012-11-19', false),
-	('leo', 'espinoza', 'LeoEspinoza@gmail.com', 'Leo', 'Espinoza', '43263', 2, '2018-09-28', true),
-	('garrett', 'fitzgerald', 'GarrettFitzgerald@gmail.com', 'Garrett', 'Fitzgerald', '89375', 2, '2010-12-02', true),
-	('andrew', 'gordon', 'AndrewGordon@gmail.com', 'Andrew', 'Gordon', '23629', 2, '2008-10-14', false),
-	('chelsea', 'schmitz', 'ChelseaSchmitz@gmail.com', 'Chelsea', 'Schmitz', '90285', 2, '2011-07-30', true);
+	('michael', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'MichaelOne@gmail.com', 'Michael', 'One', '11111', 1, '2005-05-01', true),
+	('sarah', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'SarahDavis@gmail.com', 'Sarah', 'Davis', '12345', 2, '2015-03-23', true),
+	('joshua', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'JoshuaEsmay@gmail.com', 'Joshua', 'Esmay', '44444', 2, '2012-11-19', false),
+	('leo', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'LeoEspinoza@gmail.com', 'Leo', 'Espinoza', '43263', 2, '2018-09-28', true),
+	('garrett', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'GarrettFitzgerald@gmail.com', 'Garrett', 'Fitzgerald', '89375', 2, '2010-12-02', true),
+	('andrew', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'AndrewGordon@gmail.com', 'Andrew', 'Gordon', '23629', 2, '2008-10-14', false),
+	('chelsea', '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 'ChelseaSchmitz@gmail.com', 'Chelsea', 'Schmitz', '90285', 2, '2011-07-30', true)
+	;
 
 CREATE TABLE "person"
 (
