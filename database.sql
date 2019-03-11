@@ -48,8 +48,7 @@ CREATE TABLE "batch_of_requests"
 	"id" SERIAL PRIMARY KEY,
 	"employee_id" INTEGER REFERENCES "employee"("id"),
 	"date_requested" TIMESTAMP
-	WITH TIME ZONE NOT NULL DEFAULT NOW
-	(),
+	WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "type_id" INTEGER REFERENCES "type"
 	("id"),
     "approved" BOOLEAN NOT NULL DEFAULT false
@@ -63,3 +62,7 @@ CREATE TABLE "batch_of_requests"
 		"batch_of_requests_id" INTEGER REFERENCES "batch_of_requests"("id"),
 		"hours" INTEGER NOT NULL
 	);
+
+--   Insert into the Type table
+INSERT INTO "type" ("name") VALUES ('Vacation');
+INSERT INTO "type" ("name") VALUES ('Sick and Safe Leave');
