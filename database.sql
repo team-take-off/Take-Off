@@ -1,3 +1,13 @@
+--- Insert into batch_request
+INSERT INTO "batch_of_requests" ("employee_id", "date_requested", "type_id", "approved")
+VALUES (1, '2019-03-11', 2, false), (2, '2019-03-09', 1, false);
+--- Insert into batch_request
+INSERT INTO "batch_of_requests" ("employee_id", "date_requested", "type_id", "approved")
+VALUES (3, '2019-02-11', 1, false), (5, '2019-03-07', 1, false);
+--- Insert into batch_request
+INSERT INTO "batch_of_requests" ("employee_id", "date_requested", "type_id", "approved")
+VALUES (1, '2019-03-10', 2, true), (2, '2019-03-05', 1, true);
+
 INSERT INTO "role" ("name") VALUES ('admin'),('employee'); 
 
 INSERT INTO "employee" ("email", "first_name", "last_name", "company_employee_id", "role_id", "start_date", "is_active")
