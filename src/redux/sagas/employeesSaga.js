@@ -1,7 +1,7 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
-function* fetchEmployees(action) {
+function* fetchEmployees() {
     try {
         const serverResponse = yield axios.get(`api/admin/employees`);
         yield put({type: 'SET_EMPLOYEES', payload: serverResponse.data})
