@@ -1,15 +1,18 @@
+/* Import Fonts */
+@import url('https://fonts.googleapis.com/css?family=Advent+Pro:600|Open+Sans');
+
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     margin: 0px;
 }
 
 .alert {
-    background-color: #ff4545;
+    background-color: #b5000b;
     margin: 50px;
 }
 
 form {
-    background-color: #dbd5d5;
+    background-color: #ccd1ca;
     width: 30%;
     height: 250px;
     margin: 20px auto;
@@ -23,7 +26,7 @@ input {
 }
 
 .log-in, .log-out, .register {
-  background-color: #00acb0;
+  background-color: #9d2b33;
   border-radius: 4px;
   color: #f8f8f8;
   min-height: 50px;
@@ -33,7 +36,7 @@ input {
 }
 
 .log-in:hover, .log-out:hover, .register:hover {
-  background-color: #008183;
+  background-color: #b5000b;
 }
 
 /* This line makes the "Register" and "Login" buttons look like links */
@@ -47,3 +50,10 @@ input {
     border-bottom:1px solid #444; 
     cursor: pointer;
 }
+
+/* Change font for headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Advent Pro', sans-serif;
+    font-weight: 600;
+}
+
