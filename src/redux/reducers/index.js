@@ -3,8 +3,9 @@ import errors from './errorsReducer';
 import loginMode from './loginModeReducer';
 import user from './userReducer';
 import requests from './requestsReducers';
-import userInfo from './userRequestsReducer';
+import userRequests from './userRequestsReducer';
 import employees from './employeesReducer';
+import userInfo from './userInfoReducer';
 
 // rootReducer is the primary reducer for our entire project
 // It bundles up all of the other reducers so our project can use them.
@@ -17,8 +18,9 @@ const rootReducer = combineReducers({
   loginMode, // will have a value of 'login' or 'registration' to control which screen is shown
   user, // will have an id and username if someone is logged in
   requests,
-  userInfo,
-  employees
+  userRequests,
+  employees,
+  userInfo
 });
 
 export default rootReducer;
