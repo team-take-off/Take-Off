@@ -1,3 +1,13 @@
+--- Insert into batch_request
+INSERT INTO "batch_of_requests" ("employee_id", "date_requested", "type_id", "approved")
+VALUES (1, '2019-03-11', 2, false), (2, '2019-03-09', 1, false);
+--- Insert into batch_request
+INSERT INTO "batch_of_requests" ("employee_id", "date_requested", "type_id", "approved")
+VALUES (3, '2019-02-11', 1, false), (5, '2019-03-07', 1, false);
+--- Insert into batch_request
+INSERT INTO "batch_of_requests" ("employee_id", "date_requested", "type_id", "approved")
+VALUES (1, '2019-03-10', 2, true), (2, '2019-03-05', 1, true);
+
 INSERT INTO "role" ("name") VALUES ('admin'),('employee'); 
 
 INSERT INTO "employee" ("username", "password", "email", "first_name", "last_name", "company_employee_id", "role_id", "start_date", "is_active")
@@ -62,7 +72,7 @@ CREATE TABLE "batch_of_requests"
 	"id" SERIAL PRIMARY KEY,
 	"employee_id" INTEGER REFERENCES "employee"("id"),
 	"date_requested" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    "type_id" INTEGER REFERENCES "type"("id"),
+    "type_id" INTEGER REFERENCES "type"("id"), 
     "approved" BOOLEAN NOT NULL DEFAULT false
 );
 
@@ -74,3 +84,7 @@ CREATE TABLE "batch_of_requests"
 		"batch_of_requests_id" INTEGER REFERENCES "batch_of_requests"("id"),
 		"hours" INTEGER NOT NULL
 	);
+
+--   Insert into the Type table
+INSERT INTO "type" ("name") VALUES ('Vacation');
+INSERT INTO "type" ("name") VALUES ('Sick and Safe Leave');
