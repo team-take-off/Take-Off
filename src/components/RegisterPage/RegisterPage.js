@@ -5,6 +5,10 @@ class RegisterPage extends Component {
   state = {
     username: '',
     password: '',
+    firstname: '',
+    lastname: '',
+    email:'',
+    date:'',
   };
 
   registerUser = (event) => {
@@ -16,6 +20,10 @@ class RegisterPage extends Component {
         payload: {
           username: this.state.username,
           password: this.state.password,
+          firstname: this.state.firstname,
+          lastname: this.state.lastname,
+          email: this.state.email,
+          date: this.state.date,
         },
       });
     } else {
@@ -42,6 +50,50 @@ class RegisterPage extends Component {
         )}
         <form onSubmit={this.registerUser}>
           <h1>Register User</h1>
+          <div>
+            <label htmlFor="firstname">
+              First Name:
+              <input
+                type="text"
+                name="firstname"
+                value={this.state.firstname}
+                onChange={this.handleInputChangeFor('firstname')}
+              />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="lastname">
+              Last Name:
+              <input
+                type="text"
+                name="lastname"
+                value={this.state.lastname}
+                onChange={this.handleInputChangeFor('lastname')}
+              />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="email">
+              E-Mail:
+              <input
+                type="text"
+                name="email"
+                value={this.state.email}
+                onChange={this.handleInputChangeFor('email')}
+              />
+            </label>
+          </div>
+          <div>
+            <label htmlFor="date">
+              Start Date:
+              <input
+                type="date"
+                name="date"
+                value={this.state.date}
+                onChange={this.handleInputChangeFor('date')}
+              />
+            </label>
+          </div>
           <div>
             <label htmlFor="username">
               Username:
