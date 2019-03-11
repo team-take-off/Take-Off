@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function* fetchUserRequests(action) {
   try {
-    const serverResponse = yield axios.get(`api/admin/request/${action.payload}`);
+    const serverResponse = yield axios.get(`api/employee/request/${action.payload}`);
   } catch (error) {
       console.log('Error in axios GET:', error);
   }
