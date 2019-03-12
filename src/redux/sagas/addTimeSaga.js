@@ -16,7 +16,7 @@ function* addVacationDay(action) {
 }
 
 function* addTimeSaga() {
-  yield takeLatest('FETCH_SICK_DAY', addSickDay);
+  yield takeLatest('ADD_SICK_DAY', addSickDay);
   yield takeLatest('ADD_VACATION_DAY', addVacationDay);
 }
 
