@@ -10,31 +10,26 @@ const Nav = (props) => (
       <h2 className="nav-title">Take-Off</h2>
     </Link>
     <div className="nav-right">
-      <Link className="nav-link" to="/home">
-        {/* Show this link if they are logged in or not,
-        but call this link 'Home' if they are logged in,
-        and call this link 'Login / Register' if they are not */}
-        {props.user.id ? 'Home' : 'Login / Register'}
-      </Link>
-      <Link className="nav-link" to="/employee_requests">
-        {/* Show this link if they are logged in or not,
-        but call this link 'Home' if they are logged in,
-        and call this link 'Login / Register' if they are not */}
-        {props.user.id && 'My Requests'}
-      </Link>
-      {/* Show the link to the info page and the logout button if the user is logged in */}
-      {props.user.id && (
+    {props.user.id && (
+      props.user.role_id === 1 ? 
         <>
-          <Link className="nav-link" to="/info">
-            Info Page
+          <Link className="nav-link" to="/home">Employee Home</Link>
+          <Link className="nav-link" to="/admin/home">Admin Home</Link>
+          <Link className="nav-link" to="/admin/calendar">Calendar</Link>
+          <Link className="nav-link" to="/admin/search_employee">Search Employees</Link>
+          <LogOutButton className="nav-link" />
+        </>
+      :
+        <>
+          <Link className="nav-link" to="/home">
+            {props.user.id ? 'Home' : 'Login / Register'}
+          </Link>
+          <Link className="nav-link" to="/employee_requests">
+            {props.user.id && 'My Requests'}
           </Link>
           <LogOutButton className="nav-link"/>
         </>
-      )}
-      {/* Always show this link since the about page is not protected */}
-      <Link className="nav-link" to="/about">
-        About
-      </Link>
+    )}
     </div>
   </div>
 );

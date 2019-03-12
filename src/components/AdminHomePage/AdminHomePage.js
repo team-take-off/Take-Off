@@ -6,7 +6,7 @@ class AdminHomePage extends Component {
     render() {
         return (
             <div>
-                <p>[ AdminHomePage ]</p>
+                <h2>Pending Requests</h2>
             </div>
         );
     }

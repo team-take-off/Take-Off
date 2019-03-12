@@ -59,7 +59,7 @@ class App extends Component {
             <ProtectedRoute exact path="/request_sick"
               component={SickRequestPage}
             />
-            <ProtectedRoute exact path="/admin/home"
+            <ProtectedRoute exact path="/admin/home" 
               component={AdminHomePage}
             />
             <ProtectedRoute exact path="/admin/calendar"
