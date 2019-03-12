@@ -4,7 +4,8 @@ import axios from 'axios';
 function* fetchUserInfo(action) {
   try {
     const serverResponse = yield axios.get(`api/employee/userinfo/${action.payload}`);
-    yield put({type: 'SET_USER_INFO', payload: serverResponse.data});
+    yield put({
+      type: 'SET_USER_INFO', payload: serverResponse.data});
   } catch (error) {
       console.log('Error in axios GET:', error);
   }
