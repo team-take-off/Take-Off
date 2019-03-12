@@ -10,6 +10,9 @@ class EmployeeHomePage extends Component {
             vacation:'',
         }
     }
+    componentDidMount() {
+        this.addUserInfo();
+    }
 //     getEmployee = (event)=> {
 //         axios({
 //         method:'GET',
@@ -22,6 +25,11 @@ class EmployeeHomePage extends Component {
 //     })
 // }
 
+    addUserInfo = (event) => {
+        const action = { type: 'SET_USER_INFO', payload: this.props.reduxStore.user }
+        this.props.dispatch(action)
+    }
+
 vacationRequest = (event) =>{
     this.props.history.push('/request_vacation')
 }
@@ -33,19 +41,23 @@ sickRequest = (event) => {
     render() {
         return (
             <div>
-                {/* {JSON.stringify(this.props.user)} */}
-                <h1>Welcome, {this.props.user.first_name}</h1>
-                <h2>Vacation Time: {this.props.user.vacation_hours}</h2>
+                {JSON.stringify(this.props.reduxStore.userInfo)}
+                {/* {this.props.reduxStore.userInfo.map((user) => {
+                    return (
+                        <h1>Welcome, {user.first_name}</h1>
+                    )
+                })} */}
+                <h2>Vacation Time: {this.props.reduxStore.userInfo.vacation_hours}</h2>
                 <button onClick={this.vacationRequest}>Request Vacation</button>
-                <h2>Sick and Safe Time: {this.props.user.sick_hours}</h2>
+                <h2>Sick and Safe Time: {this.props.reduxStore.userInfo.sick_hours}</h2>
                 <button onClick={this.sickRequest}>Request Sick and Safe</button>
             </div>
         );
     }
 }
 
-const mapStateToProps = state => ({
-    user: state.user,
+const mapStateToProps = reduxStore => ({
+    reduxStore
 });
 
 // this allows us to use <App /> in index.js
