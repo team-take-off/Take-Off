@@ -56,10 +56,10 @@ router.post('/', (req, res) => {
                     await client.query(insertDateText, [request.date, batchID, request.hours]);
                 }
                 await client.query('COMMIT');
-                res.sendStatus(201);
+                await res.sendStatus(201);
             } catch (error) {
                 await client.query('ROLLBACK');
-                res.sendStatus(500);
+                await res.sendStatus(500);
                 throw error;
             } finally {
                 client.release();
