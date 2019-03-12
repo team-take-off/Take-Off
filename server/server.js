@@ -34,7 +34,7 @@ app.use('/api/employee/request', employeeRequestRouter);
 app.use('/api/admin/addtime', adminAddTimeRouter);
 app.use('/api/admin/employee', adminEmployeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
-app.use('./api/employee/userinfo', employeeUserInfoRouter);
+app.use('/api/employee/userinfo', employeeUserInfoRouter);
 
 // Serve static files
 app.use(express.static('build'));
