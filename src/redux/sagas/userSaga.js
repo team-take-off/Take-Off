@@ -14,6 +14,7 @@ function* fetchUser() {
     // If a user is logged in, this will return their information
     // from the server session (req.user)
     const response = yield axios.get('api/user', config);
+console.log('usersage:',response);
 
     // now that the session has given us a user object
     // with an id and username set the client-side user object to let
