@@ -41,12 +41,7 @@ sickRequest = (event) => {
     render() {
         return (
             <div>
-                {JSON.stringify(this.props.reduxStore.userInfo)}
-                {/* {this.props.reduxStore.userInfo.map((user) => {
-                    return (
-                        <h1>Welcome, {user.first_name}</h1>
-                    )
-                })} */}
+                <h1>Welcome, {this.props.reduxStore.userInfo.first_name}</h1>
                 <h2>Vacation Time: {this.props.reduxStore.userInfo.vacation_hours}</h2>
                 <button onClick={this.vacationRequest}>Request Vacation</button>
                 <h2>Sick and Safe Time: {this.props.reduxStore.userInfo.sick_hours}</h2>
