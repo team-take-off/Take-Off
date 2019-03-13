@@ -4,6 +4,21 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
+    if(req.isAuthenticated()){
+        pool.query(`SELECT "batch_of_requests".*, "time_off_request".* 
+                    FROM "employee" 
+                    JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
+                    JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
+                    ;`)
+                    .then((result) => {
+                        res.send(result.rows);
+                    }).catch((error) => {
+                        console.log('Error in GET route for admin router: ', error);
+                        res.sendStatus(500);
+                    });
+    } else {
+        res.sendStatus(403);
+    }
 
 });
 

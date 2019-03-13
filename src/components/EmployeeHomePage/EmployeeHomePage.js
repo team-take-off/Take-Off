@@ -5,10 +5,6 @@ import { connect } from 'react-redux';
 class EmployeeHomePage extends Component {
     constructor(){
         super()
-        this.state={
-            sick_time:'',
-            vacation:'',
-        }
     }
     componentDidMount() {
         this.addUserInfo();
@@ -42,9 +38,9 @@ sickRequest = (event) => {
         return (
             <div>
                 <h1>Welcome, {this.props.reduxStore.userInfo.first_name}</h1>
-                <h2>Vacation Time: {this.props.reduxStore.userInfo.vacation_hours}</h2>
+                <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo.vacation_hours) / 8)} Days</h2>
                 <button onClick={this.vacationRequest}>Request Vacation</button>
-                <h2>Sick and Safe Time: {this.props.reduxStore.userInfo.sick_hours}</h2>
+                <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo.sick_hours) / 8)} Days</h2>
                 <button onClick={this.sickRequest}>Request Sick and Safe</button>
             </div>
         );
