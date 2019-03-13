@@ -1,7 +1,7 @@
 const vacationRequestDates = (state = [''], action) => {
     switch (action.type) {
         case 'APPEND_VACATION_REQUEST':
-            return [...state, action.payload];
+            return [...state, ''];
         case 'SET_VACATION_REQUEST':
             let index = action.payload.index;
             const newDate = action.payload.date;

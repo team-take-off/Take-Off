@@ -11,15 +11,23 @@ class RequestForm extends Component {
 
     submit = (event) => {
         event.preventDefault();
-        console.log('-- in RequestForm submit()');
+        console.log('---');
+        for (let i = 0; i <  this.props.reduxStore.vacationRequestDates.length; i++) {
+            if (this.props.reduxStore.vacationRequestDates[i] === '') {
+                console.log(' - (not set)');
+            } else {
+                console.log(' - ', this.props.reduxStore.vacationRequestDates[i]);
+            }
+        }
+        console.log('---');
     }
 
     // Show this component on the DOM
     render() {
         return (
             <form onSubmit={this.submit}>
-                {this.props.reduxStore.vacationRequestDates.map((date, i) => 
-                    <RequestFormRow key={i} />
+                {this.props.reduxStore.vacationRequestDates.map((date, i) =>
+                    <RequestFormRow key={i} index={i} date={date} />
                 )}
                 <input onClick={this.appendRequestDate} type="button" value="+" />
                 <input type="submit" />
