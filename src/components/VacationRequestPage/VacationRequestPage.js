@@ -1,18 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import VacationRequestPageItem from './VacationRequestPageItem';
+import RequestForm from '../RequestForm/RequestForm';
 // import axios from 'axios';
 
 class VacationRequestPage extends Component {
-
-    constructor() {
-
-        super()
-        this.state={
-            requests:[],
-            requestForm:[],
-        }
-    }
 
     componentDidMount() {
         this.addUserInfo();
@@ -39,29 +30,21 @@ class VacationRequestPage extends Component {
 
      removeDay = (day) =>{
          
-        this.setState({
-            requestForm: this.state.requestForm.filter((_, i) => i !== day)
-        });
+        // this.setState({
+        //     requestForm: this.state.requestForm.filter((_, i) => i !== day)
+        // });
         
         
     }
     
     // Show this component on the DOM
     render() {
-        console.log('array', this.state.requestForm);
         // console.log(this.state.requestForm);
         // let firstDay = <div><button onClick={this.subtractDay}>-</button><input type="date" /></div>
         return (
             <div>
                 <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo.vacation_hours) / 8)} Days</h2>
-                <div><button onClick={this.subtractDay}>-</button><input type="date" /></div>
-                {/* {firstDay} */}
-                {this.state.requestForm.map((item,i) => {
-                    return <VacationRequestPageItem removeDay={this.removeDay} item={item} i={i}requestForm={this.state.requestForm}/>
-                })}
-            <button onClick={this.addDay}>+</button>
-            <br></br>
-            <button>Submit</button>
+                <RequestForm type={1} />
             </div>
         );
     }
