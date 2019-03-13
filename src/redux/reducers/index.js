@@ -6,6 +6,8 @@ import requests from './requestsReducers';
 import userRequests from './userRequestsReducer';
 import employees from './employeesReducer';
 import userInfo from './userInfoReducer';
+import vacationRequestDates from './vacationRequestDatesReducer';
+import sickRequestDates from './sickRequestDatesReducer';
 
 // rootReducer is the primary reducer for our entire project
 // It bundles up all of the other reducers so our project can use them.
@@ -20,7 +22,9 @@ const rootReducer = combineReducers({
   requests,
   userRequests,
   employees,
-  userInfo
+  userInfo,
+  vacationRequestDates,
+  sickRequestDates
 });
 
 export default rootReducer;
