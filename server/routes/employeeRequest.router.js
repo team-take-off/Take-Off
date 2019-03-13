@@ -72,4 +72,30 @@ router.post('/', (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res)=> {
+    if(req.isAuthenticated ()){
+    console.log('req.params: ', req.params);
+    const client = await pool.connect();
+    try{
+        await client.query('BEGIN');
+        const firstDelete = `DELETE FROM "time_off_request" WHERE "batch_of_requests_id" = $1;`;
+        await client.query(firstDelete, [req.params.id]);
+        const lastDelete = `DELETE FROM "batch_of_requests" WHERE id =$1;`;
+        await client.query(lastDelete, [req.params.id]);
+        await client.query('COMMIT');
+        res.sendStatus(200);
+    }catch(error) {
+        console.log('Error in Delete: ', error);
+        await client.query('ROLLBACK');
+        res.sendStatus(500);
+    }
+    finally {
+        client.release()
+    }
+} else {
+    res.sendStatus(403)
+}
+    
+});
+
 module.exports = router;
