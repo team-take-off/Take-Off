@@ -4,7 +4,7 @@ class RequestItem extends Component {
     render() {
         return (
             <div>
-                name:{this.props.z.first_name}
+                Date: {this.props.z.date}
             </div>
         )
     }

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+import moment from 'moment';
+
 import RequestItem from './RequestItem';
 class AdminHomePage extends Component {
     componentDidMount() {
@@ -10,12 +12,14 @@ class AdminHomePage extends Component {
         return (
             <div>
                 {JSON.stringify(this.props.requests[0])}
-                <h2>Pending Requests</h2>
+                {console.log(moment().format('YYYY-MM-DD'))
+                }
+                <h2>Approved Requests</h2>
                 
                 <div>
                     {this.props.requests && this.props.requests.length > 0  && (
                         this.props.requests.filter(x => 
-                                x.approved === true
+                                moment(x.date).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
                         ).map(z => 
                             <RequestItem z={z} />
                             )
