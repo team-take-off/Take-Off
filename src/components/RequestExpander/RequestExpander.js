@@ -6,7 +6,7 @@ class RequestExpander extends Component {
     render() {
         return (
             <div>
-                <p>[ RequestExpander ]</p>
+                <p>[ RequestExpander ] [+]</p>
             </div>
         );
     }
