@@ -28,7 +28,7 @@ class RequestForm extends Component {
                     requestedDates: this.props.reduxStore.sickRequestDates
                 }
             };
-            this.props.dispatch(action); 
+            this.props.dispatch(action);
         }
     }
 
