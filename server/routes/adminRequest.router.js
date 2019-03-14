@@ -23,6 +23,20 @@ router.get('/', (req, res) => {
 
 });
 
+router.get('/batch', (req, res) => {
+    if(req.isAuthenticated()) {
+        const queryText = `SELECT * FROM "batch_of_requests";`;
+        pool.query(queryText).then(response => res.send(response.rows))
+        .catch(error => {
+            console.log('error in batch GET', error);
+            res.sendStatus(500);
+        });
+    }else {
+        res.sendStatus(403);
+    }
+    
+});
+
 router.post('/', (req, res) => {
 
 });
