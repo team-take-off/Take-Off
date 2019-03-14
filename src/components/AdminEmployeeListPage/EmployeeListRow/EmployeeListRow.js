@@ -34,6 +34,7 @@ class EmployeeListRow extends Component {
     // Delete this row's employee
     delete = () => {
         console.log('In EmployeeListRow pressed delete()');
+        
     }
 
     // Show this component on the DOM
