@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 
 class AdminAddEmployeePage extends Component {
 
@@ -17,11 +18,16 @@ class AdminAddEmployeePage extends Component {
             ...this.state,
             [event.target.name]: event.target.value
         });
-        console.log(this.state);
     }
 
     submit = (event) => {
+        console.log(this.state);
         event.preventDefault();
+        const action = {
+            type: 'ADD_EMPLOYEE',
+            payload: this.state
+        };
+        this.props.dispatch(action);
     }
 
     // Show this component on the DOM
@@ -31,6 +37,9 @@ class AdminAddEmployeePage extends Component {
                 <h2>Add Employee</h2>
                 <form onSubmit={this.submit}>
                     <input onChange={this.handleChange} name="first_name" placeholder="First Name" type="text" />
+                    <input onChange={this.handleChange} name="last_name" placeholder="Last Name" type="text" />
+                    <input onChange={this.handleChange} name="username" placeholder="username" type="text" />
+                    <input onChange={this.handleChange} name="start_date" type="date" />
                     <input type="submit" value="Submit" />
                 </form>
             </div>
@@ -38,4 +47,4 @@ class AdminAddEmployeePage extends Component {
     }
 }
 
-export default AdminAddEmployeePage;
+export default connect()(AdminAddEmployeePage);

@@ -4,9 +4,9 @@ import axios from 'axios';
 function* fetchEmployees() {
     try {
         const serverResponse = yield axios.get(`api/admin/employees`);
-        yield put({type: 'SET_EMPLOYEES', payload: serverResponse.data})
+        yield put({type: 'SET_EMPLOYEES', payload: serverResponse.data});
     } catch (error) {
-        console.log('Error in axios GET:', error);
+        console.log('Error in SET_EMPLOYEES:', error);
     }
 }
 
@@ -14,16 +14,16 @@ function* deleteEmployee(action) {
     try {
 
     } catch (error) {
-        console.log('Error in DELETE:', error);
+        console.log('Error in DELETE_EMPLOYEE:', error);
     }
 }
 
-
 function* addEmployee(action) {
     try {
-
+        yield axios.post('api/admin/employees', action.payload);
+        yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
-        console.log('Error in DELETE:', error);
+        console.log('Error in ADD_EMPLOYEE:', error);
     }
 }
 
@@ -31,7 +31,7 @@ function* deactivateEmployee(action) {
     try {
 
     } catch (error) {
-        console.log('Error in :', error);
+        console.log('Error in DEACTIVATE_EMPLOYEE:', error);
     }
 }
 
@@ -39,7 +39,7 @@ function* activateEmployee(action) {
     try {
 
     } catch (error) {
-        console.log('Error in :', error);
+        console.log('Error in ACTIVATE_EMPLOYEE:', error);
     }
 }
 function* employeesSaga() {

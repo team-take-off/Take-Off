@@ -41,9 +41,9 @@ CREATE TABLE "employee"
     "first_name" VARCHAR(25) NOT NULL,
     "last_name" VARCHAR(25) NOT NULL,
     "company_employee_id" VARCHAR(10),
-	"sick_hours" INTEGER NOT NULL,
-	"vacation_hours" INTEGER NOT NULL,
-    "role_id" INTEGER REFERENCES "role"("id"),
+	"sick_hours" INTEGER NOT NULL DEFAULT 0,
+	"vacation_hours" INTEGER NOT NULL DEFAULT 0,
+    "role_id" INTEGER REFERENCES "role"("id") DEFAULT 2,
     "start_date" DATE NOT NULL,
     "is_active" BOOLEAN DEFAULT true
 );
