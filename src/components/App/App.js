@@ -14,6 +14,7 @@ import Footer from '../Footer/Footer';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
 
 import AdminAddEmployeePage from '../AdminAddEmployeePage/AdminAddEmployeePage';
+import AdminEditEmployeePage from '../AdminEditEmployeePage/AdminEditEmployeePage';
 import AdminCalendarPage from '../AdminCalendarPage/AdminCalendarPage';
 import AdminEmployeeListPage from '../AdminEmployeeListPage/AdminEmployeeListPage';
 import AdminSearchEmployeePage from '../AdminSearchEmployeePage/AdminSearchEmployeePage';
@@ -73,6 +74,9 @@ class App extends Component {
             />
             <ProtectedRoute exact path="/admin/add_employee"
               component={AdminAddEmployeePage}
+            />
+            <ProtectedRoute exact path="/admin/edit_employee"
+              component={AdminEditEmployeePage}
             />
             {/* This works the same as the other protected route, except that if the user is logged in,
             they will see the info page instead. */}
