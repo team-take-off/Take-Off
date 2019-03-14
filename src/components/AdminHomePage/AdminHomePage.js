@@ -10,17 +10,13 @@ class AdminHomePage extends Component {
     }
 
     groupBatchIds = () => {
-        // let arrayOfCards = [];
+        let arrayOfCards = [];
         for (const id of this.props.requests.batchOfRequests) {
             const requestDatesArrary = this.props.requests.requests.filter(x => 
                 id.id === x.batch_of_requests_id
                 )
                 console.log(requestDatesArrary);
-                
-                // requestDatesArrary.map(z => {
-                //     <RequestItem z={z} />
-                // })
-                // arrayOfCards.push(<RequestItem x={x} />)
+              console.log((requestDatesArrary[requestDatesArrary.length-1]).date)
         }
     }
     // Show this component on the DOM
