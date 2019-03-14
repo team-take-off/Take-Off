@@ -24,13 +24,19 @@ router.post('/:id', (req, res) => {
     }else {
         res.sendStatus(403);
     }
-});
+}); // end of post
 
 router.put('/:id', (req, res) => {
+    console.log(req.params);
+    
     if(req.isAuthenticated()) {
         const queryText = `UPDATE "employee" SET "vacation_hours" = "vacation_hours" + 8 WHERE "id" = $1;`;
-        pool.query(queryText, [req.params.id])
-    }
-})
+        pool.query(queryText, [req.params.id]).then(response => res.sendStatus(200))
+        .catch(error => {
+            console.log('error in making UPDATE', error);
+            res.sendStatus(500);
+        });
+    };
+}); // end of put
 
 module.exports = router;
