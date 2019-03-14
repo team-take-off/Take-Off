@@ -48,8 +48,8 @@ class AdminEmployeeListPage extends Component {
     }
 }
 
-const mapStateToProps = reduxStore => ({
+const mapReduxStoreToProps = reduxStore => ({
     reduxStore
 });
 
-export default connect(mapStateToProps)(AdminEmployeeListPage);
+export default connect(mapReduxStoreToProps)(AdminEmployeeListPage);
