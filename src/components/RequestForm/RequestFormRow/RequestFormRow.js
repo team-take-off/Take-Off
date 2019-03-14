@@ -47,7 +47,7 @@ class RequestFromRow extends Component {
                 index: this.props.index,
                 request: {
                     date: event.target.value,
-                    hours: 8
+                    hours: this.state.hours
                 }
             }
         };
@@ -57,13 +57,16 @@ class RequestFromRow extends Component {
     setHours = (event) => {
         this.setState({
             ...this.state,
-            hours: event.target.value
+            hours: parseInt(event.target.value)
         });
         const action = {
             type: 'SET_VACATION_REQUEST',
             payload: {
                 index: this.props.index,
-                hours: event.target.value
+                request: {
+                    date: this.state.date,
+                    hours: parseInt(event.target.value)
+                }
             }
         };
         this.props.dispatch(action);
@@ -78,6 +81,10 @@ class RequestFromRow extends Component {
                 <input onChange={this.setDate} type="date" value={this.state.date} />
                 {/* <input onChange={this.setHours} type="radio" name="full" value={8} />Full Day
                 <input onChange={this.setHours} type="radio" name="half" value={4} />Half Day */}
+                <select onChange={this.setHours} value={this.state.hours}>
+                    <option value="8">Full Day</option>
+                    <option value="4">Half Day</option>
+                </select>
             </div>
         );
     }
