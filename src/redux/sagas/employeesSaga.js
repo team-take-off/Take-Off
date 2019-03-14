@@ -12,7 +12,7 @@ function* fetchEmployees() {
 
 function* deleteEmployee(action) {
     try {
-
+        yield axios.delete(`/api/`)
     } catch (error) {
         console.log('Error in DELETE_EMPLOYEE:', error);
     }
