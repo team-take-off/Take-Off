@@ -16,7 +16,7 @@ class AdminHomePage extends Component {
                 id.id === x.batch_of_requests_id
                 )
                 console.log(requestDatesArrary);
-              console.log((requestDatesArrary[requestDatesArrary.length-1]).date)
+              console.log(moment((requestDatesArrary[requestDatesArrary.length-1]).date).format('YYYY-MM-DD'))
         }
     }
     // Show this component on the DOM
