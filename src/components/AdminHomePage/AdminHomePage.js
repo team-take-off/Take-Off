@@ -14,12 +14,12 @@ class AdminHomePage extends Component {
                 {JSON.stringify(this.props.requests[0])}
                 {console.log(moment().format('YYYY-MM-DD'))
                 }
-                <h2>Approved Requests</h2>
+                <h2>Past Requests</h2>
                 
                 <div>
                     {this.props.requests && this.props.requests.length > 0  && (
                         this.props.requests.filter(x => 
-                                moment(x.date).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
+                            moment(x.date).format('YYYY-MM-DD') < moment().format('YYYY-MM-DD')
                         ).map(z => 
                             <RequestItem z={z} />
                             )
