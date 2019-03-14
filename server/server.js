@@ -32,7 +32,7 @@ app.use(passport.session());
 app.use('/api/user', userRouter);
 app.use('/api/employee/request', employeeRequestRouter);
 app.use('/api/admin/addtime', adminAddTimeRouter);
-app.use('/api/admin/employee', adminEmployeeRouter);
+app.use('/api/admin/employees', adminEmployeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
 app.use('/api/employee/userinfo', employeeUserInfoRouter);
 
