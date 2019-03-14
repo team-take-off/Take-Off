@@ -36,12 +36,17 @@ class EmployeeListRow extends Component {
     // Delete this row's employee
     delete = () => {
         console.log('In EmployeeListRow pressed delete()');
+        console.log(this.props.employee.id);
+        const action = {type: 'DELETE_EMPLOYEE'}
+        
     }
 
     // Show this component on the DOM
     render() {
         const employee = this.props.employee;
         return (
+            
+            
             <tr>
                 <td>{employee.first_name} {employee.last_name}</td>
                 <td>{employee.username}</td>
