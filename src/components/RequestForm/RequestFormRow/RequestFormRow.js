@@ -25,9 +25,15 @@ class RequestFromRow extends Component {
     // Send a request to the reduxStore to remove the vacation request 
     // corresponding to the current row.
     deleteRow = () => {
+        let typeString = '';
+        if (this.props.type === 1) {
+            typeString = 'REMOVE_VACATION_REQUEST';
+        }else{
+            typeString = 'REMOVE_SICK_REQUEST';
+        }
         const action = {
-            type: 'REMOVE_VACATION_REQUEST',
-            payload: {
+            type: typeString,
+            payload: {     
                 index: this.props.index,
             }
         };
@@ -41,40 +47,51 @@ class RequestFromRow extends Component {
             ...this.state,
             date: event.target.value
         });
-        const action = {
-            type: 'SET_VACATION_REQUEST',
-            payload: {
-                index: this.props.index,
-                request: {
-                    date: event.target.value,
-                    hours: this.state.hours
+        let typeString = '';
+        if (this.props.type === 1) {
+            typeString = 'SET_VACATION_REQUEST';
+        } else {
+            typeString = 'SET_SICK_REQUEST';
+        }
+            const action = {
+                type: typeString,
+                payload: {
+                    index: this.props.index,
+                    request: {
+                        date: event.target.value,
+                        hours: this.state.hours
+                    }
                 }
-            }
-        };
+            };
         this.props.dispatch(action);
     }
-    
+
     setHours = (event) => {
         this.setState({
             ...this.state,
             hours: parseInt(event.target.value)
         });
-        const action = {
-            type: 'SET_VACATION_REQUEST',
-            payload: {
-                index: this.props.index,
-                request: {
-                    date: this.state.date,
-                    hours: parseInt(event.target.value)
+        let typeString = '';
+        if (this.props.type === 1) {
+            typeString = 'SET_VACATION_REQUEST';
+        } else {
+            typeString = 'SET_SICK_REQUEST';
+        }
+            const action = {
+                type: typeString,
+                payload: {
+                    index: this.props.index,
+                    request: {
+                        date: this.state.date,
+                        hours: parseInt(event.target.value)
+                    }
                 }
-            }
-        };
+            };
         this.props.dispatch(action);
-    }
+}
 
     // Show this component on the DOM
     render() {
-        console.log('in render() for RequestFormRow ');
         return (
             <div>
                 <button onClick={this.deleteRow}>-</button>
