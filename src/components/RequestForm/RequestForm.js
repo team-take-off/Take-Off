@@ -36,7 +36,6 @@ class RequestForm extends Component {
     render() {
         return (
             <form onSubmit={this.submit}>
-            {JSON.stringify(this.props.type)}
                 {this.props.reduxStore.vacationRequestDates.map((request, i) =>
                     <RequestFormRow key={i} index={i} request={request} />
                 )}
