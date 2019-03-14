@@ -36,8 +36,8 @@ class RequestForm extends Component {
     render() {
         return (
             <form onSubmit={this.submit}>
-                {this.props.reduxStore.vacationRequestDates.map((date, i) =>
-                    <RequestFormRow key={i} index={i} date={date} />
+                {this.props.reduxStore.vacationRequestDates.map((request, i) =>
+                    <RequestFormRow key={i} index={i} request={request} />
                 )}
                 <input onClick={this.appendRequestDate} type="button" value="+" />
                 <input type="submit" />
