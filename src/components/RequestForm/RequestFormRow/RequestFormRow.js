@@ -79,8 +79,6 @@ class RequestFromRow extends Component {
             <div>
                 <button onClick={this.deleteRow}>-</button>
                 <input onChange={this.setDate} type="date" value={this.state.date} />
-                {/* <input onChange={this.setHours} type="radio" name="full" value={8} />Full Day
-                <input onChange={this.setHours} type="radio" name="half" value={4} />Half Day */}
                 <select onChange={this.setHours} value={this.state.hours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>
