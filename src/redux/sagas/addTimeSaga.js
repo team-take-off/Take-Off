@@ -3,6 +3,8 @@ import axios from 'axios';
 
 function* addSickDay(action) {
     try {
+        yield axios.post(`/api/admin/addtime/sick/${action.payload}`);
+        yield axios.put(`/api/admin/addtime/sick/${action.payload}`);
     } catch (error) {
         console.log('Error in axios sick POST:', error);
     }
