@@ -16,6 +16,7 @@ const Nav = (props) => (
           <Link className="nav-link" to="/home">Employee Home</Link>
           <Link className="nav-link" to="/admin/home">Admin Home</Link>
           <Link className="nav-link" to="/admin/calendar">Calendar</Link>
+          <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
           <Link className="nav-link" to="/admin/search_employee">Search Employees</Link>
           <LogOutButton className="nav-link" />
         </>
