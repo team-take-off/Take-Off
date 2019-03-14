@@ -7,18 +7,18 @@ router.get('/', (req, res) => {
 
 });
 
-router.post('/:id', (req, res) => {
+router.post('/vacation/:id', (req, res) => {
     
     if (req.isAuthenticated()) {
         const queryText = `
             INSERT INTO "accrued_time" 
-                ("sick_time", "vacation_time", "employee_id")
-            VALUES ($1, $2, $3)`
+                ("sick_hours", "vacation_hours", "employee_id")
+            VALUES (0, 8, $1)`
             
-        pool.query(queryText, [,,,])
+        pool.query(queryText, [req.params.id])
         .then(response =>{res.sendStatus(200)})
         .catch(error => {
-            console.log('error in PUT', error);
+            console.log('error in POST', error);
             res.sendStatus(500);
         })
     }else {
@@ -26,7 +26,7 @@ router.post('/:id', (req, res) => {
     }
 }); // end of post
 
-router.put('/:id', (req, res) => {
+router.put('/vacation/:id', (req, res) => {
     console.log(req.params);
     
     if(req.isAuthenticated()) {
