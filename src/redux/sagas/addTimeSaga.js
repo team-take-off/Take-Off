@@ -10,6 +10,7 @@ function* addSickDay(action) {
 
 function* addVacationDay(action) {
     try {
+        yield axios.put(`/api/admin/addtime/${action.payload}`)
     } catch (error) {
         console.log('Error in axios vacation POST:', error);
     }

@@ -12,7 +12,9 @@ class EmployeeListRow extends Component {
     // Add one day of vacation to this rows's employee
     addVacation = () => {
         console.log('In EmployeeListRow pressed addVacation()');
-        // this.props.dispatch();
+        console.log(this.props.employee.id);
+        
+        this.props.dispatch({type: 'ADD_VACATION_DAY', payload: this.props.employee.id});
     }
 
     // Add one day of sick and safe leave to this rows's employee

@@ -26,4 +26,11 @@ router.post('/:id', (req, res) => {
     }
 });
 
+router.put('/:id', (req, res) => {
+    if(req.isAuthenticated()) {
+        const queryText = `UPDATE "employee" SET "vacation_hours" = "vacation_hours" + 8 WHERE "id" = $1;`;
+        pool.query(queryText, [req.params.id])
+    }
+})
+
 module.exports = router;
