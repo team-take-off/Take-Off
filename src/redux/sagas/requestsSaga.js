@@ -11,6 +11,16 @@ function* fetchRequests() {
   }
 }
 
+function* fetchBatchOfRequests() {
+  try {
+    const serverResponse = yield axios.get('api/admin/request/batch');
+
+    yield put({ type: 'SET_BATCH_REQUESTS', payload: serverResponse.data });
+  } catch (error) {
+      console.log('Error in axios GET:', error);
+  }
+}
+
 function* acceptRequests(action) {
     try {
       yield axios.post('api/admin/request', action.payload);
@@ -33,6 +43,7 @@ function* acceptRequests(action) {
 
 function* requestsSaga() {
   yield takeLatest('FETCH_REQUESTS', fetchRequests);
+  yield takeLatest('BATCH_OF_REQUESTS', fetchBatchOfRequests);
   yield takeLatest('ACCEPT_REQUEST', acceptRequests);
   yield takeLatest('DENY_REQUEST', denyRequests);
 }
