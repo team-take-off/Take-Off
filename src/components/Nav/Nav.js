@@ -32,7 +32,8 @@ class Nav extends Component {
       <Link to="/home">
         <h2 className="nav-title">Take-Off</h2>
       </Link>
-      <div className={classes.mobile}><DynamicDrawer /></div>
+      {/* Runs if the window width is less than 700px */}
+      <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer /></div>
       <div className={classnames(classes.desktop, "nav-right")}>
       {/* <span>{`(min-width:600px) matches:${matches}`}</span> */}
       
