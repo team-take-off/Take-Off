@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import swal from 'sweetalert';
 
 class EmployeeListRow extends Component {
 
@@ -33,10 +34,25 @@ class EmployeeListRow extends Component {
 
     // Delete this row's employee
     delete = () => {
-        console.log('In EmployeeListRow pressed delete()');
-        console.log('id fir the dlete row: ', this.props.employee.id);
-        const action = {type: 'DELETE_EMPLOYEE'}
-        
+        swal({
+                title: "Are you sure?",
+                text: "Once deleted, employee and employee record is deleted!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        swal("Employee Deleted!", {
+                        icon: "success",
+                        });
+                        console.log('id fir the dlete row: ', this.props.employee.id);
+                        const action = {type: 'DELETE_EMPLOYEE', payload: this.props.employee.id}
+                        this.props.dispatch(action);
+                    } else {
+                        swal("Employee Record Safe");
+                    }
+                });
     }
 
     // Show this component on the DOM
