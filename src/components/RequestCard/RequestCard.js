@@ -54,7 +54,7 @@ class RequestCard extends Component {
         if (requestArray.length === 0) {
             return '[Unknown Type]';
         } else {
-            return requestArray[0].name;
+            return requestArray[0].type;
         }
     }
 

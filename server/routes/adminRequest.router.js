@@ -2,33 +2,56 @@ const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
 
-
+// Route GET /api/admin/request
+// Returns an array all requested days off for all users
 router.get('/', (req, res) => {
-    if (req.isAuthenticated() && req.user.role_id == 1) {
-        pool.query(`SELECT "time_off_request".*, "batch_of_requests"."date_requested", "batch_of_requests"."approved", "employee"."first_name", "type"."name"
-                    FROM "employee" 
-                    JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
-                    JOIN "type" ON "type".id = "batch_of_requests"."type_id"
-                    JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
-                    ;`)
-                    .then((result) => {
-                        res.send(result.rows);
-                    }).catch((error) => {
-                        console.log('Error in GET route for admin router: ', error);
-                        res.sendStatus(500);
-                    });
+    if(req.isAuthenticated()){
+        const queryText = `
+        SELECT
+            "time_off_request".*, 
+            "batch_of_requests"."date_requested", 
+            "batch_of_requests"."approved", 
+            "employee"."first_name", 
+            "employee"."last_name", 
+            "type"."name" AS "type"
+        FROM "employee" 
+        JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
+        JOIN "type" ON "type".id = "batch_of_requests"."type_id"
+        JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
+        ;
+        `;
+        pool.query(queryText).then((result) => {
+            res.send(result.rows);
+        }).catch((queryError) => {
+            const errorMessage = `SQL error using GET /api/admin/request, ${queryError}`;
+            console.log(errorMessage);
+            res.sendStatus(500);
+        });
     } else {
         res.sendStatus(403);
     }
-
 });
 
+// Route GET /api/admin/request/batch
+// Returns all batches of requested days off
 router.get('/batch', (req, res) => {
+<<<<<<< HEAD
+    if(req.isAuthenticated()) {
+        const queryText = `
+        SELECT * FROM "batch_of_requests";
+        `;
+        pool.query(queryText).then((result) => {
+            res.send(result.rows)
+        }).catch(queryError => {
+            const errorMessage = `SQL error using GET /api/admin/request/batch, ${queryError}`;
+            console.log(errorMessage);
+=======
     if (req.isAuthenticated() && req.user.role_id == 1) {
         const queryText = `SELECT * FROM "batch_of_requests";`;
         pool.query(queryText).then(response => res.send(response.rows))
         .catch(error => {
             console.log('error in batch GET', error);
+>>>>>>> master
             res.sendStatus(500);
         });
     }else {
@@ -37,6 +60,8 @@ router.get('/batch', (req, res) => {
     
 });
 
+// Route POST /api/admin/request
+// Insert an new batch of requested days off
 router.post('/', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id == 1) {
         const userID = req.user.id;
