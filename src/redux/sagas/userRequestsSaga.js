@@ -3,10 +3,10 @@ import axios from 'axios';
 
 function* fetchUserRequests(action) {
     try {
-        const serverResponse = yield axios.get(`api/employee/request/${action.payload}`);
+        const serverResponse = yield axios.get(`api/employee/request`);
         const nextAction = {
             type: 'SET_USER_REQUESTS',
-            payload: serverResponse
+            payload: serverResponse.data
         }
         yield put(nextAction);
     } catch (error) {

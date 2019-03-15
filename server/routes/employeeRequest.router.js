@@ -8,12 +8,14 @@ router.get('/', (req, res) => {
     if (req.isAuthenticated() && req.user.is_active) {
         const queryText = `
         SELECT
-            "batch_of_requests".*, "time_off_request".* 
+            "batch_of_requests".*, "time_off_request".* , "employee"."first_name", "employee"."last_name", "type"."name" AS "type"
             FROM "employee" 
             JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
+            JOIN "type" ON "type".id = "batch_of_requests"."type_id"
             JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
             WHERE "employee"."id" = $1;
         `;
+
         pool.query(queryText, [req.user.id]).then((queryResponse) => {
             res.send(queryResponse.rows);
         }).catch((queryError) => {

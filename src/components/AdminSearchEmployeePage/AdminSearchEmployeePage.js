@@ -37,7 +37,7 @@ class AdminSearchEmployeePage extends Component {
         if(this.state.person!='' && this.state.year!=''){
         
         this.props.reduxStore.requests.map((request) => {
-            if (request.first_name == this.state.firstname && request.date.substr(0, 4)){
+            if (request.first_name == this.state.firstname && request.date.substr(0, 4)==this.state.year){
                 userRequests.push(request)
             }
         })

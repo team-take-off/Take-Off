@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-
+import { connect } from 'react-redux';
 // TODO: Remove or replace eventually
 const tempStyle = {
     backgroundColor: '#ddd'
@@ -131,4 +131,9 @@ class RequestCard extends Component {
     }
 }
 
-export default RequestCard;
+const mapStateToProps = reduxStore => ({
+    reduxStore
+});
+
+// this allows us to use <App /> in index.js
+export default connect(mapStateToProps)(RequestCard);
