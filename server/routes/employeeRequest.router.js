@@ -16,12 +16,6 @@ router.get('/', (req, res) => {
             WHERE "employee"."id" = $1;
         `;
 
-        // (`SELECT "time_off_request".*, "batch_of_requests"."date_requested", "batch_of_requests"."approved", "employee"."first_name", "type"."name"
-        //             FROM "employee" 
-        //             JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
-        //             JOIN "type" ON "type".id = "batch_of_requests"."type_id"
-        //             JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
-        //             ;`)
         pool.query(queryText, [req.user.id]).then((queryResponse) => {
             res.send(queryResponse.rows);
         }).catch((queryError) => {
