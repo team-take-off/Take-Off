@@ -94,7 +94,7 @@ class RequestFromRow extends Component {
     render() {
         return (
             <div>
-                <button onClick={this.deleteRow}>-</button>
+                <input value="-" type="button" onClick={this.deleteRow}/>
                 <input onChange={this.setDate} type="date" value={this.state.date} />
                 {/* <input onChange={this.setHours} type="radio" name="full" value={8} />Full Day
                 <input onChange={this.setHours} type="radio" name="half" value={4} />Half Day */}
