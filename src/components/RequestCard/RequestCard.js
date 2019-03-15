@@ -6,61 +6,27 @@ const tempStyle = {
     backgroundColor: '#ddd'
 };
 
-/* EXAMPLE INPUT
-
-const requestedDates = [
-    { date: '2019-05-02', hours: 8 },
-    { date: '2019-04-03', hours: 8 },
-    { date: '2019-05-05', hours: 8 },
-    { date: '2019-04-02', hours: 8 },
-    { date: '2019-04-01', hours: 4 },
-    { date: '2019-05-01', hours: 8 },
-];
-const conflicts = [
-    {
-        name: 'Sharmarke',
-        approved: true,
-        dates: [
-            { date: '2019-04-01' },
-            { date: '2019-04-02' },
-            { date: '2019-04-03' }
-        ]
-    },
-    {
-        name: 'Bode',
-        approved: false,
-        dates: [
-            { date: '2019-04-01' },
-            { date: '2019-04-02' }
-        ]
-    }
-];
-
-<RequestCard name="Michael" requestedDates={requestedDates} conflicts={conflicts} onApprove={this.onApprove} onDeny={this.onDeny} onCancel={this.onCancel} />
-
-*/
-
 class RequestCard extends Component {
 
     renderName = () => {
-        const datesArray = this.props.requestedDates;
-        if (datesArray.length === 0) {
+        const requestArray = this.props.requestArray;
+        if (requestArray.length === 0) {
             return '[Unknown Name]';
         } else {
-            return `${datesArray[0].first_name} ${datesArray[0].last_name}`;
+            return `${requestArray[0].first_name} ${requestArray[0].last_name}`;
         }
     }
 
     renderDateRange = () => {
-        const datesArray = this.props.requestedDates;
-        if (datesArray.length === 0) {
+        const requestArray = this.props.requestArray;
+        if (requestArray.length === 0) {
             return '[Unknown Date Range]';
         }
 
         // Read in an array of objects with the attribute 'date:' and convert
         // to an array of class 'moment' from Moment.js.
         let momentArray = [];
-        for (let element of datesArray) {
+        for (let element of requestArray) {
             momentArray.push(moment(element.date, 'YYYY-MM-DD'));
         }
 
@@ -84,11 +50,11 @@ class RequestCard extends Component {
     }
 
     renderType = () => {
-        const datesArray = this.props.requestedDates;
-        if (datesArray.length === 0) {
+        const requestArray = this.props.requestArray;
+        if (requestArray.length === 0) {
             return '[Unknown Type]';
         } else {
-            return datesArray[0].name;
+            return requestArray[0].name;
         }
     }
 

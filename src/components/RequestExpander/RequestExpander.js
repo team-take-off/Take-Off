@@ -28,9 +28,8 @@ class RequestExpander extends Component {
             <div>
                 <h3>{this.props.title}</h3>
                 {this.renderTab()}
-                {JSON.stringify(this.props.requests)}
-                {this.props.requests.map((request, i) =>
-                    <RequestCard key={i} requestedDates={request} onApprove={this.onApprove} />
+                {this.props.requests.map((requestArray, i) =>
+                    <RequestCard key={i} requestArray={requestArray} onApprove={this.onApprove} />
                 )}
             </div>
         );

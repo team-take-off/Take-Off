@@ -17,25 +17,36 @@ class RequestExpanderCollection extends Component {
     getRequestArrays = () => {
         const currentTime = moment();
         const requests = this.props.requests;
-        const uniqueBatches = this.filterUniqueBatches(requests);
+        const batchIDs = this.filterUniqueBatchIDs(requests);
         let pendingRequests = [];
         let approvedRequests = [];
         let pastRequests = [];
         
-        for (let batch of uniqueBatches) {
-            const id = batch.id;
+        for (let id of batchIDs) {
             const requestBatchArray = requests.filter(
-                request => request.batch_of_requests_id === id
+                request => parseInt(request.batch_of_requests_id) === parseInt(id)
             );
-            requestBatchArray.sort((left, right) => {
-                return moment(left.date).diff(moment(right.date));
-            });
-            if (moment(requestBatchArray[requestBatchArray.length - 1]).diff(currentTime) > 0) {
-                pastRequests.push(requestBatchArray);
-            } else if (batch.approved) {
-                approvedRequests.push(requestBatchArray);
-            } else {
-                pendingRequests.push(requestBatchArray);
+
+            if (requestBatchArray.length > 0) {
+                // Read in an array of objects with the attribute 'date:' and convert
+                // to an array of class 'moment' from Moment.js.
+                let momentArray = [];
+                for (let element of requestBatchArray) {
+                    momentArray.push(moment(element.date, 'YYYY-MM-DD'));
+                }
+
+                // Sort the array of moments
+                momentArray.sort((left, right) => {
+                    return left.diff(right);
+                });
+
+                if (currentTime < momentArray[momentArray.length - 1]) {
+                    pastRequests.push(requestBatchArray);
+                } else if (requestBatchArray[0].approved) {
+                    approvedRequests.push(requestBatchArray);
+                } else {
+                    pendingRequests.push(requestBatchArray);
+                }
             }
         }
 
@@ -46,16 +57,16 @@ class RequestExpanderCollection extends Component {
         };
     }
 
-    filterUniqueBatches = (requests) => {
-        if (requests) {
-            return requests.filter((requestItem, index, uniqueArray) => {
-                if (uniqueArray.indexOf(requestItem) === index) {
-                    return requestItem;
-                }
-            }); 
-        } else {
-            return [];
+    filterUniqueBatchIDs = (requests) => {
+        let uniqueObject = {};
+        for (let request of requests) {
+            uniqueObject[request.batch_of_requests_id] = 1;
         }
+        let uniqueArray = [];
+        for (let id in uniqueObject) {
+            uniqueArray.push(id);
+        }
+        return uniqueArray;
     }
 
     // Show this component on the DOM
