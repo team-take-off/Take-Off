@@ -46,6 +46,7 @@ class DynamicDrawer extends Component {
         const {classes} = this.props;
         const sideList = (
             <div className={classes.list}>
+            
             {this.props.user && this.props.location.pathname !== '/homepage' && (
                 <List>
                     <ListItem button key={this.props.history.location.pathname}>

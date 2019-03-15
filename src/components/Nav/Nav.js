@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
+import classnames from 'classnames';
+
 import { connect } from 'react-redux';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import DynamicDrawer from './DynamicDrawer';
@@ -10,10 +12,14 @@ import { unstable_useMediaQuery as useMediaQuery } from '@material-ui/core/useMe
 import { withStyles } from '@material-ui/core/styles';
 
 const styles  = {
-  myClass:{
-      '@media (min-width:600px)' : {
+  mobile:{
+      '@media (min-width:700px)' : {
           display: 'none'
-  }}
+  }},
+  desktop:{
+    '@media (max-width:700px)' : {
+        display: 'none'
+}},
 }
 
 class Nav extends Component {
@@ -26,10 +32,10 @@ class Nav extends Component {
       <Link to="/home">
         <h2 className="nav-title">Take-Off</h2>
       </Link>
-      
-      <div className="nav-right">
+      <div className={classes.mobile}><DynamicDrawer /></div>
+      <div className={classnames(classes.desktop, "nav-right")}>
       {/* <span>{`(min-width:600px) matches:${matches}`}</span> */}
-      <div className={classes.myClass}><DynamicDrawer /></div>
+      
       {this.props.user.id && (
        this.props.user.role_id === 1 ? 
         <>
