@@ -35,7 +35,6 @@ router.get('/', (req, res) => {
 // Route GET /api/admin/request/batch
 // Returns all batches of requested days off
 router.get('/batch', (req, res) => {
-<<<<<<< HEAD
     if(req.isAuthenticated()) {
         const queryText = `
         SELECT * FROM "batch_of_requests";
@@ -45,13 +44,6 @@ router.get('/batch', (req, res) => {
         }).catch(queryError => {
             const errorMessage = `SQL error using GET /api/admin/request/batch, ${queryError}`;
             console.log(errorMessage);
-=======
-    if (req.isAuthenticated() && req.user.role_id == 1) {
-        const queryText = `SELECT * FROM "batch_of_requests";`;
-        pool.query(queryText).then(response => res.send(response.rows))
-        .catch(error => {
-            console.log('error in batch GET', error);
->>>>>>> master
             res.sendStatus(500);
         });
     }else {
