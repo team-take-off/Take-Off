@@ -18,11 +18,20 @@ class RequestExpander extends Component {
         }
     }
 
+    onApprove = () => {
+        console.log('in RequestExpander onApprove');
+    }
+
     // Show this component on the DOM
     render() {
         return (
             <div>
+                <h3>{this.props.title}</h3>
                 {this.renderTab()}
+                {JSON.stringify(this.props.requests)}
+                {this.props.requests.map((request, i) =>
+                    <RequestCard key={i} requestedDates={request} onApprove={this.onApprove} />
+                )}
             </div>
         );
     }

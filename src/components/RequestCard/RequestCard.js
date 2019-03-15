@@ -42,16 +42,30 @@ const conflicts = [
 
 class RequestCard extends Component {
 
-    formatAsDateRange = (datesArray) => {
+    renderName = () => {
+        const datesArray = this.props.requestedDates;
+        if (datesArray.length === 0) {
+            return '[Unknown Name]';
+        } else {
+            return `${datesArray[0].first_name} ${datesArray[0].last_name}`;
+        }
+    }
+
+    renderDateRange = () => {
+        const datesArray = this.props.requestedDates;
+        if (datesArray.length === 0) {
+            return '[Unknown Date Range]';
+        }
+
         // Read in an array of objects with the attribute 'date:' and convert
         // to an array of class 'moment' from Moment.js.
         let momentArray = [];
         for (let element of datesArray) {
-            momentArray.push(moment(element.date, "YYYY-MM-DD"));
+            momentArray.push(moment(element.date, 'YYYY-MM-DD'));
         }
 
         // Sort the array of moments
-        momentArray.sort(function (left, right) {
+        momentArray.sort((left, right) => {
             return left.diff(right);
         });
 
@@ -67,6 +81,15 @@ class RequestCard extends Component {
             }
         }
         return outputString;
+    }
+
+    renderType = () => {
+        const datesArray = this.props.requestedDates;
+        if (datesArray.length === 0) {
+            return '[Unknown Type]';
+        } else {
+            return datesArray[0].name;
+        }
     }
 
     // Renders an unordered list of conflicts with this request. Only applies if
@@ -131,7 +154,8 @@ class RequestCard extends Component {
     render() {
         return (
             <div style={tempStyle}>
-                <h4>{this.props.name} - {this.formatAsDateRange(this.props.requestedDates)}</h4>
+                <h4>{this.renderName()} - {this.renderDateRange()}</h4>
+                <h5>{this.renderType()}</h5>
                 {this.renderConflicts()}
                 {this.renderApproveButton()}
                 {this.renderDenyButton()}

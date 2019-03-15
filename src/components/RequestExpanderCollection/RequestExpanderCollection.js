@@ -11,12 +11,11 @@ class RequestExpanderCollection extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.requests !== this.props.requests) {
             this.setState(this.getRequestArrays());
-            const uniqueBatchIDs = this.findUniqueBatches(this.props.requests);
-            console.log(uniqueBatchIDs);
         }
     }
 
     getRequestArrays = () => {
+        const currentTime = moment();
         const requests = this.props.requests;
         const uniqueBatches = this.filterUniqueBatches(requests);
         let pendingRequests = [];
@@ -25,6 +24,19 @@ class RequestExpanderCollection extends Component {
         
         for (let batch of uniqueBatches) {
             const id = batch.id;
+            const requestBatchArray = requests.filter(
+                request => request.batch_of_requests_id === id
+            );
+            requestBatchArray.sort((left, right) => {
+                return moment(left.date).diff(moment(right.date));
+            });
+            if (moment(requestBatchArray[requestBatchArray.length - 1]).diff(currentTime) > 0) {
+                pastRequests.push(requestBatchArray);
+            } else if (batch.approved) {
+                approvedRequests.push(requestBatchArray);
+            } else {
+                pendingRequests.push(requestBatchArray);
+            }
         }
 
         return {
@@ -46,25 +58,13 @@ class RequestExpanderCollection extends Component {
         }
     }
 
-    groupBatchIds = () => {
-        let arrayOfCards = [];
-        for (const id of this.props.reduxStore.requests) {
-            const requestDatesArrary = this.props.reduxStore.requests.filter(x =>
-                id.id === x.batch_of_requests_id
-            )
-            console.log(requestDatesArrary);
-            console.log(moment((requestDatesArrary[requestDatesArrary.length - 1]).date).format('YYYY-MM-DD'))
-        }
-    }
-
     // Show this component on the DOM
     render() {
         return (
             <div>
-                {JSON.stringify(this.props.requests)}
-                <RequestExpander open={true} requests={this.state.pendingRequests} />
-                <RequestExpander open={true} requests={this.state.approvedRequests} />
-                <RequestExpander open={false} requests={this.state.pastRequests} />
+                <RequestExpander title="Pending Requests" open={true} requests={this.state.pendingRequests} />
+                <RequestExpander title="Approved Requests" open={true} requests={this.state.approvedRequests} />
+                <RequestExpander title="Past Requests" open={false} requests={this.state.pastRequests} />
             </div>
         );
     }
