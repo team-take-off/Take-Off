@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function* fetchUserInfo(action) {
   try {
-    const serverResponse = yield axios.get(`api/employee/userinfo/${action.payload}`);
+    const serverResponse = yield axios.get(`api/employee/userinfo/`);
     yield put({
       type: 'SET_USER_INFO', payload: serverResponse.data});
   } catch (error) {
