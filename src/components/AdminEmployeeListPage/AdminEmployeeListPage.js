@@ -34,7 +34,7 @@ class AdminEmployeeListPage extends Component {
                             <th>Vacation Days</th>
                             <th>Sick and Safe Days</th>
                             <th>Edit</th>
-                            <th>Deactivate</th>
+                            <th>Activate/Deactivate</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
