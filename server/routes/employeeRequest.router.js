@@ -55,6 +55,10 @@ router.post('/', (req, res) => {
 	                    ($1, $2, $3);
                     `;
                     await client.query(insertDateText, [request.date, batchID, request.hours]);
+                    const updateEmployeeLeaveTable = `UPDATE "employee" SET 
+                    ${typeID === 1 ? "vacation_hours" : "sick_hours"} = ${typeID === 1 ? "vacation_hours" : "sick_hours"} - ${request.hours}
+                    WHERE "id" = $1`
+                    await client.query(updateEmployeeLeaveTable, [userID]);
                 }
                 await client.query('COMMIT');
                 await res.sendStatus(201);

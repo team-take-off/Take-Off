@@ -13,9 +13,7 @@ function* fetchEmployees() {
 function* deleteEmployee(action) {
     try {
         yield axios.delete(`api/admin/employees/${action.payload}`);
-        console.log('action.payload: ', action.payload);
-
-        const nextAction = {type: 'FETCH_EMPLOYEES'};
+        const nextAction = { type: 'FETCH_EMPLOYEES' };
         yield put(nextAction);
     } catch (error) {
         console.log('Error in DELETE_EMPLOYEE:', error);
@@ -46,7 +44,8 @@ function* deactivateEmployee(action) {
 
 function* activateEmployee(action) {
     try {
-
+        // TODO: Send a request to the server to activate the employee
+        yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in ACTIVATE_EMPLOYEE:', error);
     }

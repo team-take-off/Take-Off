@@ -4,6 +4,11 @@ import axios from 'axios';
 function* fetchUserRequests(action) {
     try {
         const serverResponse = yield axios.get(`api/employee/request/${action.payload}`);
+        const nextAction = {
+            type: 'SET_USER_REQUESTS',
+            payload: serverResponse
+        }
+        yield put(nextAction);
     } catch (error) {
         console.log('Error in axios GET:', error);
     }
@@ -12,6 +17,9 @@ function* fetchUserRequests(action) {
 function* addUserRequests(action) {
       try {
           yield axios.post('api/employee/request/', action.payload);
+
+          yield put({type: 'FETCH_USER_INFO'})
+
       } catch (error) {
           console.log('Error in POST:', error);
       }
@@ -19,6 +27,8 @@ function* addUserRequests(action) {
 
   function* deleteUserRequests(action) {
       try {
+          // TODO: Send a request to the server to delete an employee
+          yield put({ type: 'FETCH_USER_REQUESTS' });
       } catch (error) {
           console.log('Error in DELETE:', error);
       }

@@ -3,27 +3,9 @@ import { connect } from 'react-redux';
 // import axios from 'axios';
 
 class EmployeeHomePage extends Component {
-    constructor(){
-        super()
-    }
     componentDidMount() {
-        this.addUserInfo();
-    }
-//     getEmployee = (event)=> {
-//         axios({
-//         method:'GET',
-//         url:`/api/employee/userinfo:${this.props.user.id}`,
-//     }).then((response)=>{
-//         this.setState({
-//             vacation:response.vacation,
-//             sick_time:response.sick_time,
-//         })
-//     })
-// }
-
-    addUserInfo = (event) => {
-        const action = { type: 'SET_USER_INFO', payload: this.props.reduxStore.user }
-        this.props.dispatch(action)
+        // this.addUserInfo();
+        this.props.dispatch({type: 'FETCH_USER_INFO'});
     }
 
 vacationRequest = (event) =>{
@@ -37,11 +19,16 @@ sickRequest = (event) => {
     render() {
         return (
             <div>
-                <h1>Welcome, {this.props.reduxStore.userInfo.first_name}</h1>
-                <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo.vacation_hours) / 8)} Days</h2>
+                {JSON.stringify(this.props.reduxStore.userInfo)}
+                {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
+                    <div>
+                        <h1>Welcome, {this.props.reduxStore.userInfo[0].first_name}</h1>
+                <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} Days</h2>
                 <button onClick={this.vacationRequest}>Request Vacation</button>
-                <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo.sick_hours) / 8)} Days</h2>
+                <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} Days</h2>
                 <button onClick={this.sickRequest}>Request Sick and Safe</button>
+                    </div>
+                )}
             </div>
         );
     }

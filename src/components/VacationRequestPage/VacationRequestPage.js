@@ -5,16 +5,19 @@ import RequestForm from '../RequestForm/RequestForm';
 class VacationRequestPage extends Component {
 
     componentDidMount() {
-        const action = { type: 'SET_USER_INFO', payload: this.props.reduxStore.user }
-        this.props.dispatch(action)
+        this.props.dispatch({type: 'FETCH_USER_INFO'});
     }
 
 
     render() {
         return (
             <div>
-                <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo.vacation_hours) / 8)} Days</h2>
-                <RequestForm history={this.props.history} type={1} />
+                {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
+                    <div>
+                        <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} Days</h2>
+                        <RequestForm history={this.props.history} type={1} />
+                    </div>
+                )}
             </div>
         );
     }
