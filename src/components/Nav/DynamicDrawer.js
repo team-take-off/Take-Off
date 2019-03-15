@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import {withRouter} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -46,27 +47,47 @@ class DynamicDrawer extends Component {
         const {classes} = this.props;
         const sideList = (
             <div className={classes.list}>
-            
-            {this.props.user && this.props.location.pathname !== '/homepage' && (
-                <List>
-                    <ListItem button key={this.props.history.location.pathname}>
-                      <Button color="primary" onClick={() => this.props.history.goBack()}>Back</Button>
-                  </ListItem>
+                {this.props.user.id && (
+                this.props.user.role_id === 1 ? 
+                    <>
+                        <List>
+                            <ListItem button>
+                                <Button color="primary" onClick={() => this.props.history.push('/home')}>Employee Home</Button>
+                            </ListItem>
 
-                  <ListItem button >
-                      <Button color="primary" onClick={() => this.props.history.push('/homepage')}>Home</Button>
-                  </ListItem>
-                </List>
-            )}
-              <Divider />
-              {this.props.user && (
-              <List>
-                  <ListItem button key="Log out">
-                    <ListItemIcon><PowerIcon /></ListItemIcon>
-                    <ListItemText primary={<LogOutButton />} />
-                  </ListItem>
-              </List>
-               )}
+                            <ListItem button >
+                                <Button color="primary" onClick={() => this.props.history.push('/admin/home')}>Admin Home</Button>
+                            </ListItem>
+                            <ListItem button>
+                                <Button color="primary" onClick={() => this.props.history.push('/admin/calendar')}>Calendar</Button>
+                            </ListItem>
+                            <ListItem button >
+                                <Button color="primary" onClick={() => this.props.history.push('/admin/list_employees')}>Manage Employees</Button>
+                            </ListItem>
+                            <ListItem button >
+                                <Button color="primary" onClick={() => this.props.history.push('/admin/search_employee')}>Search Employees</Button>
+                            </ListItem>
+                            <Divider />
+                            <ListItem button >
+                                <Button><LogOutButton/></Button>
+                            </ListItem>
+                        </List>
+                    
+                    </>
+                :
+                    <>
+                        <ListItem button>
+                            <Button color="primary" onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
+                        </ListItem>
+                        <ListItem button >
+                            <Button color="primary" onClick={() => this.props.history.push('/employee_requests')}>{this.props.user.id && 'My Requests'}</Button>
+                        </ListItem>
+                        <ListItem button >
+                            <Button><LogOutButton/></Button>
+                        </ListItem>
+                    </>
+                    
+                )}
             </div>
           );
       

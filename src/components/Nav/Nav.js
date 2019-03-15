@@ -8,7 +8,6 @@ import DynamicDrawer from './DynamicDrawer';
 import './Nav.css';
 
 // material ui
-import { unstable_useMediaQuery as useMediaQuery } from '@material-ui/core/useMediaQuery';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles  = {
@@ -25,7 +24,6 @@ const styles  = {
 class Nav extends Component {
 
   render() {
-    // const matches = useMediaQuery('(min-width:600px');
     const {classes} = this.props
   return (  
     <div className="nav">
@@ -33,9 +31,8 @@ class Nav extends Component {
         <h2 className="nav-title">Take-Off</h2>
       </Link>
       {/* Runs if the window width is less than 700px */}
-      <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer /></div>
+      <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer user={this.props.user}/></div>
       <div className={classnames(classes.desktop, "nav-right")}>
-      {/* <span>{`(min-width:600px) matches:${matches}`}</span> */}
       
       {this.props.user.id && (
        this.props.user.role_id === 1 ? 
@@ -63,12 +60,6 @@ class Nav extends Component {
 );
   }
 }
-
-// Instead of taking everything from state, we just want the user
-// object to determine if they are logged in
-// if they are logged in, we show them a few more links 
-// if you wanted you could write this code like this:
-// const mapStateToProps = ({ user }) => ({ user });
 const mapStateToProps = state => ({
   user: state.user,
 });
