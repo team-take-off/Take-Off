@@ -34,7 +34,7 @@ class EmployeeListRow extends Component {
     // Delete this row's employee
     delete = () => {
         console.log('In EmployeeListRow pressed delete()');
-        console.log(this.props.employee.id);
+        console.log('id fir the dlete row: ', this.props.employee.id);
         const action = {type: 'DELETE_EMPLOYEE'}
         
     }
