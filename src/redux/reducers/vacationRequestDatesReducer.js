@@ -17,6 +17,8 @@ const vacationRequestDates = (state = [defaultRequest], action) => {
                 state.splice(index2, 1);
                 return [...state];
             }
+        case 'RESET_VACATION_REQUEST':
+            return state =[defaultRequest];
         default:
             return state;
     }

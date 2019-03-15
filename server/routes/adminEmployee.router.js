@@ -60,4 +60,20 @@ router.post('/', (req, res) => {
     }
 });
 
+router.delete('/:id', (req, res) => {
+     if (req.isAuthenticated() && req.user.role_id == 1) {
+
+    console.log('req.params: ', req.params);
+    const queryText = `DELETE FROM "employee" WHERE "id" = $1;`;
+    pool.query(queryText, [req.params.id]).then(() => {
+        res.sendStatus(200);
+    }).catch((error) => {
+        console.log('Error in Delete adminEmployee: ', error);
+        res.sendStatus(500);
+    })
+
+}
+
+});
+
 module.exports = router;

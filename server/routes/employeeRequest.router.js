@@ -31,8 +31,9 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     if (req.isAuthenticated()) {
         const userID = req.user.id;
-        const typeID = req.body.requestType;
+        const typeID = req.body.typeID;
         const requestedDates = req.body.requestedDates;
+        
         (async () => {
             const client = await pool.connect();
             try {
@@ -49,7 +50,7 @@ router.post('/', (req, res) => {
                 for (let request of requestedDates) {
                     const insertDateText = `
                     INSERT INTO "time_off_request"
-	                    ("date", "batch_of_requests_id", "hours")
+	                    ("date", "batch_of_requests_id", "hours" )
                     VALUES
 	                    ($1, $2, $3);
                     `;
