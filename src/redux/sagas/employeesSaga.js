@@ -17,7 +17,6 @@ function* deleteEmployee(action) {
 
         const nextAction = {type: 'FETCH_EMPLOYEES'};
         yield put(nextAction);
-        
     } catch (error) {
         console.log('Error in DELETE_EMPLOYEE:', error);
         alert('Something went wrong')
