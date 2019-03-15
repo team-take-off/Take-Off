@@ -56,7 +56,6 @@ class EmployeeRequestsPage extends Component {
                         <option key={i}>{year}</option>
                     )}
                 </select>
-                {/* {JSON.stringify(this.props.reduxStore.userRequests)} */}
                 <RequestExpanderCollection requests={userRequests} />
                 <p>[ EmployeeRequestsPage ]</p>
             </div>
@@ -67,5 +66,4 @@ const mapStateToProps = reduxStore => ({
     reduxStore
 });
 
-// this allows us to use <App /> in index.js
 export default connect(mapStateToProps)(EmployeeRequestsPage);
