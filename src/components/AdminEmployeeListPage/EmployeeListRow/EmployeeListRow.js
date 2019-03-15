@@ -32,6 +32,8 @@ class EmployeeListRow extends Component {
     // Deactivate this row's employee
     deactivate = () => {
         console.log('In EmployeeListRow pressed deactivate()');
+        const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
+        this.props.dispatch(action);
     }
 
     // Delete this row's employee

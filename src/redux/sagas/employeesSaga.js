@@ -34,9 +34,13 @@ function* addEmployee(action) {
 
 function* deactivateEmployee(action) {
     try {
+        yield axios.put(`api/admin/employees/${action.payload}`);
+        const nextAction = {type: 'FETCH_EMPLOYEES'};
+        yield put (nextAction);
 
     } catch (error) {
         console.log('Error in DEACTIVATE_EMPLOYEE:', error);
+        alert('Something Went Wrong')
     }
 }
 
