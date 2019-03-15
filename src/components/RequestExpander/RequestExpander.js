@@ -10,11 +10,36 @@ class RequestExpander extends Component {
         }
     }
 
-    renderTab = () => {
+    // Render a button for toggling between open and closed
+    renderToggleButton = () => {
         if (this.state.open) {
-            return <span>[ - ]</span>;
+            return <button onClick={this.toggleOpen}>[ - ]</button>;
         } else {
-            return <span>[ + ]</span>;
+            return <button onClick={this.toggleOpen}>[ + ]</button>;
+        }
+    }
+
+    // Toggle this expanding div between open and closed
+    toggleOpen = () => {
+        this.setState({
+            open: !this.state.open,
+        });
+    }
+
+    // Render a summary of requests in this category
+    renderCards = () => {
+        if (this.state.open) {
+            if (this.props.requests.length === 0) {
+                return <p>[ No requests in this category ]</p>
+            } else {
+                return (
+                    <div>
+                        {this.props.requests.map((requestArray, i) =>
+                            <RequestCard key={i} requestArray={requestArray} onApprove={this.onApprove} />
+                        )}
+                    </div>
+                );
+            }
         }
     }
 
@@ -27,10 +52,8 @@ class RequestExpander extends Component {
         return (
             <div>
                 <h3>{this.props.title}</h3>
-                {this.renderTab()}
-                {this.props.requests.map((requestArray, i) =>
-                    <RequestCard key={i} requestArray={requestArray} onApprove={this.onApprove} />
-                )}
+                {this.renderToggleButton()}
+                {this.renderCards()}
             </div>
         );
     }
