@@ -5,7 +5,7 @@ const router = express.Router();
 // Route GET /api/employee/request
 // Returns an array of requested days off for one user (based on user ID)
 router.get('/', (req, res) => {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.is_active) {
         const queryText = `
         SELECT
             "batch_of_requests".*, "time_off_request".* 
@@ -29,7 +29,7 @@ router.get('/', (req, res) => {
 // Route POST /api/employee/request
 // User adds requested time-off to the database
 router.post('/', (req, res) => {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.is_active) {
         const userID = req.user.id;
         const typeID = req.body.typeID;
         const requestedDates = req.body.requestedDates;
@@ -78,7 +78,7 @@ router.post('/', (req, res) => {
 });
 
 router.delete('/:id', async (req, res)=> {
-    if(req.isAuthenticated ()){
+    if(req.isAuthenticated () && req.user.is_active){
     console.log('req.params: ', req.params);
     const client = await pool.connect();
     try{

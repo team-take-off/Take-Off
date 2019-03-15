@@ -31,7 +31,26 @@ class EmployeeListRow extends Component {
 
     // Deactivate this row's employee
     deactivate = () => {
-        console.log('In EmployeeListRow pressed deactivate()');
+        swal({
+                title: "Are you sure?",
+                text: "Employee status will be changed!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    swal("Employee Access Revoked!", {
+                        icon: "success",
+                    });
+                    console.log('In EmployeeListRow pressed deactivate()');
+                    const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
+                    this.props.dispatch(action);
+                } else {
+                    swal("Employee Still has Access");
+                }
+            });
+        
     }
 
     // Delete this row's employee

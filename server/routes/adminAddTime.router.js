@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 
 router.post('/vacation/:id', (req, res) => {
     
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.role_id == 1) {
         const queryText = `
             INSERT INTO "accrued_time" 
                 ("sick_hours", "vacation_hours", "employee_id")
@@ -41,7 +41,7 @@ router.put('/vacation/:id', (req, res) => {
 
 router.post('/sick/:id', (req, res) => {
     
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.role_id == 1) {
         const queryText = `
             INSERT INTO "accrued_time" 
                 ("sick_hours", "vacation_hours", "employee_id")
@@ -61,7 +61,7 @@ router.post('/sick/:id', (req, res) => {
 router.put('/sick/:id', (req, res) => {
     console.log(req.params);
     
-    if(req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.role_id == 1) {
         const queryText = `UPDATE "employee" SET "sick_hours" = "sick_hours" + 8 WHERE "id" = $1;`;
         pool.query(queryText, [req.params.id]).then(response => res.sendStatus(200))
         .catch(error => {
