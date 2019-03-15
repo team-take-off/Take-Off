@@ -12,9 +12,14 @@ function* fetchEmployees() {
 
 function* deleteEmployee(action) {
     try {
-        yield axios.delete(`/api/`)
+        yield axios.delete(`api/admin/employees/${action.payload}`);
+        console.log('action.payload: ', action.payload);
+
+        const nextAction = {type: 'FETCH_EMPLOYEES'};
+        yield put(nextAction);
     } catch (error) {
         console.log('Error in DELETE_EMPLOYEE:', error);
+        alert('Something went wrong')
     }
 }
 

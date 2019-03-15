@@ -6,52 +6,32 @@ const tempStyle = {
     backgroundColor: '#ddd'
 };
 
-/* EXAMPLE INPUT
-
-const requestedDates = [
-    { date: '2019-05-02', hours: 8 },
-    { date: '2019-04-03', hours: 8 },
-    { date: '2019-05-05', hours: 8 },
-    { date: '2019-04-02', hours: 8 },
-    { date: '2019-04-01', hours: 4 },
-    { date: '2019-05-01', hours: 8 },
-];
-const conflicts = [
-    {
-        name: 'Sharmarke',
-        approved: true,
-        dates: [
-            { date: '2019-04-01' },
-            { date: '2019-04-02' },
-            { date: '2019-04-03' }
-        ]
-    },
-    {
-        name: 'Bode',
-        approved: false,
-        dates: [
-            { date: '2019-04-01' },
-            { date: '2019-04-02' }
-        ]
-    }
-];
-
-<RequestCard name="Michael" requestedDates={requestedDates} conflicts={conflicts} onApprove={this.onApprove} onDeny={this.onDeny} onCancel={this.onCancel} />
-
-*/
-
 class RequestCard extends Component {
 
-    formatAsDateRange = (datesArray) => {
+    renderName = () => {
+        const requestArray = this.props.requestArray;
+        if (requestArray.length === 0) {
+            return '[Unknown Name]';
+        } else {
+            return `${requestArray[0].first_name} ${requestArray[0].last_name}`;
+        }
+    }
+
+    renderDateRange = () => {
+        const requestArray = this.props.requestArray;
+        if (requestArray.length === 0) {
+            return '[Unknown Date Range]';
+        }
+
         // Read in an array of objects with the attribute 'date:' and convert
         // to an array of class 'moment' from Moment.js.
         let momentArray = [];
-        for (let element of datesArray) {
-            momentArray.push(moment(element.date, "YYYY-MM-DD"));
+        for (let element of requestArray) {
+            momentArray.push(moment(element.date, 'YYYY-MM-DD'));
         }
 
         // Sort the array of moments
-        momentArray.sort(function (left, right) {
+        momentArray.sort((left, right) => {
             return left.diff(right);
         });
 
@@ -67,6 +47,15 @@ class RequestCard extends Component {
             }
         }
         return outputString;
+    }
+
+    renderType = () => {
+        const requestArray = this.props.requestArray;
+        if (requestArray.length === 0) {
+            return '[Unknown Type]';
+        } else {
+            return requestArray[0].name;
+        }
     }
 
     // Renders an unordered list of conflicts with this request. Only applies if
@@ -131,7 +120,8 @@ class RequestCard extends Component {
     render() {
         return (
             <div style={tempStyle}>
-                <h4>{this.props.name} - {this.formatAsDateRange(this.props.requestedDates)}</h4>
+                <h4>{this.renderName()} - {this.renderDateRange()}</h4>
+                <h5>{this.renderType()}</h5>
                 {this.renderConflicts()}
                 {this.renderApproveButton()}
                 {this.renderDenyButton()}
