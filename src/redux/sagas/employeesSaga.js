@@ -32,10 +32,13 @@ function* addEmployee(action) {
 
 function* deactivateEmployee(action) {
     try {
-        // TODO: Send a request to the server to deactivate the employee
-        yield put({ type: 'FETCH_EMPLOYEES' });
+        yield axios.put(`api/admin/employees/${action.payload}`);
+        const nextAction = {type: 'FETCH_EMPLOYEES'};
+        yield put (nextAction);
+
     } catch (error) {
         console.log('Error in DEACTIVATE_EMPLOYEE:', error);
+        alert('Something Went Wrong')
     }
 }
 

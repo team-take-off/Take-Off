@@ -24,7 +24,7 @@ class AdminEmployeeListPage extends Component {
                     Add New Employee
                 </button>
                 <h2>List Employees</h2>
-                {(JSON.stringify(this.props.reduxStore.employees))}
+                {/* {(JSON.stringify(this.props.reduxStore.employees))} */}
                 <table>
                     <thead>
                         <tr>

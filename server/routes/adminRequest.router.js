@@ -4,7 +4,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated() && req.user.role_id == 1) {
         pool.query(`SELECT "time_off_request".*, "batch_of_requests"."date_requested", "batch_of_requests"."approved", "employee"."first_name", "type"."name"
                     FROM "employee" 
                     JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/batch', (req, res) => {
-    if(req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.role_id == 1) {
         const queryText = `SELECT * FROM "batch_of_requests";`;
         pool.query(queryText).then(response => res.send(response.rows))
         .catch(error => {
