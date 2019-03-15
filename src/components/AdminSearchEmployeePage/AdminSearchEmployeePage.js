@@ -45,7 +45,6 @@ class AdminSearchEmployeePage extends Component {
 
         return (
                 <div>
-                    {/* {JSON.stringify(userRequests)} */}
                     <select onChange={this.setPerson}>
                         <option value="" disabled selected>Select an Employee</option>
 
@@ -61,7 +60,6 @@ class AdminSearchEmployeePage extends Component {
                         })}
                     </select>
                 <RequestExpanderCollection requests={userRequests} />
-                    <p>[ AdminSearchEmployeePage ]</p>
                 </div>
             );
 
