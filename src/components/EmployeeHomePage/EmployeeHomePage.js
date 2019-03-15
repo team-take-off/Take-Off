@@ -3,9 +3,6 @@ import { connect } from 'react-redux';
 // import axios from 'axios';
 
 class EmployeeHomePage extends Component {
-    constructor(){
-        super()
-    }
     componentDidMount() {
         this.addUserInfo();
     }
