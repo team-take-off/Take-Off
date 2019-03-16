@@ -94,29 +94,29 @@ class EmployeeListRow extends Component {
 
         let content = '';
         if(this.state.clicked) {
-            content = <button>Deactivate</button>
-            swal({
+               swal({
                 title: "Are you sure?",
-                text: "Once deleted, employee and employee record is deleted!",
+                text: "Employee status will be changed!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        swal("Employee Deleted!", {
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    swal("Employee Access Revoked!", {
                         icon: "success",
-                        });
-                        console.log('id fir the dlete row: ', this.props.employee.id);
-                        const action = {type: 'DELETE_EMPLOYEE', payload: this.props.employee.id}
-                        this.props.dispatch(action);
-                    } else {
-                        swal("Employee Record Safe");
-                    }
+                    });
+                    console.log('In EmployeeListRow pressed deactivate()');
+                    content = <button>Activate</button>
+                    const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
+                    this.props.dispatch(action);
+                } else {
+                    swal("Employee Still has Access");
+                    content = <button>Deactivate</button>
+                }
                 });
-
             } else {
-                content = <button>Active</button>
+                content = <button>Deactivate</button>
             }
         return (
             
