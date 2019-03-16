@@ -86,9 +86,27 @@ class RequestExpanderCollection extends Component {
     render() {
         return (
             <div>
-                <RequestExpander title="Pending Requests" open={true} requests={this.state.pendingRequests} />
-                <RequestExpander title="Approved Requests" open={true} requests={this.state.approvedRequests} />
-                <RequestExpander title="Past Requests" open={false} requests={this.state.pastRequests} />
+                <RequestExpander
+                    title="Pending Requests"
+                    open={true}
+                    requests={this.state.pendingRequests}
+                    forAdmin={this.props.forAdmin}
+                    past={false}
+                 />
+                <RequestExpander
+                    title="Approved Requests"
+                    open={true}
+                    requests={this.state.approvedRequests}
+                    forAdmin={this.props.forAdmin}
+                    past={false}
+                />
+                <RequestExpander
+                    title="Past Requests"
+                    open={false}
+                    requests={this.state.pastRequests}
+                    forAdmin={this.props.forAdmin}
+                    past={true}
+                />
             </div>
         );
     }

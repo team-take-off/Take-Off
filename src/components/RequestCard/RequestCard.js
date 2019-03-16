@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 import { connect } from 'react-redux';
+
+import DateRange from '../../modules/DateRange';
+
 // TODO: Remove or replace eventually
 const tempStyle = {
     backgroundColor: '#ddd'
@@ -8,6 +10,7 @@ const tempStyle = {
 
 class RequestCard extends Component {
 
+    // Display the employee's name if possible
     renderName = () => {
         const requestArray = this.props.requestArray;
         if (requestArray.length === 0) {
@@ -17,38 +20,18 @@ class RequestCard extends Component {
         }
     }
 
+    // Show a nicely formatted date range if possible
     renderDateRange = () => {
         const requestArray = this.props.requestArray;
         if (requestArray.length === 0) {
             return '[Unknown Date Range]';
         }
 
-        // Read in an array of objects with the attribute 'date:' and convert
-        // to an array of class 'moment' from Moment.js.
-        let momentArray = [];
-        for (let element of requestArray) {
-            momentArray.push(moment(element.date, 'YYYY-MM-DD'));
-        }
-
-        // Sort the array of moments
-        momentArray.sort((left, right) => {
-            return left.diff(right);
-        });
-
-        // Build a human readable output string and condense all contiguous 
-        // dates into date ranges such as 'April 1, 2019 to April 3, 2019'.
-        let outputString = momentArray[0].format('LL');
-        for (let i = 1; i < momentArray.length; i++) {
-            if (i === momentArray.length - 1) {
-                outputString += ` to ${momentArray[i].format('LL')}`;
-            } else if (momentArray[i + 1].diff(momentArray[i], 'days') > 1) {
-                outputString += ` to ${momentArray[i].format('LL')} and ${momentArray[i+1].format('LL')}`;
-                i += 1;
-            }
-        }
-        return outputString;
+        const dateRange = new DateRange(this.props.requestArray);
+        return dateRange.format('LL');
     }
 
+    // Show the type of request 'Vacation' or 'Sick and Safe Leave' if possible
     renderType = () => {
         const requestArray = this.props.requestArray;
         if (requestArray.length === 0) {
@@ -69,9 +52,9 @@ class RequestCard extends Component {
                         {this.props.conflicts.map(
                             (conflict, index) => {
                                 const name = conflict.name;
-                                const dateRanges = this.formatAsDateRange(conflict.dates);
+                                const dateRange = new DateRange(conflict.dates);
                                 const approved = conflict.approved ? '(Approved)' : '(Pending)';
-                                return (<li key={index}>{name} - {dateRanges} - {approved}</li>);
+                                return (<li key={index}>{name} - {dateRange.format('LL')} - {approved}</li>);
                             }
                         )}
                     </ul>
@@ -80,39 +63,88 @@ class RequestCard extends Component {
         }
     }
 
-    // Renders a 'Approve' button. Only applies if an 'onApprove' function was 
-    // sent via props.
-    renderApproveButton = () => {
-        if (this.props.onApprove) {
-            return (
-                <button onClick={this.props.onApprove}>
-                    Approve
-                </button>
-            );
+    // Render 'Approve' and 'Deny' buttons on pending cards shown to the admin.
+    // Renders a cancel button on already approved cards.
+    renderAdminButtons = () => {
+        if (this.props.forAdmin && !this.props.past) {
+            if (this.props.requestArray.length > 0 && !this.props.requestArray[0].approved) {
+                return (
+                    <div>
+                        <button onClick={this.approve}>
+                            Approve
+                        </button>
+                        <button onClick={this.deny}>
+                            Deny
+                        </button>
+                    </div>
+                );
+            } else {
+                return (
+                    <button onClick={this.cancel}>
+                        Cancel Request
+                    </button>
+                );
+            } 
         }
     }
 
-    // Renders a 'Deny' button. Only applies if an 'onDeny' function was 
-    // sent via props.
-    renderDenyButton = () => {
-        if (this.props.onDeny) {
+    // Renders a cancel/withdraw button allowing employees to withdraw a 
+    // previous request that is still in the future.
+    renderEmployeeButtons = () => {
+        if (!this.props.forAdmin && !this.props.past) {
             return (
-                <button onClick={this.props.onDeny}>
-                    Deny 
-                </button>
-            );
-        }
-    }
-
-    // Renders a 'Cancel' button. Only applies if an 'onCancel' function was 
-    // sent via props.
-    renderCancelButton = () => {
-        if (this.props.onCancel) {
-            return (
-                <button onClick={this.props.onCancel}>
+                <button onClick={this.withdraw}>
                     Cancel Request
                 </button>
             );
+        }
+    }
+
+    // Handles when the admin presses the 'Approve' button
+    approve = () => {
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'APPROVE_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
+    }
+
+    // Handles when the admin presses the 'Deny' button
+    deny = () => {
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'DENY_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
+    }
+
+    // Handles when the admin presses the 'Cancel' button.
+    cancel = () => {
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'DENY_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
+    }
+
+    // Handles when an employee presses the 'Withdraw' button (labeled cancel).
+    withdraw = () => {
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'WITHDRAW_USER_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
         }
     }
 
@@ -123,9 +155,8 @@ class RequestCard extends Component {
                 <h4>{this.renderName()} - {this.renderDateRange()}</h4>
                 <h5>{this.renderType()}</h5>
                 {this.renderConflicts()}
-                {this.renderApproveButton()}
-                {this.renderDenyButton()}
-                {this.renderCancelButton()}
+                {this.renderAdminButtons()}
+                {this.renderEmployeeButtons()}
             </div>
         );
     }
@@ -135,5 +166,4 @@ const mapStateToProps = reduxStore => ({
     reduxStore
 });
 
-// this allows us to use <App /> in index.js
 export default connect(mapStateToProps)(RequestCard);

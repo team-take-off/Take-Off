@@ -19,9 +19,9 @@ class EmployeeRequestsPage extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.reduxStore.userRequests !== this.props.reduxStore.userRequests) {
             let uniqueDates = [];
-            this.props.reduxStore.userRequests.map((request) => {
+            for (let request of this.props.reduxStore.userRequests) {
                 uniqueDates.push(request.date.substr(0, 4))
-            });
+            }
             this.setState({
                 ...this.state,
                 years: [...new Set(uniqueDates)]
@@ -66,8 +66,7 @@ class EmployeeRequestsPage extends Component {
                         <option key={i}>{year}</option>
                     )}
                 </select>
-                <RequestExpanderCollection requests={userRequests} />
-                <p>[ EmployeeRequestsPage ]</p>
+                <RequestExpanderCollection requests={userRequests} forAdmin={false} />
             </div>
         );
     }
