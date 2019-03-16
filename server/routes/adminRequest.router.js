@@ -101,16 +101,32 @@ router.post('/', (req, res) => {
 });
 
 // Route PUT /api/admin/request/:id
-// Set the value of approved for a batch of requested days off
+// Update the value of approved for a batch of requested days off
 router.put('/:id', (req, res) => {
-
+    if (req.isAuthenticated() && req.user.role_id === 1) {
+        const batchID = req.params.id;
+        const approved = req.body.approved;
+        const queryText = `
+        UPDATE "batch_of_requests"
+        SET "approved" = $1
+        WHERE "id" = $2;
+        `;
+        pool.query(queryText, [approved, batchID]).then((queryResult) => {
+            res.sendStatus(200);
+        }).catch((queryError) => {
+            const errorMessage = `SQL error using PUT /api/admin/request/:id, ${queryError}`;
+            console.log(errorMessage);
+            res.sendStatus(500);
+        });
+    } else {
+        res.sendStatus(403);
+    }
 });
 
 // Route DELETE /api/admin/request/:id
 // Remove a batch of requested days off
 router.delete('/:id', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
-        const employeeID = req.user.id;
         const batchID = req.params.id;
         (async () => {
             const client = await pool.connect();

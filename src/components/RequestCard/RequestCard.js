@@ -20,6 +20,7 @@ class RequestCard extends Component {
         }
     }
 
+    // Show a nicely formatted date range if possible
     renderDateRange = () => {
         const requestArray = this.props.requestArray;
         if (requestArray.length === 0) {
@@ -30,6 +31,7 @@ class RequestCard extends Component {
         return dateRange.format('LL');
     }
 
+    // Show the type of request 'Vacation' or 'Sick and Safe Leave' if possible
     renderType = () => {
         const requestArray = this.props.requestArray;
         if (requestArray.length === 0) {
@@ -61,8 +63,8 @@ class RequestCard extends Component {
         }
     }
 
-    // Renders a 'Approve' button. Only applies if an 'onApprove' function was 
-    // sent via props.
+    // Render 'Approve' and 'Deny' buttons on pending cards shown to the admin.
+    // Renders a cancel button on already approved cards.
     renderAdminButtons = () => {
         if (this.props.forAdmin && !this.props.past) {
             if (this.props.requestArray.length > 0 && !this.props.requestArray[0].approved) {
@@ -86,6 +88,8 @@ class RequestCard extends Component {
         }
     }
 
+    // Renders a cancel/withdraw button allowing employees to withdraw a 
+    // previous request that is still in the future.
     renderEmployeeButtons = () => {
         if (!this.props.forAdmin && !this.props.past) {
             return (
@@ -96,10 +100,19 @@ class RequestCard extends Component {
         }
     }
 
+    // Handles when the admin presses the 'Approve' button
     approve = () => {
-        console.log('In RequestCard pressed approve');
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'APPROVE_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
     }
 
+    // Handles when the admin presses the 'Deny' button
     deny = () => {
         if (this.props.requestArray.length !== 0) {
             const id = this.props.requestArray[0].batch_of_requests_id;
@@ -111,6 +124,7 @@ class RequestCard extends Component {
         }
     }
 
+    // Handles when the admin presses the 'Cancel' button.
     cancel = () => {
         if (this.props.requestArray.length !== 0) {
             const id = this.props.requestArray[0].batch_of_requests_id;
@@ -122,6 +136,7 @@ class RequestCard extends Component {
         }
     }
 
+    // Handles when an employee presses the 'Withdraw' button (labeled cancel).
     withdraw = () => {
         if (this.props.requestArray.length !== 0) {
             const id = this.props.requestArray[0].batch_of_requests_id;
