@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import moment from 'moment';
 import { connect } from 'react-redux';
+
+import DateRange from '../../modules/DateRange';
 
 // TODO: Remove or replace eventually
 const tempStyle = {
@@ -9,6 +10,7 @@ const tempStyle = {
 
 class RequestCard extends Component {
 
+    // Display the employee's name if possible
     renderName = () => {
         const requestArray = this.props.requestArray;
         if (requestArray.length === 0) {
@@ -24,30 +26,8 @@ class RequestCard extends Component {
             return '[Unknown Date Range]';
         }
 
-        // Read in an array of objects with the attribute 'date:' and convert
-        // to an array of class 'moment' from Moment.js.
-        let momentArray = [];
-        for (let element of requestArray) {
-            momentArray.push(moment(element.date, 'YYYY-MM-DD'));
-        }
-
-        // Sort the array of moments
-        momentArray.sort((left, right) => {
-            return left.diff(right);
-        });
-
-        // Build a human readable output string and condense all contiguous 
-        // dates into date ranges such as 'April 1, 2019 to April 3, 2019'.
-        let outputString = momentArray[0].format('LL');
-        for (let i = 1; i < momentArray.length; i++) {
-            if (i === momentArray.length - 1) {
-                outputString += ` to ${momentArray[i].format('LL')}`;
-            } else if (momentArray[i + 1].diff(momentArray[i], 'days') > 1) {
-                outputString += ` to ${momentArray[i].format('LL')} and ${momentArray[i+1].format('LL')}`;
-                i += 1;
-            }
-        }
-        return outputString;
+        const dateRange = new DateRange(this.props.requestArray);
+        return dateRange.format('LL');
     }
 
     renderType = () => {
