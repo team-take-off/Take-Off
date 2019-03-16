@@ -33,25 +33,35 @@ class EmployeeRequestsPage extends Component {
         this.setState({
             year: event.target.value
         })
-    }
+    }     
 
     // Show this component on the DOM
     render() {
-
-        let userRequests = [];
-        if (this.state.year !== '') {
-
-            this.props.reduxStore.userRequests.map((request) => {
-                if (request.date.substr(0, 4) === this.state.year) {
+            let userRequests = [];
+            if (this.state.year == '') {
+                this.props.reduxStore.userRequests.map((request) => {
                     userRequests.push(request)
-                }
-            })
-        }
+                })
+            }
+            else if (this.state.year != '' && this.state.year != 'all') {
+
+                this.props.reduxStore.userRequests.map((request) => {
+                    if (request.date.substr(0, 4) == this.state.year) {
+                        userRequests.push(request)
+                    }
+                })
+            } else if (this.state.year == 'all') {
+                this.props.reduxStore.userRequests.map((request) => {
+                    userRequests.push(request)
+                })
+            }
+        
         return (
             <div>
             
                 <select onChange={this.setYear}>
                     <option value="" disabled selected>Select a Year</option>
+                    <option value="all">All Years</option>
                     {this.state.years.map((year, i) =>
                         <option key={i}>{year}</option>
                     )}
