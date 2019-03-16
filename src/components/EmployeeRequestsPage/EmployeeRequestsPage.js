@@ -56,8 +56,7 @@ class EmployeeRequestsPage extends Component {
                         <option key={i}>{year}</option>
                     )}
                 </select>
-                <RequestExpanderCollection requests={userRequests} />
-                <p>[ EmployeeRequestsPage ]</p>
+                <RequestExpanderCollection requests={userRequests} forAdmin={false} />
             </div>
         );
     }

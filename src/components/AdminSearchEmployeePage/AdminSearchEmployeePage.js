@@ -59,7 +59,7 @@ class AdminSearchEmployeePage extends Component {
                             return <option>{request}</option>
                         })}
                     </select>
-                <RequestExpanderCollection requests={userRequests} />
+                <RequestExpanderCollection requests={userRequests} forAdmin={true} />
                 </div>
             );
 

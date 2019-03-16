@@ -35,16 +35,17 @@ class RequestExpander extends Component {
                 return (
                     <div>
                         {this.props.requests.map((requestArray, i) =>
-                            <RequestCard key={i} requestArray={requestArray} onApprove={this.onApprove} />
+                            <RequestCard
+                                key={i}
+                                requestArray={requestArray}
+                                forAdmin={this.props.forAdmin}
+                                past={this.props.past}
+                            />
                         )}
                     </div>
                 );
             }
         }
-    }
-
-    onApprove = () => {
-        console.log('in RequestExpander onApprove');
     }
 
     // Show this component on the DOM
