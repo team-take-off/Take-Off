@@ -3,6 +3,12 @@ import { connect } from 'react-redux';
 import swal from 'sweetalert';
 
 class EmployeeListRow extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            clicked: false
+        }
+    }
 
     // Convert hours to nicely formatted representation of days
     // Note: Based on an 8 hour workday
@@ -79,6 +85,11 @@ class EmployeeListRow extends Component {
     // Show this component on the DOM
     render() {
         const employee = this.props.employee;
+
+        let content = '';
+        if(this.state.clicked) {
+            
+        }
         return (
             
             
