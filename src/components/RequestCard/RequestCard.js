@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { connect } from 'react-redux';
+
 // TODO: Remove or replace eventually
 const tempStyle = {
     backgroundColor: '#ddd'
@@ -82,11 +83,34 @@ class RequestCard extends Component {
 
     // Renders a 'Approve' button. Only applies if an 'onApprove' function was 
     // sent via props.
-    renderApproveButton = () => {
+    renderAdminButtons = () => {
         if (this.props.forAdmin && !this.props.past) {
+            if (this.props.requestArray.length > 0 && !this.props.requestArray[0].approved) {
+                return (
+                    <div>
+                        <button onClick={this.approve}>
+                            Approve
+                        </button>
+                        <button onClick={this.deny}>
+                            Deny
+                        </button>
+                    </div>
+                );
+            } else {
+                return (
+                    <button onClick={this.cancel}>
+                        Cancel Request
+                    </button>
+                );
+            } 
+        }
+    }
+
+    renderEmployeeButtons = () => {
+        if (!this.props.forAdmin && !this.props.past) {
             return (
-                <button onClick={this.approve}>
-                    Approve
+                <button onClick={this.withdraw}>
+                    Cancel Request
                 </button>
             );
         }
@@ -96,46 +120,12 @@ class RequestCard extends Component {
         console.log('In RequestCard pressed approve');
     }
 
-    // Renders a 'Deny' button. Only applies if this card is for admin use and
-    // has not yet happened
-    renderDenyButton = () => {
-        if (this.props.forAdmin && !this.props.past) {
-            return (
-                <button onClick={this.deny}>
-                    Deny 
-                </button>
-            );
-        }
-    }
-
-    // Handle
     deny = () => {
         console.log('In RequestCard pressed deny');
     }
 
-    // Renders a 'Cancel' button
-    renderCancelButton = () => {
-        if (this.props.forAdmin && this.props.past) {
-            return (
-                <button onClick={this.cancel}>
-                    Cancel Request
-                </button>
-            );
-        }
-    }
-
     cancel = () => {
         console.log('In RequestCard pressed cancel');
-    }
-
-    renderWithdrawButton = () => {
-        if (!this.props.forAdmin && !this.props.past) {
-            return (
-                <button onClick={this.withdraw}>
-                    Cancel Request
-                </button>
-            );
-        }
     }
 
     withdraw = () => {
@@ -149,10 +139,8 @@ class RequestCard extends Component {
                 <h4>{this.renderName()} - {this.renderDateRange()}</h4>
                 <h5>{this.renderType()}</h5>
                 {this.renderConflicts()}
-                {this.renderApproveButton()}
-                {this.renderDenyButton()}
-                {this.renderCancelButton()}
-                {this.renderWithdrawButton()}
+                {this.renderAdminButtons()}
+                {this.renderEmployeeButtons()}
             </div>
         );
     }
@@ -162,5 +150,4 @@ const mapStateToProps = reduxStore => ({
     reduxStore
 });
 
-// this allows us to use <App /> in index.js
 export default connect(mapStateToProps)(RequestCard);
