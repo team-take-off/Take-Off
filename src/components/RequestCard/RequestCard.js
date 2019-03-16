@@ -83,37 +83,63 @@ class RequestCard extends Component {
     // Renders a 'Approve' button. Only applies if an 'onApprove' function was 
     // sent via props.
     renderApproveButton = () => {
-        if (this.props.onApprove) {
+        if (this.props.forAdmin && !this.props.past) {
             return (
-                <button onClick={this.props.onApprove}>
+                <button onClick={this.approve}>
                     Approve
                 </button>
             );
         }
     }
 
-    // Renders a 'Deny' button. Only applies if an 'onDeny' function was 
-    // sent via props.
+    approve = () => {
+        console.log('In RequestCard pressed approve');
+    }
+
+    // Renders a 'Deny' button. Only applies if this card is for admin use and
+    // has not yet happened
     renderDenyButton = () => {
-        if (this.props.onDeny) {
+        if (this.props.forAdmin && !this.props.past) {
             return (
-                <button onClick={this.props.onDeny}>
+                <button onClick={this.deny}>
                     Deny 
                 </button>
             );
         }
     }
 
-    // Renders a 'Cancel' button. Only applies if an 'onCancel' function was 
-    // sent via props.
+    // Handle
+    deny = () => {
+        console.log('In RequestCard pressed deny');
+    }
+
+    // Renders a 'Cancel' button
     renderCancelButton = () => {
-        if (this.props.onCancel) {
+        if (this.props.forAdmin && this.props.past) {
             return (
-                <button onClick={this.props.onCancel}>
+                <button onClick={this.cancel}>
                     Cancel Request
                 </button>
             );
         }
+    }
+
+    cancel = () => {
+        console.log('In RequestCard pressed cancel');
+    }
+
+    renderWithdrawButton = () => {
+        if (!this.props.forAdmin && !this.props.past) {
+            return (
+                <button onClick={this.withdraw}>
+                    Cancel Request
+                </button>
+            );
+        }
+    }
+
+    withdraw = () => {
+        console.log('In RequestCard pressed withdraw');
     }
 
     // Show this component on the DOM
@@ -126,6 +152,7 @@ class RequestCard extends Component {
                 {this.renderApproveButton()}
                 {this.renderDenyButton()}
                 {this.renderCancelButton()}
+                {this.renderWithdrawButton()}
             </div>
         );
     }
