@@ -11,9 +11,10 @@ function* fetchRequests() {
   }
 }
 
-function* acceptRequests(action) {
+function* acceptRequest(action) {
     try {
-      yield axios.post('api/admin/request', action.payload);
+      const batchID = action.payload;
+      yield axios.put(`api/admin/request/${batchID}`, { approved: true });
   
       yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
@@ -21,9 +22,10 @@ function* acceptRequests(action) {
     }
   }
 
-  function* denyRequests(action) {
+  function* denyRequest(action) {
     try {
-      yield axios.delete(`api/admin/request/${action.payload}`);
+      const batchID = action.payload;
+      yield axios.delete(`api/admin/request/${batchID}`);
   
       yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
@@ -33,8 +35,8 @@ function* acceptRequests(action) {
 
 function* requestsSaga() {
   yield takeLatest('FETCH_REQUESTS', fetchRequests);
-  yield takeLatest('ACCEPT_REQUEST', acceptRequests);
-  yield takeLatest('DENY_REQUEST', denyRequests);
+  yield takeLatest('ACCEPT_REQUEST', acceptRequest);
+  yield takeLatest('DENY_REQUEST', denyRequest);
 }
 
 export default requestsSaga;

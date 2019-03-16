@@ -5,7 +5,7 @@ const router = express.Router();
 // Route GET /api/admin/request
 // Returns an array all requested days off for all users
 router.get('/', (req, res) => {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         const queryText = `
         SELECT
             "time_off_request".*, 
@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
 // Route GET /api/admin/request/batch
 // Returns all batches of requested days off
 router.get('/batch', (req, res) => {
-    if(req.isAuthenticated()) {
+    if (req.isAuthenticated()) {
         const queryText = `
         SELECT * FROM "batch_of_requests";
         `;
@@ -55,7 +55,7 @@ router.get('/batch', (req, res) => {
 // Route POST /api/admin/request
 // Insert an new batch of requested days off
 router.post('/', (req, res) => {
-    if (req.isAuthenticated() && req.user.role_id == 1) {
+    if (req.isAuthenticated() && req.user.role_id === 1) {
         const userID = req.user.id;
         const typeID = req.body.requestType;
         const requestedDates = req.body.requestedDates;
@@ -82,6 +82,66 @@ router.post('/', (req, res) => {
 	                    ($1, $2, $3);
                     `;
                     await client.query(insertDateText, [request.date, batchID, request.hours]);
+                }
+                await client.query('COMMIT');
+                await res.sendStatus(201);
+            } catch (error) {
+                await client.query('ROLLBACK');
+                await res.sendStatus(500);
+                throw error;
+            } finally {
+                client.release();
+            }
+        })().catch((error) => {
+            console.error(error.stack);
+        });
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+// Route PUT /api/admin/request/:id
+// Set the value of approved for a batch of requested days off
+router.put('/:id', (req, res) => {
+
+});
+
+// Route DELETE /api/admin/request/:id
+// Remove a batch of requested days off
+router.delete('/:id', (req, res) => {
+    if (req.isAuthenticated()) {
+        const employeeID = req.user.id;
+        const batchID = req.params.id;
+        (async () => {
+            const client = await pool.connect();
+            try {
+                await client.query('BEGIN');
+                const deleteRequestsText = `
+                DELETE FROM "time_off_request"
+                WHERE "batch_of_requests_id" = $1;
+                `;
+                await client.query(deleteRequestsText, [batchID]);
+
+                if (req.user.role_id === 1) {
+                    const deleteBatchText = `
+                    DELETE FROM "batch_of_requests"
+                    WHERE "id" = $1
+                    RETURNING *;
+                    `;
+                    const { rowCount } = await client.query(deleteBatchText, [batchID]);
+                    if (rowCount === 0) {
+                        throw new Error('Attempted to delete from table "batch_of_requests" using a batch ID that does not belong to the currently authenticated user.');
+                    }
+                } else {
+                    const deleteBatchText = `
+                    DELETE FROM "batch_of_requests"
+                    WHERE "id" = $1 AND "employee_id" = $2
+                    RETURNING *;
+                    `;
+                    const { rowCount } = await client.query(deleteBatchText, [batchID, employeeID]);
+                    if (rowCount === 0) {
+                        throw new Error('Attempted to delete from table "batch_of_requests" using a batch ID that does not belong to the currently authenticated user.');
+                    }
                 }
                 await client.query('COMMIT');
                 await res.sendStatus(201);

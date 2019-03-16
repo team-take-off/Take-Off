@@ -50,9 +50,9 @@ class RequestCard extends Component {
                         {this.props.conflicts.map(
                             (conflict, index) => {
                                 const name = conflict.name;
-                                const dateRanges = this.formatAsDateRange(conflict.dates);
+                                const dateRange = new DateRange(conflict.dates);
                                 const approved = conflict.approved ? '(Approved)' : '(Pending)';
-                                return (<li key={index}>{name} - {dateRanges} - {approved}</li>);
+                                return (<li key={index}>{name} - {dateRange.format('LL')} - {approved}</li>);
                             }
                         )}
                     </ul>
@@ -101,7 +101,14 @@ class RequestCard extends Component {
     }
 
     deny = () => {
-        console.log('In RequestCard pressed deny');
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'DENY_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
     }
 
     cancel = () => {
