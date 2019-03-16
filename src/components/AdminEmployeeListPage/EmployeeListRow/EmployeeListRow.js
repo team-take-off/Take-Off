@@ -82,14 +82,42 @@ class EmployeeListRow extends Component {
                 });
     }
 
+    showButton = () => {
+        this.setState({
+            clicked: !(this.state.clicked),
+        })
+    }
+
     // Show this component on the DOM
     render() {
         const employee = this.props.employee;
 
         let content = '';
         if(this.state.clicked) {
-            
-        }
+            content = <button>Deactivate</button>
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, employee and employee record is deleted!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        swal("Employee Deleted!", {
+                        icon: "success",
+                        });
+                        console.log('id fir the dlete row: ', this.props.employee.id);
+                        const action = {type: 'DELETE_EMPLOYEE', payload: this.props.employee.id}
+                        this.props.dispatch(action);
+                    } else {
+                        swal("Employee Record Safe");
+                    }
+                });
+
+            } else {
+                content = <button>Active</button>
+            }
         return (
             
             
@@ -100,7 +128,7 @@ class EmployeeListRow extends Component {
                 <td>{this.displayHoursAsDays(employee.vacation_hours)} <button onClick={this.addVacation}>+</button></td>
                 <td>{this.displayHoursAsDays(employee.sick_hours)} <button onClick={this.addSick}>+</button></td>
                 <td><button onClick={this.edit}>Edit</button></td>
-                <td><button onClick={this.deactivate}>Deactivate</button></td>
+                <td><p onClick={this.showButton}>{content}</p></td>
                 <td><button onClick={this.delete}>Delete</button></td>
             </tr>
         );
