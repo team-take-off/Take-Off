@@ -19,9 +19,9 @@ class EmployeeRequestsPage extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.reduxStore.userRequests !== this.props.reduxStore.userRequests) {
             let uniqueDates = [];
-            this.props.reduxStore.userRequests.map((request) => {
+            for (let request of this.props.reduxStore.userRequests) {
                 uniqueDates.push(request.date.substr(0, 4))
-            });
+            }
             this.setState({
                 ...this.state,
                 years: [...new Set(uniqueDates)]
@@ -39,10 +39,10 @@ class EmployeeRequestsPage extends Component {
     render() {
 
         let userRequests = [];
-        if (this.state.year != '') {
+        if (this.state.year !== '') {
 
             this.props.reduxStore.userRequests.map((request) => {
-                if (request.date.substr(0, 4)==this.state.year) {
+                if (request.date.substr(0, 4) === this.state.year) {
                     userRequests.push(request)
                 }
             })

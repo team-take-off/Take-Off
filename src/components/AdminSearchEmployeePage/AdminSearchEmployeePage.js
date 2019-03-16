@@ -29,18 +29,18 @@ class AdminSearchEmployeePage extends Component {
     // Show this component on the DOM
     render() {
         let uniqueDates = [];
-        this.props.reduxStore.requests.map((request) => {
+        for (let request of this.props.reduxStore.requests) {
            uniqueDates.push(request.date.substr(0, 4))
-        })
+        }
         let requestDates = [...new Set(uniqueDates)];
         let userRequests = [];
-        if(this.state.person!='' && this.state.year!=''){
+        if(this.state.person !== '' && this.state.year !== ''){
         
-        this.props.reduxStore.requests.map((request) => {
-            if (request.first_name == this.state.firstname && request.date.substr(0, 4)==this.state.year){
+        for (let request of this.props.reduxStore.requests) {
+            if (request.first_name === this.state.firstname && request.date.substr(0, 4) === this.state.year) {
                 userRequests.push(request)
             }
-        })
+        }
     }
 
         return (
