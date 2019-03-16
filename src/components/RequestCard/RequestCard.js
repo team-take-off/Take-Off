@@ -112,11 +112,25 @@ class RequestCard extends Component {
     }
 
     cancel = () => {
-        console.log('In RequestCard pressed cancel');
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'DENY_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
     }
 
     withdraw = () => {
-        console.log('In RequestCard pressed withdraw');
+        if (this.props.requestArray.length !== 0) {
+            const id = this.props.requestArray[0].batch_of_requests_id;
+            const action = {
+                type: 'WITHDRAW_USER_REQUEST',
+                payload: id
+            };
+            this.props.dispatch(action);
+        }
     }
 
     // Show this component on the DOM

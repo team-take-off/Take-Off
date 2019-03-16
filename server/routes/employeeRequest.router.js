@@ -79,30 +79,42 @@ router.post('/', (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res)=> {
-    if(req.isAuthenticated () && req.user.is_active){
-    console.log('req.params: ', req.params);
-    const client = await pool.connect();
-    try{
-        await client.query('BEGIN');
-        const firstDelete = `DELETE FROM "time_off_request" WHERE "batch_of_requests_id" = $1;`;
-        await client.query(firstDelete, [req.params.id]);
-        const lastDelete = `DELETE FROM "batch_of_requests" WHERE id =$1;`;
-        await client.query(lastDelete, [req.params.id]);
-        await client.query('COMMIT');
-        res.sendStatus(200);
-    }catch(error) {
-        console.log('Error in Delete: ', error);
-        await client.query('ROLLBACK');
-        res.sendStatus(500);
+// Route DELETE /api/employee/request/:id
+// Removes a batch of requested days off belonging to one user (based on batch ID)
+router.delete('/:id', async (req, res) => {
+    if (req.isAuthenticated () && req.user.is_active) {
+        const employeeID = req.user.id;
+        const batchID = req.params.id;
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            const deleteRequestsText = `
+            DELETE FROM "time_off_request" 
+            WHERE "batch_of_requests_id" = $1;
+            `;
+            await client.query(deleteRequestsText, [batchID]);
+            const deleteBatchText = `
+            DELETE FROM "batch_of_requests" 
+            WHERE id = $1 AND "employee_id" = $2
+            RETURNING *;
+            `;
+            const { rowCount } = await client.query(deleteBatchText, [batchID, employeeID]);
+            if (rowCount === 0) {
+                throw new Error('Attempted to delete an entry from table "batch_of_requests" that does not belong to the currently authenticated user.');
+            }
+            await client.query('COMMIT');
+            res.sendStatus(200);
+        } catch (queryError) {
+            await client.query('ROLLBACK');
+            const errorMessage = `SQL error using DELETE /api/employee/request/:id, ${queryError}`;
+            console.log(errorMessage);
+            res.sendStatus(500);
+        } finally {
+            client.release();
+        }
+    } else {
+        res.sendStatus(403);
     }
-    finally {
-        client.release()
-    }
-} else {
-    res.sendStatus(403)
-}
-    
 });
 
 module.exports = router;

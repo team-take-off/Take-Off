@@ -109,7 +109,7 @@ router.put('/:id', (req, res) => {
 // Route DELETE /api/admin/request/:id
 // Remove a batch of requested days off
 router.delete('/:id', (req, res) => {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.role_id === 1) {
         const employeeID = req.user.id;
         const batchID = req.params.id;
         (async () => {
@@ -121,28 +121,12 @@ router.delete('/:id', (req, res) => {
                 WHERE "batch_of_requests_id" = $1;
                 `;
                 await client.query(deleteRequestsText, [batchID]);
-
-                if (req.user.role_id === 1) {
-                    const deleteBatchText = `
-                    DELETE FROM "batch_of_requests"
-                    WHERE "id" = $1
-                    RETURNING *;
-                    `;
-                    const { rowCount } = await client.query(deleteBatchText, [batchID]);
-                    if (rowCount === 0) {
-                        throw new Error('Attempted to delete from table "batch_of_requests" using a batch ID that does not belong to the currently authenticated user.');
-                    }
-                } else {
-                    const deleteBatchText = `
-                    DELETE FROM "batch_of_requests"
-                    WHERE "id" = $1 AND "employee_id" = $2
-                    RETURNING *;
-                    `;
-                    const { rowCount } = await client.query(deleteBatchText, [batchID, employeeID]);
-                    if (rowCount === 0) {
-                        throw new Error('Attempted to delete from table "batch_of_requests" using a batch ID that does not belong to the currently authenticated user.');
-                    }
-                }
+                const deleteBatchText = `
+                DELETE FROM "batch_of_requests"
+                WHERE "id" = $1
+                RETURNING *;
+                `;
+                await client.query(deleteBatchText, [batchID]);
                 await client.query('COMMIT');
                 await res.sendStatus(201);
             } catch (error) {
