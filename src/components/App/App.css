@@ -78,3 +78,9 @@ td {
 table {
   border-bottom: 5px solid #222d31;
 }
+
+/* Horizontal padding for page contents  */
+div.page-container {
+  width: 95vw;
+  margin: 0 auto;
+} 
