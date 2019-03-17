@@ -102,7 +102,8 @@ CREATE TABLE "batch_of_requests"
 	"employee_id" INTEGER REFERENCES "employee"("id"),
 	"date_requested" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     "type_id" INTEGER REFERENCES "type"("id"), 
-    "request_status_id" INTEGER REFERENCES "request_status"("id") DEFAULT 1
+    "request_status_id" INTEGER REFERENCES "request_status"("id") DEFAULT 1,
+	"notes" VARCHAR(250)
 );
 
 	INSERT INTO "batch_of_requests"
