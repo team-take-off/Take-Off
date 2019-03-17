@@ -8,15 +8,16 @@ router.get('/', (req, res) => {
     if (req.isAuthenticated()) {
         const queryText = `
         SELECT
-            "time_off_request".*, 
-            "batch_of_requests"."date_requested", 
-            "batch_of_requests"."approved", 
-            "employee"."first_name", 
-            "employee"."last_name", 
-            "type"."name" AS "type"
+            "time_off_request".*,
+            "batch_of_requests"."date_requested",
+            "employee"."first_name",
+            "employee"."last_name",
+            "type"."name" AS "type",
+            "request_status"."name" AS "status"
         FROM "employee" 
         JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
         JOIN "type" ON "type".id = "batch_of_requests"."type_id"
+        JOIN "request_status" ON "request_status"."id" = "batch_of_requests"."request_status_id"
         JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
         ;
         `;
@@ -105,13 +106,13 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const batchID = req.params.id;
-        const approved = req.body.approved;
+        const requestStatus = req.body.requestStatus;
         const queryText = `
         UPDATE "batch_of_requests"
-        SET "approved" = $1
+        SET "request_status_id" = $1
         WHERE "id" = $2;
         `;
-        pool.query(queryText, [approved, batchID]).then((queryResult) => {
+        pool.query(queryText, [requestStatus, batchID]).then((queryResult) => {
             res.sendStatus(200);
         }).catch((queryError) => {
             const errorMessage = `SQL error using PUT /api/admin/request/:id, ${queryError}`;
