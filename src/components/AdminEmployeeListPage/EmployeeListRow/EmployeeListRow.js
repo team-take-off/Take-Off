@@ -92,32 +92,15 @@ class EmployeeListRow extends Component {
     render() {
         const employee = this.props.employee;
 
-        let content = '';
-        if(this.state.clicked) {
-               swal({
-                title: "Are you sure?",
-                text: "Employee status will be changed!",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            })
-            .then((willDelete) => {
-                if (willDelete) {
-                    swal("Employee Access Revoked!", {
-                        icon: "success",
-                    });
-                    console.log('In EmployeeListRow pressed deactivate()');
-                    content = <button>Activate</button>
-                    const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
-                    this.props.dispatch(action);
-                } else {
-                    swal("Employee Still has Access");
-                    content = <button>Deactivate</button>
-                }
-                });
-            } else {
-                content = <button>Deactivate</button>
-            }
+        // let content = 'Deactivate';
+        // if(this.state.clicked) {
+        //     console.log('In EmployeeListRow pressed deactivate()');
+        //     const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
+        //     this.props.dispatch(action);
+        //     content = <button>Activate</button>
+        //     } else {
+        //         content = <button>Deactivate</button>
+        //     }
         return (
             
             
@@ -128,7 +111,7 @@ class EmployeeListRow extends Component {
                 <td>{this.displayHoursAsDays(employee.vacation_hours)} <button onClick={this.addVacation}>+</button></td>
                 <td>{this.displayHoursAsDays(employee.sick_hours)} <button onClick={this.addSick}>+</button></td>
                 <td><button onClick={this.edit}>Edit</button></td>
-                <td><p onClick={this.showButton}>{content}</p></td>
+                <td><button onClick={this.deactivate}>Deactivate</button></td>
                 <td><button onClick={this.delete}>Delete</button></td>
             </tr>
         );
