@@ -3,6 +3,12 @@ import { connect } from 'react-redux';
 import swal from 'sweetalert';
 
 class EmployeeListRow extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            clicked: false
+        }
+    }
 
     // Convert hours to nicely formatted representation of days
     // Note: Based on an 8 hour workday
@@ -76,9 +82,25 @@ class EmployeeListRow extends Component {
                 });
     }
 
+    showButton = () => {
+        this.setState({
+            clicked: !(this.state.clicked),
+        })
+    }
+
     // Show this component on the DOM
     render() {
         const employee = this.props.employee;
+
+        // let content = 'Deactivate';
+        // if(this.state.clicked) {
+        //     console.log('In EmployeeListRow pressed deactivate()');
+        //     const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
+        //     this.props.dispatch(action);
+        //     content = <button>Activate</button>
+        //     } else {
+        //         content = <button>Deactivate</button>
+        //     }
         return (
             
             
