@@ -16,7 +16,7 @@ class AdminHomePage extends Component {
             </div>
         );
     }
-}
+} 
 
 const mapReduxStoreToProps = reduxStore => ({
     reduxStore
