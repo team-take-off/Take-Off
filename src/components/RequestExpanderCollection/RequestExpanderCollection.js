@@ -36,7 +36,7 @@ class RequestExpanderCollection extends Component {
                 const lastTimeInBatch = this.getLastMoment(requestBatchArray);
                 if (currentTime > lastTimeInBatch) {
                     pastRequests.push(requestBatchArray);
-                } else if (requestBatchArray[0].approved) {
+                } else if (requestBatchArray[0].status === 'approved') {
                     approvedRequests.push(requestBatchArray);
                 } else {
                     pendingRequests.push(requestBatchArray);
