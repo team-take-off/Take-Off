@@ -45,11 +45,19 @@ class EmployeeListRow extends Component {
                 dangerMode: true,
             })
             .then((willDelete) => {
+
                 if (willDelete) {
-                    swal("Employee Access Revoked!", {
-                        icon: "success",
-                    });
-                    console.log('In EmployeeListRow pressed deactivate()');
+                    if (this.props.employee.is_active) {
+                        swal("Employee Access Revoked!", {
+                            icon: "success",
+                        });
+                        console.log('In EmployeeListRow pressed deactivate()');
+                    } else {
+                        swal("Employee Access Restored!", {
+                            icon: "success",
+                        });
+                        console.log('In EmployeeListRow pressed activate()');
+                    }
                     const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
                     this.props.dispatch(action);
                 } else {
@@ -111,7 +119,7 @@ class EmployeeListRow extends Component {
                 <td>{this.displayHoursAsDays(employee.vacation_hours)} <button onClick={this.addVacation}>+</button></td>
                 <td>{this.displayHoursAsDays(employee.sick_hours)} <button onClick={this.addSick}>+</button></td>
                 <td><button onClick={this.edit}>Edit</button></td>
-                <td><button onClick={this.deactivate}>Deactivate</button></td>
+                <td><button onClick={this.deactivate}>{employee.is_active === true ? 'Deactive': 'Activate'}</button></td>
                 <td><button onClick={this.delete}>Delete</button></td>
             </tr>
         );
