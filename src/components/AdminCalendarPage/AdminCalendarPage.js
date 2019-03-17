@@ -5,7 +5,7 @@ class AdminCalendarPage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div>
+            <div className="page-container">
                 <p>[ AdminCalendarPage ]</p>
             </div>
         );
