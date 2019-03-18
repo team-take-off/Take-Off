@@ -5,6 +5,6 @@ const requests = (state = [], action) => {
         default:
             return state;
     }
-};
+}
 
 export default requests;

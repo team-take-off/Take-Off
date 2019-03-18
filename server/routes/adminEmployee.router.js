@@ -60,4 +60,34 @@ router.post('/', (req, res) => {
     }
 });
 
+router.put('/:id', (req, res) =>{
+    if(req.isAuthenticated() && req.user.role_id == 1){
+        const queryText = `UPDATE "employee" SET "is_active" = NOT "is_active" WHERE "id" = $1;`;
+        pool.query(queryText, [req.params.id]).then(()=> {
+            res.sendStatus(200);
+        }).catch((error) => {
+            res.sendStatus(500);
+            console.log('error in update is_active: ', error);
+        })
+    } else {
+        res.sendStatus(403);
+    }
+});
+
+router.delete('/:id', (req, res) => {
+     if (req.isAuthenticated() && req.user.role_id == 1) {
+
+    console.log('req.params: ', req.params);
+    const queryText = `DELETE FROM "employee" WHERE "id" = $1;`;
+    pool.query(queryText, [req.params.id]).then(() => {
+        res.sendStatus(200);
+    }).catch((error) => {
+        console.log('Error in Delete adminEmployee: ', error);
+        res.sendStatus(500);
+    })
+
+}
+
+});
+
 module.exports = router;

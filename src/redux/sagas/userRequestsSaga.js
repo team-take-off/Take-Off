@@ -3,22 +3,31 @@ import axios from 'axios';
 
 function* fetchUserRequests(action) {
     try {
-        const serverResponse = yield axios.get(`api/employee/request/${action.payload}`);
+        const serverResponse = yield axios.get(`api/employee/request`);
+        const nextAction = {
+            type: 'SET_USER_REQUESTS',
+            payload: serverResponse.data
+        }
+        yield put(nextAction);
     } catch (error) {
         console.log('Error in axios GET:', error);
     }
 }
 
-function* addUserRequests(action) {
+function* addUserRequest(action) {
       try {
           yield axios.post('api/employee/request/', action.payload);
+          yield put({type: 'FETCH_USER_INFO'})
       } catch (error) {
           console.log('Error in POST:', error);
       }
   }
 
-  function* deleteUserRequests(action) {
+function* withdrawUserRequest(action) {
       try {
+          const batchID = action.payload;
+          yield axios.delete(`api/employee/request/${batchID}`);
+          yield put({ type: 'FETCH_USER_REQUESTS' });
       } catch (error) {
           console.log('Error in DELETE:', error);
       }
@@ -26,8 +35,8 @@ function* addUserRequests(action) {
 
 function* userRequestsSaga() {
     yield takeLatest('FETCH_USER_REQUESTS', fetchUserRequests);
-    yield takeLatest('ADD_USER_REQUEST', addUserRequests);
-    yield takeLatest('DELETE_USER_REQUEST', deleteUserRequests);
+    yield takeLatest('ADD_USER_REQUEST', addUserRequest);
+    yield takeLatest('WITHDRAW_USER_REQUEST', withdrawUserRequest);
 }
 
 export default userRequestsSaga;

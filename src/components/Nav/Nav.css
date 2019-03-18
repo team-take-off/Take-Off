@@ -3,12 +3,37 @@
     font-weight: 700;
     display: inline-block;
     color: #f2f2f2;
-    padding-left: 10px;
+    padding-left: 3vw;
 }
 
 .nav {
   overflow: hidden;
   background-color: #222d31;
+}
+
+.counter-balance {
+  display: none;
+}
+
+@media only screen and (max-width: 700px) {
+  .nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .menu-icon {
+    color: #f2f2f2;
+    margin: 0.4rem 0 0.4rem 5vw;
+  }
+
+  .counter-balance {
+    display: block;
+    color: #222d31;
+    width: 40px;
+  }
 }
 
 .nav-link {
@@ -22,9 +47,9 @@
 
   /* these last two make the logout button in
   the nav bar look like another link */
-  border:none;
+  border: none;
   cursor: pointer;
-  outline:0;
+  outline: 0;
 }
 
 .nav-link:hover {
@@ -33,4 +58,5 @@
 
 .nav-right {
   float: right;
+  margin-right: 3vw;
 }

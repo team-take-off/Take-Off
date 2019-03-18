@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+const moment = require('moment');
+moment().format();
+let startDate = moment().format('YYYY-MM-DD');
 class RequestFromRow extends Component {
     constructor(props) {
         super(props);
         this.state = {
             date: this.props.request.date,
             hours: this.props.request.hours,
+            
         }
     }
 
@@ -25,9 +28,15 @@ class RequestFromRow extends Component {
     // Send a request to the reduxStore to remove the vacation request 
     // corresponding to the current row.
     deleteRow = () => {
+        let typeString = '';
+        if (this.props.type === 1) {
+            typeString = 'REMOVE_VACATION_REQUEST';
+        }else{
+            typeString = 'REMOVE_SICK_REQUEST';
+        }
         const action = {
-            type: 'REMOVE_VACATION_REQUEST',
-            payload: {
+            type: typeString,
+            payload: {     
                 index: this.props.index,
             }
         };
@@ -41,44 +50,55 @@ class RequestFromRow extends Component {
             ...this.state,
             date: event.target.value
         });
-        const action = {
-            type: 'SET_VACATION_REQUEST',
-            payload: {
-                index: this.props.index,
-                request: {
-                    date: event.target.value,
-                    hours: this.state.hours
+        let typeString = '';
+        if (this.props.type === 1) {
+            typeString = 'SET_VACATION_REQUEST';
+        } else {
+            typeString = 'SET_SICK_REQUEST';
+        }
+            const action = {
+                type: typeString,
+                payload: {
+                    index: this.props.index,
+                    request: {
+                        date: event.target.value,
+                        hours: this.state.hours
+                    }
                 }
-            }
-        };
+            };
         this.props.dispatch(action);
     }
-    
+
     setHours = (event) => {
         this.setState({
             ...this.state,
             hours: parseInt(event.target.value)
         });
-        const action = {
-            type: 'SET_VACATION_REQUEST',
-            payload: {
-                index: this.props.index,
-                request: {
-                    date: this.state.date,
-                    hours: parseInt(event.target.value)
+        let typeString = '';
+        if (this.props.type === 1) {
+            typeString = 'SET_VACATION_REQUEST';
+        } else {
+            typeString = 'SET_SICK_REQUEST';
+        }
+            const action = {
+                type: typeString,
+                payload: {
+                    index: this.props.index,
+                    request: {
+                        date: this.state.date,
+                        hours: parseInt(event.target.value)
+                    }
                 }
-            }
-        };
+            };
         this.props.dispatch(action);
-    }
+}
 
     // Show this component on the DOM
     render() {
-        console.log('in render() for RequestFormRow ');
         return (
             <div>
-                <button onClick={this.deleteRow}>-</button>
-                <input onChange={this.setDate} type="date" value={this.state.date} />
+                <input value="-" type="button" onClick={this.deleteRow}/>
+                <input onChange={this.setDate} type="date"  value={this.state.date} />
                 <select onChange={this.setHours} value={this.state.hours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>

@@ -1,15 +1,31 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import RequestForm from '../RequestForm/RequestForm';
 
 class SickRequestPage extends Component {
 
-    // Show this component on the DOM
+    componentDidMount() {
+        this.props.dispatch({type: 'FETCH_USER_INFO'});
+    }
+
+
     render() {
         return (
-            <div>
-                <p>[ SickRequestPage ]</p>
+            <div className="page-container">
+                {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
+                    <div>
+                        <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} Days</h2>
+                        <RequestForm history={this.props.history} type={2} />
+                    </div>
+                )}
             </div>
         );
     }
 }
 
-export default SickRequestPage;
+const mapStateToProps = reduxStore => ({
+    reduxStore
+});
+
+// this allows us to use <App /> in index.js
+export default connect(mapStateToProps)(SickRequestPage);

@@ -1,9 +1,12 @@
-const defaultRequest = { date: '', hours: 8 };
-
+const moment = require('moment-business-days');
+moment().format();
+let defaultRequest = { date: moment().nextBusinessDay().format('YYYY-MM-DD'), hours: 8 };
 const vacationRequestDates = (state = [defaultRequest], action) => {
     switch (action.type) {
         case 'APPEND_VACATION_REQUEST':
-            return [...state, defaultRequest];
+        console.log('state', state);
+            const nextDate = { date: moment(state[state.length - 1].date).nextBusinessDay().format('YYYY-MM-DD'), hours: 8 }
+            return [...state, nextDate];
         case 'SET_VACATION_REQUEST':
             let index = action.payload.index;
             const newRequest = action.payload.request;
@@ -17,6 +20,8 @@ const vacationRequestDates = (state = [defaultRequest], action) => {
                 state.splice(index2, 1);
                 return [...state];
             }
+        case 'RESET_VACATION_REQUEST':
+            return state =[defaultRequest];
         default:
             return state;
     }
