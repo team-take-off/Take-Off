@@ -32,6 +32,14 @@ const buttonStyle = {
     width: '100%',
 }
 
+const logoutButtonStyle = {
+    color: '#e6e7e6',
+    backgroundColor: '#9d2b33',
+    textTransform: 'none',
+    fontWeight: 'bold',
+    width: '100%',
+}
+
 class DynamicDrawer extends Component {
     
     constructor(props) {
@@ -73,7 +81,7 @@ class DynamicDrawer extends Component {
                             </ListItem>
                             <Divider />
                             <ListItem button >
-                                <Button style={buttonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
+                                <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
                             </ListItem>
                         </List>
                     
@@ -88,7 +96,7 @@ class DynamicDrawer extends Component {
                         </ListItem>
                         <Divider />
                         <ListItem button >
-                            <Button style={buttonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
+                            <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
                         </ListItem>
                     </>
                     
