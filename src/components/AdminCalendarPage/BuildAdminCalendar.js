@@ -12,7 +12,7 @@ class BuildAdminCalendar extends Component {
         super(props)
 
         this.state = {
-            calendar_events: [ {start: new Date(), end: new Date(moment().add(1, 'days')), allDay: false}],
+            calendar_events: [],
         }
       }
     configureEvent = () => {
@@ -21,18 +21,34 @@ class BuildAdminCalendar extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.requests !== this.props.requests) {
-        console.log(this.props.requests);
-        const requests = this.props.requests;
+            // console.log(this.props.requests);
+            const requests = this.props.requests;
 
-
-
-        // this.setState({
-        //     calendar_events: {
-        //         start: ,
-        //         end: ,
-
-        //     }
-        // })
+            const batchIDs = this.filterUniqueBatchIDs(requests);
+            
+            for (let id of batchIDs) {
+                // Sort requests into batches based on their 'batch_of_requests_id'
+                const requestBatchArray = requests.filter(
+                    request => request.batch_of_requests_id === id
+                );
+                console.log(Date(requestBatchArray[0].date));
+                console.log(moment.utc(requestBatchArray[0].date).toDate());
+                console.log(moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate());
+                
+                
+                console.log(requestBatchArray);
+                    this.setState({
+                        calendar_events: [{
+                            start: moment.utc(requestBatchArray[0].date).toDate(),
+                            end: moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate(),
+                            title: requestBatchArray[0].first_name,
+                        }]
+                    })
+                
+                
+            }
+            
+        
         }
     }
         
