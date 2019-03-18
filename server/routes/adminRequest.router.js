@@ -133,6 +133,11 @@ router.delete('/:id', (req, res) => {
             const client = await pool.connect();
             try {
                 await client.query('BEGIN');
+                const getHoursText = `
+                SELECT "employee_id", SUM("hours") AS "hours" FROM "time_off_request"
+                WHERE "batch_of_requests_id" = $1;
+                `;
+                const getHoursResponse = await client.query(getHoursText, [batchID]);
                 const deleteRequestsText = `
                 DELETE FROM "time_off_request"
                 WHERE "batch_of_requests_id" = $1;
@@ -144,8 +149,16 @@ router.delete('/:id', (req, res) => {
                 RETURNING *;
                 `;
                 await client.query(deleteBatchText, [batchID]);
+
+
+                console.log(`id: ${getHoursResponse.rows[0].employee_id}, hours: ${getHoursResponse.rows[0].hours}`);
+                const insertHoursText = `
+                UPDATE "employees" 
+                `;
+
+
                 await client.query('COMMIT');
-                await res.sendStatus(201);
+                await res.sendStatus(200);
             } catch (error) {
                 await client.query('ROLLBACK');
                 await res.sendStatus(500);
