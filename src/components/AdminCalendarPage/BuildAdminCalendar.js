@@ -4,7 +4,8 @@ import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-// moment.locale('en-GB');
+
+moment.locale('en');
 BigCalendar.momentLocalizer(moment);
 
 class BuildAdminCalendar extends Component {
@@ -27,12 +28,8 @@ class BuildAdminCalendar extends Component {
                 // Sort requests into batches based on their 'batch_of_requests_id'
                 requestBatchArray = requests.filter(
                     request => request.batch_of_requests_id === id
-                    
-
                 );
                 filteredRequest.push(requestBatchArray)
-                    
-                    
             }
             
             console.log(filteredRequest);
@@ -42,19 +39,21 @@ class BuildAdminCalendar extends Component {
                 console.log('start leave: ', moment.utc(firstRequest.date).toDate());
                 console.log('end leave: ', moment.utc(lastRequest.date).toDate());
                 
-                this.setState({
-                    calendar_events: [...this.state.calendar_events, {
-                        title: requestBatchArray[0].first_name,
+                this.setState(prevState => ({
+                    calendar_events: [...prevState.calendar_events, {
+                        title: firstRequest.first_name,
                         start: moment.utc(firstRequest.date).toDate(),
-                        end: moment.utc(lastRequest.date).toDate(),
-                    }],
-                    
-                })
-            });
+                        end: moment(moment.utc(lastRequest.date).toDate()).add(1, 'day'),
+                }],
+                })) // end of setState
+            }); // end of map
+            
+            
             
         
         }
     }
+    
         
       // Returns an array with unique batch_of_request_id
     filterUniqueBatchIDs = (requests) => {
@@ -72,6 +71,7 @@ class BuildAdminCalendar extends Component {
       
     // Show this component on the DOM
     render() {
+        console.log('current state', this.state.calendar_events);
         const localizer = BigCalendar.momentLocalizer(moment);
     return (
       <div>
@@ -82,7 +82,7 @@ class BuildAdminCalendar extends Component {
                     step={30}
                     defaultView='month'
                     views={['month']}
-                    defaultDate={new Date()}
+                    // defaultDate={new Date()}
                 />
             </div>
         </div>
