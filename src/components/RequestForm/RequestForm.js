@@ -1,17 +1,30 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
 import RequestFormRow from './RequestFormRow/RequestFormRow';
-
+const moment = require('moment-business-days');
+moment().format();
+// let date = moment().nextBusinessDay().format('YYYY-MM-DD');
 class RequestForm extends Component {
+    constructor(){
+        super()
+        // this.state={
+        //     startDate: moment(date).add(1, 'days').format('YYYY-MM-DD'),
+        // }
+    }
 
     appendRequestDate = () => {
+        // this.setState({
+        //     startDate: moment(this.state.startDate).nextBusinessDay().format('YYYY-MM-DD')
+        // });
+        // if (moment(this.state.startDate, 'YYYY-MM-DD').isBusinessDay() == true){
+        // payload: { date: this.state.startDate, hours: 8 }
         if(this.props.type ===1){
-        this.props.dispatch({ type: 'APPEND_VACATION_REQUEST' });
+        this.props.dispatch({ type: 'APPEND_VACATION_REQUEST',});
         }
         else{
             this.props.dispatch({ type: 'APPEND_SICK_REQUEST' });
         }
+    // }
     }
 
     submit = (event) => {
@@ -62,8 +75,7 @@ class RequestForm extends Component {
         }
         return (
             <form onSubmit={this.submit}>
-                
-                {type}
+                            {type}
                 <input onClick={this.appendRequestDate} type="button" value="+" />
                 <input type="submit" />
             </form>
