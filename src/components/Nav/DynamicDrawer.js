@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-// import LogOutButton from '../LogOutButton/LogOutButton';
 import { withRouter } from 'react-router-dom';
-// import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
