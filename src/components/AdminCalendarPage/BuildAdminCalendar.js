@@ -41,16 +41,12 @@ class BuildAdminCalendar extends Component {
                 
                 this.setState(prevState => ({
                     calendar_events: [...prevState.calendar_events, {
-                        title: firstRequest.first_name,
+                        title: `${firstRequest.first_name}: ${firstRequest.type}`,
                         start: moment.utc(firstRequest.date).toDate(),
                         end: moment(moment.utc(lastRequest.date).toDate()).add(1, 'day'),
                 }],
                 })) // end of setState
             }); // end of map
-            
-            
-            
-        
         }
     }
     
@@ -67,6 +63,18 @@ class BuildAdminCalendar extends Component {
         }
         return uniqueArray;
     }
+
+    eventStyle = (event, start, end, isSelected) => {
+        console.log(event);
+        
+        var backgroundColor = event.title.includes('Vacation') ? 'green': 'red';
+        var style = {
+            backgroundColor: backgroundColor
+        };
+        return {
+        style: style
+        };
+    }
         
       
     // Show this component on the DOM
@@ -82,6 +90,7 @@ class BuildAdminCalendar extends Component {
                     step={30}
                     defaultView='month'
                     views={['month']}
+                    eventPropGetter={(this.eventStyle)}
                     // defaultDate={new Date()}
                 />
             </div>
