@@ -19,7 +19,8 @@ router.get('/', (req, res) => {
             "role_id",
             "start_date",
             "is_active"
-        FROM "employee";
+        FROM "employee"
+        ORDER BY "last_name", "first_name";
         `;
         pool.query(queryText).then((result) => {
             res.send(result.rows);

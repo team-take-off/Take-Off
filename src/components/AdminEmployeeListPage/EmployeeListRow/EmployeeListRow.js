@@ -36,7 +36,7 @@ class EmployeeListRow extends Component {
 
     // Bring up a page for editing this row's employee data
     edit = () => {
-        console.log('In EmployeeListRow pressed edit()');
+        this.props.history.push(`/admin/edit_employee/${this.props.employee.id}`);
     }
 
     // Deactivate this row's employee

@@ -75,7 +75,7 @@ class App extends Component {
             <ProtectedRoute exact path="/admin/add_employee"
               component={AdminAddEmployeePage}
             />
-            <ProtectedRoute exact path="/admin/edit_employee"
+            <ProtectedRoute exact path="/admin/edit_employee/:id"
               component={AdminEditEmployeePage}
             />
             {/* This works the same as the other protected route, except that if the user is logged in,
