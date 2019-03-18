@@ -52,9 +52,14 @@ input {
 }
 
 /* Change font for all headings */
-h1, h2, h3, h4, h5, h6 {
+h1, h2 {
     font-family: 'Advent Pro', sans-serif;
     font-weight: 600;
+    color: #444;
+}
+
+h3, h4, h5, h6 {
+    font-weight: bold;
 }
 
 /* Basic table styling */
