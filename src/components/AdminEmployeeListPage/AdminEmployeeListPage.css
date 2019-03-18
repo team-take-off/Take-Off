@@ -1,0 +1,24 @@
+.employee-list-wrapper {
+    display: flex;
+    align-content: center;
+}
+
+.employee-list-div {
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.employee-list-div table {
+    white-space: nowrap;
+}
+
+@media only screen and (max-width: 700px) { 
+    .employee-list-div table {
+        font-size: 10px;
+    }
+
+    .employee-list-div td, .employee-list-div th {
+        padding: 0.2rem 10px;
+        margin: 0px;
+    }
+}
