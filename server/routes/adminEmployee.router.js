@@ -61,6 +61,8 @@ router.post('/', (req, res) => {
     }
 });
 
+// Route PUT /api/admin/employee
+// Allow the administrator to update employee account data
 router.put('/', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const employee = req.body;
@@ -88,6 +90,8 @@ router.put('/', (req, res) => {
     }
 });
 
+// Route PUT /api/admin/employee/active/:id
+// Allow the administrator to update active status of a single employee
 router.put('/active/:id', (req, res) =>{
     if(req.isAuthenticated() && req.user.role_id === 1) {
         const is_active = req.body.is_active;

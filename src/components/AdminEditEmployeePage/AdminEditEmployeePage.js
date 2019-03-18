@@ -17,16 +17,21 @@ class AdminEditEmployeePage extends Component {
         this.loadEmployeeState();
     }
 
+    // As soon as this component mounts request all employee data from the 
+    // server
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
     }
 
+    // If any of the input data changes reload the selected employee data that 
+    // is loaded into the form.
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.reduxStore.employees !== this.props.reduxStore.employees || prevProps.match.params.id !== this.props.match.params.id) {
             this.loadEmployeeState();
         }
     }
 
+    // Load data for the current employee into this component's state
     loadEmployeeState = () => {
         const id = parseInt(this.props.match.params.id);
         let employee = null;
@@ -50,6 +55,7 @@ class AdminEditEmployeePage extends Component {
         }
     }
 
+    // Handle a change to any of the input fields
     handleChange = (event) => {
         this.setState({
             ...this.state,
@@ -57,6 +63,7 @@ class AdminEditEmployeePage extends Component {
         });
     }
 
+    // Update the employee's data from state
     submit = (event) => {
         event.preventDefault();
         const action = {
