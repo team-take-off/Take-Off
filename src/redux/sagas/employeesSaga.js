@@ -32,10 +32,9 @@ function* addEmployee(action) {
 
 function* deactivateEmployee(action) {
     try {
-        yield axios.put(`api/admin/employees/${action.payload}`);
-        const nextAction = {type: 'FETCH_EMPLOYEES'};
-        yield put (nextAction);
-
+        const deactivate = { is_active: false };
+        yield axios.put(`api/admin/employees/active/${action.payload}`, deactivate);
+        yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in DEACTIVATE_EMPLOYEE:', error);
         alert('Something Went Wrong')
@@ -44,7 +43,8 @@ function* deactivateEmployee(action) {
 
 function* activateEmployee(action) {
     try {
-        // TODO: Send a request to the server to activate the employee
+        const activate = { is_active: true };
+        yield axios.put(`api/admin/employees/active/${action.payload}`, activate);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in ACTIVATE_EMPLOYEE:', error);

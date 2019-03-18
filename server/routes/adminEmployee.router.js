@@ -5,7 +5,7 @@ const router = express.Router();
 // Route GET /api/admin/employees
 // Allow the administrator to retrieve all employees in the database
 router.get('/', (req, res) => {
-    if (req.isAuthenticated() && req.user.role_id == 1) {
+    if (req.isAuthenticated() && req.user.role_id === 1) {
         const queryText = `
         SELECT 
             "id",
@@ -36,7 +36,7 @@ router.get('/', (req, res) => {
 // Route POST /api/admin/employees
 // Allow the administrator to add a new employee to the database
 router.post('/', (req, res) => {
-    if (req.isAuthenticated() && req.user.role_id == 1) {
+    if (req.isAuthenticated() && req.user.role_id === 1) {
         const queryText = `
         INSERT INTO "employee"
             ("username", "password", "email", "first_name", "last_name", "company_employee_id", "start_date")
@@ -61,10 +61,11 @@ router.post('/', (req, res) => {
     }
 });
 
-router.put('/:id', (req, res) =>{
-    if(req.isAuthenticated() && req.user.role_id == 1){
-        const queryText = `UPDATE "employee" SET "is_active" = NOT "is_active" WHERE "id" = $1;`;
-        pool.query(queryText, [req.params.id]).then(()=> {
+router.put('/active/:id', (req, res) =>{
+    if(req.isAuthenticated() && req.user.role_id === 1) {
+        const is_active = req.body.is_active;
+        const queryText = `UPDATE "employee" SET "is_active" = $1 WHERE "id" = $2;`;
+        pool.query(queryText, [is_active, req.params.id]).then(()=> {
             res.sendStatus(200);
         }).catch((error) => {
             res.sendStatus(500);
@@ -76,7 +77,7 @@ router.put('/:id', (req, res) =>{
 });
 
 router.delete('/:id', (req, res) => {
-     if (req.isAuthenticated() && req.user.role_id == 1) {
+     if (req.isAuthenticated() && req.user.role_id === 1) {
 
     console.log('req.params: ', req.params);
     const queryText = `DELETE FROM "employee" WHERE "id" = $1;`;

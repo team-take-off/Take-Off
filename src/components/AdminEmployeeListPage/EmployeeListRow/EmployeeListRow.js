@@ -52,18 +52,18 @@ class EmployeeListRow extends Component {
 
                 if (willDelete) {
                     if (this.props.employee.is_active) {
-                        swal("Employee Access Revoked!", {
+                        swal("Employee access revoked!", {
                             icon: "success",
                         });
-                        console.log('In EmployeeListRow pressed deactivate()');
+                        const action = { type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id }
+                        this.props.dispatch(action);
                     } else {
-                        swal("Employee Access Restored!", {
+                        swal("Employee access restored!", {
                             icon: "success",
                         });
-                        console.log('In EmployeeListRow pressed activate()');
+                        const action = { type: 'ACTIVATE_EMPLOYEE', payload: this.props.employee.id }
+                        this.props.dispatch(action);
                     }
-                    const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
-                    this.props.dispatch(action);
                 } else {
                     swal("Employee Still has Access");
                 }
