@@ -1,37 +1,17 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-
-import BigCalendar from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-
-// moment.locale('en-GB');
-BigCalendar.momentLocalizer(moment);
+import BuildAdminCalendar from './BuildAdminCalendar';
 
 class AdminCalendarPage extends Component {
-    constructor() {
-        super()
-        //Declare state variables here
-      }
-      componentDidMount() { 
-        //Fetch events from database here
-      }
+    componentDidMount() { 
+        this.props.dispatch({type: 'FETCH_REQUESTS'});
+    }
+      
     // Show this component on the DOM
     render() {
-        const cal_events = []
-        const localizer = BigCalendar.momentLocalizer(moment);
     return (
       <div>
-            <div style={{ height: 700 }}>
-                <BigCalendar
-                    localizer={localizer}
-                    events={cal_events}
-                    step={30}
-                    defaultView='week'
-                    views={['month','week','day']}
-                    defaultDate={new Date()}
-                />
-            </div>
+          <BuildAdminCalendar requests={this.props.reduxStore.requests} />
         </div>
         );
     }
