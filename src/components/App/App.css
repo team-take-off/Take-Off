@@ -88,3 +88,43 @@ div.page-container {
   width: 95vw;
   margin: 0 auto;
 } 
+
+/* Default styling for buttons */
+button {
+  background-color: #aaa;
+  border: none;
+  color: whitesmoke;
+  border-radius: 5px;
+  padding: 0.4rem 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+input {
+  background-color: #aaa;
+  border: none;
+  color: whitesmoke;
+  border-radius: 5px;
+  padding: 0.4rem 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+select {
+  background-color: #666;
+  border: none;
+  color: whitesmoke;
+  border-radius: 5px;
+  padding: 0.4rem 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
