@@ -27,11 +27,12 @@ class Nav extends Component {
     const {classes} = this.props
   return (  
     <div className="nav">
+      {/* Runs if the window width is less than 700px */}
+      <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer user={this.props.user} /></div>
       <Link to="/home">
         <h2 className="nav-title">Take-Off</h2>
       </Link>
-      {/* Runs if the window width is less than 700px */}
-      <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer user={this.props.user}/></div>
+      <div className="counter-balance"></div>
       <div className={classnames(classes.desktop, "nav-right")}>
       
       {this.props.user.id && (
