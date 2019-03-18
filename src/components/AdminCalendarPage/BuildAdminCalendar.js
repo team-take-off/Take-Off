@@ -12,12 +12,9 @@ class BuildAdminCalendar extends Component {
         super(props)
 
         this.state = {
-            calendar_events: [{start: '', end: ''}],
+            calendar_events: [],
         }
       }
-    configureEvent = () => {
-
-    }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.requests !== this.props.requests) {
@@ -31,44 +28,44 @@ class BuildAdminCalendar extends Component {
                 const requestBatchArray = requests.filter(
                     request => request.batch_of_requests_id === id
                 );
+                console.log(requestBatchArray);
+                this.setState({
+                    calendar_events: [...this.state.calendar_events,{
+                        title: requestBatchArray[0].first_name,
+                        start: moment.utc(requestBatchArray[0].date).toDate(),
+                        end: moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate(),
+                    }]
+                })
                 console.log(Date(requestBatchArray[0].date));
                 console.log(moment.utc(requestBatchArray[0].date).toDate());
                 console.log(moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate());
                 
-                
-                console.log(requestBatchArray);
-                for (let i = 0; i < requestBatchArray.length; i++) {
-                    const element = requestBatchArray[i];
-                    if (i === 0) {
-                        this.setState(prevState => ({
-                            calendar_events: [{
-                                ...prevState.end,
-                                start: moment.utc(element.date).toDate()
-                            }]
-                        }))
-                    } else if (i === requestBatchArray.length-1) {
-                        this.setState(prevState =>({
-                            calendar_events: [{
-                                ...prevState.start,
-                                end: moment.utc(element.date).toDate(),
-                            }]
-                        }))
+    
+                // for (let i = 0; i < requestBatchArray.length; i++) {
+                //     const element = requestBatchArray[i];
+                //     if (i === 0) {
+                //         this.setState(({
+                //             calendar_events: [...this.state.calendar_events, {
+                //                 start: moment.utc(element.date).toDate()
+                //             }]
+                //         }))
+                //     } else if (i === requestBatchArray.length-1) {
+                //         this.setState(({
+                //             calendar_events: [...this.state.calendar_events, {
+                //                 end: moment.utc(element.date).toDate(),
+                //                 title: element.type
+                //             }]
+                //         }))
                     
 
-                    }
+                //     }
                     
                     
-                }
-                console.log('current state', this.state.calendar_events);
-                    // this.setState({
-                    //     calendar_events: [{
-                    //         start: moment.utc(requestBatchArray[0].date).toDate(),
-                    //         end: moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate(),
-                    //         title: requestBatchArray[0].first_name,
-                    //     }]
-                    // })
+                // }
                 
+                    
                 
+                    console.log('current state', this.state.calendar_events);
             }
             
         
@@ -94,7 +91,7 @@ class BuildAdminCalendar extends Component {
         const localizer = BigCalendar.momentLocalizer(moment);
     return (
       <div>
-            <div style={{ height: 700 }}>
+            <div style={{ height: '100vh' }}>
                 <BigCalendar
                     localizer={localizer}
                     events={this.state.calendar_events}
