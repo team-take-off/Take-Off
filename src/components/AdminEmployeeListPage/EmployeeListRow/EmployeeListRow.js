@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import swal from 'sweetalert';
+import moment from 'moment';
 
 class EmployeeListRow extends Component {
     constructor(props){
@@ -115,12 +119,24 @@ class EmployeeListRow extends Component {
             <tr>
                 <td>{employee.first_name} {employee.last_name}</td>
                 <td>{employee.username}</td>
-                <td>{employee.start_date}</td>
+                <td>{moment(employee.start_date).format('MMM DD, YYYY')}</td>
                 <td>{this.displayHoursAsDays(employee.vacation_hours)} <button onClick={this.addVacation}>+</button></td>
-                <td>{this.displayHoursAsDays(employee.sick_hours)} <button onClick={this.addSick}>+</button></td>
-                <td><button onClick={this.edit}>Edit</button></td>
-                <td><button onClick={this.deactivate}>{employee.is_active === true ? 'Deactive': 'Activate'}</button></td>
-                <td><button onClick={this.delete}>Delete</button></td>
+                <td>
+                    {this.displayHoursAsDays(employee.sick_hours)}
+                    <button onClick={this.addSick}>+</button>
+                </td>
+                <td>
+                    <IconButton onClick={this.edit} aria-label="Edit">
+                        <EditIcon />
+                    </IconButton>
+                </td>
+
+                <td><button onClick={this.deactivate}>{employee.is_active ? 'Deactivate' : 'Activate'}</button></td>
+                <td>
+                    <IconButton onClick={this.delete} aria-label="Delete">
+                        <DeleteIcon />
+                    </IconButton>
+                </td>
             </tr>
         );
     }

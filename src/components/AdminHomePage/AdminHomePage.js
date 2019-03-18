@@ -11,7 +11,7 @@ class AdminHomePage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div>
+            <div className="page-container">
                 <RequestExpanderCollection requests={this.props.reduxStore.requests} forAdmin={true} />
             </div>
         );

@@ -11,7 +11,7 @@ class VacationRequestPage extends Component {
 
     render() {
         return (
-            <div>
+            <div className="page-container">
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
                     <div>
                         <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} Days</h2>

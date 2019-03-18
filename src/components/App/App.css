@@ -12,12 +12,11 @@ body {
 }
 
 form {
-    background-color: #ccd1ca;
-    width: 30%;
-    height: 250px;
+    background-color: #e6e7e6;
+    max-width: 70vw;
     margin: 20px auto;
-    padding: 25px;
-    border-radius: 2px;
+    padding: 0.4rem 20px;
+    border-radius: 5px;
 }
 
 input {
@@ -52,9 +51,14 @@ input {
 }
 
 /* Change font for all headings */
-h1, h2, h3, h4, h5, h6 {
+h1, h2 {
     font-family: 'Advent Pro', sans-serif;
     font-weight: 600;
+    color: #444;
+}
+
+h3, h4, h5, h6 {
+    font-weight: bold;
 }
 
 /* Basic table styling */
@@ -77,4 +81,50 @@ td {
 
 table {
   border-bottom: 5px solid #222d31;
+}
+
+/* Horizontal padding for page contents  */
+div.page-container {
+  width: 95vw;
+  margin: 0 auto;
+} 
+
+/* Default styling for buttons */
+button {
+  background-color: #aaa;
+  border: none;
+  color: whitesmoke;
+  border-radius: 5px;
+  padding: 0.4rem 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+input {
+  background-color: #aaa;
+  border: none;
+  color: whitesmoke;
+  border-radius: 5px;
+  padding: 0.4rem 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+
+select {
+  background-color: #666;
+  border: none;
+  color: whitesmoke;
+  border-radius: 5px;
+  padding: 0.4rem 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
 }

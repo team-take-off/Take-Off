@@ -20,53 +20,37 @@ class BuildAdminCalendar extends Component {
         if (prevProps.requests !== this.props.requests) {
             // console.log(this.props.requests);
             const requests = this.props.requests;
-
+            let filteredRequest = []
             const batchIDs = this.filterUniqueBatchIDs(requests);
-            
+            let requestBatchArray;
             for (let id of batchIDs) {
                 // Sort requests into batches based on their 'batch_of_requests_id'
-                const requestBatchArray = requests.filter(
+                requestBatchArray = requests.filter(
                     request => request.batch_of_requests_id === id
-                );
-                console.log(requestBatchArray);
-                this.setState({
-                    calendar_events: [...this.state.calendar_events,{
-                        title: requestBatchArray[0].first_name,
-                        start: moment.utc(requestBatchArray[0].date).toDate(),
-                        end: moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate(),
-                    }]
-                })
-                console.log(Date(requestBatchArray[0].date));
-                console.log(moment.utc(requestBatchArray[0].date).toDate());
-                console.log(moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate());
-                
-    
-                // for (let i = 0; i < requestBatchArray.length; i++) {
-                //     const element = requestBatchArray[i];
-                //     if (i === 0) {
-                //         this.setState(({
-                //             calendar_events: [...this.state.calendar_events, {
-                //                 start: moment.utc(element.date).toDate()
-                //             }]
-                //         }))
-                //     } else if (i === requestBatchArray.length-1) {
-                //         this.setState(({
-                //             calendar_events: [...this.state.calendar_events, {
-                //                 end: moment.utc(element.date).toDate(),
-                //                 title: element.type
-                //             }]
-                //         }))
                     
 
-                //     }
+                );
+                filteredRequest.push(requestBatchArray)
                     
                     
-                // }
-                
-                    
-                
-                    console.log('current state', this.state.calendar_events);
             }
+            
+            console.log(filteredRequest);
+            filteredRequest.map((requestArray, index) => {
+                const firstRequest = requestArray[0];
+                const lastRequest = requestArray[requestArray.length - 1];
+                console.log('start leave: ', moment.utc(firstRequest.date).toDate());
+                console.log('end leave: ', moment.utc(lastRequest.date).toDate());
+                
+                this.setState({
+                    calendar_events: [...this.state.calendar_events, {
+                        title: requestBatchArray[0].first_name,
+                        start: moment.utc(firstRequest.date).toDate(),
+                        end: moment.utc(lastRequest.date).toDate(),
+                    }],
+                    
+                })
+            });
             
         
         }

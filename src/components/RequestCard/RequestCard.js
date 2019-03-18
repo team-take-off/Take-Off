@@ -67,7 +67,7 @@ class RequestCard extends Component {
     // Renders a cancel button on already approved cards.
     renderAdminButtons = () => {
         if (this.props.forAdmin && !this.props.past) {
-            if (this.props.requestArray.length > 0 && !this.props.requestArray[0].approved) {
+            if (this.props.requestArray.length > 0 && this.props.requestArray[0].status === 'pending') {
                 return (
                     <div>
                         <button onClick={this.approve}>

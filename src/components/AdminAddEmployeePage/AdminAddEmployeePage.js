@@ -33,7 +33,7 @@ class AdminAddEmployeePage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div>
+            <div className="page-container">
                 <h2>Add Employee</h2>
                 <form onSubmit={this.submit}>
                     <input onChange={this.handleChange} name="first_name" placeholder="First Name" type="text" />

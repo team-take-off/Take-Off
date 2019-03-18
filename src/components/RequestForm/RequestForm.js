@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
 import RequestFormRow from './RequestFormRow/RequestFormRow';
+const moment = require('moment-business-days');
+moment().format();
 
 class RequestForm extends Component {
 
     appendRequestDate = () => {
         if(this.props.type ===1){
-        this.props.dispatch({ type: 'APPEND_VACATION_REQUEST' });
+        this.props.dispatch({ type: 'APPEND_VACATION_REQUEST',});
         }
         else{
             this.props.dispatch({ type: 'APPEND_SICK_REQUEST' });
@@ -62,8 +63,7 @@ class RequestForm extends Component {
         }
         return (
             <form onSubmit={this.submit}>
-                
-                {type}
+                            {type}
                 <input onClick={this.appendRequestDate} type="button" value="+" />
                 <input type="submit" />
             </form>

@@ -44,7 +44,7 @@ class AdminSearchEmployeePage extends Component {
     }
 
         return (
-                <div>
+                <div className="page-container">
                     <select onChange={this.setPerson}>
                         <option value="" disabled selected>Select an Employee</option>
 

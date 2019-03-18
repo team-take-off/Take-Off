@@ -4,9 +4,7 @@ const router = express.Router();
 
 
 router.get('/', (req, res) => {
-    if(req.isAuthenticated()){
-        console.log(req.user.id);
-        
+    if(req.isAuthenticated()){        
         pool.query(`SELECT *
                     FROM "employee" WHERE "id" = $1;`, [req.user.id])
                     .then((result)=> {

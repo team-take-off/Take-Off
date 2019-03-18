@@ -11,7 +11,7 @@ class SickRequestPage extends Component {
 
     render() {
         return (
-            <div>
+            <div className="page-container">
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
                     <div>
                         <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} Days</h2>
