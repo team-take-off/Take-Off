@@ -12,7 +12,7 @@ class BuildAdminCalendar extends Component {
         super(props)
 
         this.state = {
-            calendar_events: [],
+            calendar_events: [{start: '', end: ''}],
         }
       }
     configureEvent = () => {
@@ -37,13 +37,36 @@ class BuildAdminCalendar extends Component {
                 
                 
                 console.log(requestBatchArray);
-                    this.setState({
-                        calendar_events: [{
-                            start: moment.utc(requestBatchArray[0].date).toDate(),
-                            end: moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate(),
-                            title: requestBatchArray[0].first_name,
-                        }]
-                    })
+                for (let i = 0; i < requestBatchArray.length; i++) {
+                    const element = requestBatchArray[i];
+                    if (i === 0) {
+                        this.setState(prevState => ({
+                            calendar_events: [{
+                                ...prevState.end,
+                                start: moment.utc(element.date).toDate()
+                            }]
+                        }))
+                    } else if (i === requestBatchArray.length-1) {
+                        this.setState(prevState =>({
+                            calendar_events: [{
+                                ...prevState.start,
+                                end: moment.utc(element.date).toDate(),
+                            }]
+                        }))
+                    
+
+                    }
+                    
+                    
+                }
+                console.log('current state', this.state.calendar_events);
+                    // this.setState({
+                    //     calendar_events: [{
+                    //         start: moment.utc(requestBatchArray[0].date).toDate(),
+                    //         end: moment.utc(requestBatchArray[requestBatchArray.length-1].date).toDate(),
+                    //         title: requestBatchArray[0].first_name,
+                    //     }]
+                    // })
                 
                 
             }
@@ -77,7 +100,7 @@ class BuildAdminCalendar extends Component {
                     events={this.state.calendar_events}
                     step={30}
                     defaultView='month'
-                    views={['month', 'week']}
+                    views={['month']}
                     defaultDate={new Date()}
                 />
             </div>
