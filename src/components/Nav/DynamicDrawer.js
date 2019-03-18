@@ -1,31 +1,38 @@
-import React, {Component} from 'react';
-import LogOutButton from '../LogOutButton/LogOutButton';
-import {withRouter} from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+// import LogOutButton from '../LogOutButton/LogOutButton';
+import { withRouter } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-import PowerIcon from '@material-ui/icons/PowerSettingsNewTwoTone'
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemText from '@material-ui/core/ListItemText';
+// import InboxIcon from '@material-ui/icons/MoveToInbox';
+// import MailIcon from '@material-ui/icons/Mail';
+// import PowerIcon from '@material-ui/icons/PowerSettingsNewTwoTone'
 import MenuIcon from '@material-ui/icons/Menu';
-
-
 
 const styles = {
     list: {
-      width: 150,
+        width: '70vw',
     },
     fullList: {
-      width: 'auto',
+        width: 'auto',
     },
-  };
+};
+
+const buttonStyle = {
+    color: '#e6e7e6',
+    backgroundColor: '#222d31',
+    textTransform: 'none',
+    fontWeight: 'bold',
+    width: '100%',
+}
 
 class DynamicDrawer extends Component {
     
@@ -52,24 +59,23 @@ class DynamicDrawer extends Component {
                     <>
                         <List>
                             <ListItem button>
-                                <Button color="primary" onClick={() => this.props.history.push('/home')}>Employee Home</Button>
+                                <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>Employee Home</Button>
                             </ListItem>
-
                             <ListItem button >
-                                <Button color="primary" onClick={() => this.props.history.push('/admin/home')}>Admin Home</Button>
+                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/home')}>Admin Home</Button>
                             </ListItem>
                             <ListItem button>
-                                <Button color="primary" onClick={() => this.props.history.push('/admin/calendar')}>Calendar</Button>
+                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/calendar')}>Calendar</Button>
                             </ListItem>
                             <ListItem button >
-                                <Button color="primary" onClick={() => this.props.history.push('/admin/list_employees')}>Manage Employees</Button>
+                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/list_employees')}>Manage Employees</Button>
                             </ListItem>
                             <ListItem button >
-                                <Button color="primary" onClick={() => this.props.history.push('/admin/search_employee')}>Search Employees</Button>
+                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/search_employee')}>Search Employees</Button>
                             </ListItem>
                             <Divider />
                             <ListItem button >
-                                <Button><LogOutButton/></Button>
+                                <Button style={buttonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
                             </ListItem>
                         </List>
                     
@@ -77,13 +83,14 @@ class DynamicDrawer extends Component {
                 :
                     <>
                         <ListItem button>
-                            <Button color="primary" onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
+                            <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
                         </ListItem>
                         <ListItem button >
-                            <Button color="primary" onClick={() => this.props.history.push('/employee_requests')}>{this.props.user.id && 'My Requests'}</Button>
+                            <Button style={buttonStyle} onClick={() => this.props.history.push('/employee_requests')}>{this.props.user.id && 'My Requests'}</Button>
                         </ListItem>
+                        <Divider />
                         <ListItem button >
-                            <Button><LogOutButton/></Button>
+                            <Button style={buttonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
                         </ListItem>
                     </>
                     
@@ -109,4 +116,4 @@ class DynamicDrawer extends Component {
     }
 }
 
-export default withStyles(styles)(withRouter(DynamicDrawer));
+export default connect()(withStyles(styles)(withRouter(DynamicDrawer)));
