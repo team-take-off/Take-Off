@@ -57,8 +57,7 @@ class EmployeeRequestsPage extends Component {
             }
         
         return (
-            <div>
-            
+            <div className="page-container">
                 <select onChange={this.setYear}>
                     <option value="" disabled selected>Select a Year</option>
                     <option value="all">All Years</option>

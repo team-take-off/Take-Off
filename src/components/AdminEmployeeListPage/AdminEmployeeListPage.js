@@ -18,13 +18,12 @@ class AdminEmployeeListPage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div>
+            <div className="page-container">
                 <h2>Manage Employees</h2>
                 <button onClick={this.addEmployee}>
                     Add New Employee
                 </button>
                 <h2>List Employees</h2>
-                {/* {(JSON.stringify(this.props.reduxStore.employees))} */}
                 <table>
                     <thead>
                         <tr>

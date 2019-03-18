@@ -18,8 +18,7 @@ sickRequest = (event) => {
     // Show this component on the DOM
     render() {
         return (
-            <div>
-                {/* {JSON.stringify(this.props.reduxStore.userInfo)} */}
+            <div className="page-container">
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
                     <div>
                         <h1>Welcome, {this.props.reduxStore.userInfo[0].first_name}</h1>
