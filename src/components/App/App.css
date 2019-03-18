@@ -12,12 +12,11 @@ body {
 }
 
 form {
-    background-color: #ccd1ca;
-    width: 30%;
-    height: 250px;
+    background-color: #e6e7e6;
+    max-width: 70vw;
     margin: 20px auto;
-    padding: 25px;
-    border-radius: 2px;
+    padding: 0.4rem 20px;
+    border-radius: 5px;
 }
 
 input {
