@@ -61,6 +61,33 @@ router.post('/', (req, res) => {
     }
 });
 
+router.put('/', (req, res) => {
+    if (req.isAuthenticated() && req.user.role_id === 1) {
+        const employee = req.body;
+        const queryText = `
+        UPDATE "employee" 
+        SET 
+            "first_name" = $1,
+            "last_name" = $2,
+            "username" = $3,
+            "email" = $4,
+            "start_date" = $5,
+            "vacation_hours" = $6,
+            "sick_hours" = $7
+        WHERE 
+            "id" = $8;`;
+        queryArray = [employee.first_name, employee.last_name, employee.username, employee.email, employee.start_date, employee.vacation_hours, employee.sick_hours, employee.id];
+        pool.query(queryText, queryArray).then((response) => {
+            res.sendStatus(200);
+        }).catch((error) => {
+            res.sendStatus(500);
+            console.log(`Error in PUT /api/admin/employee, ${error}`);
+        })
+    } else {
+        res.sendStatus(403);
+    }
+});
+
 router.put('/active/:id', (req, res) =>{
     if(req.isAuthenticated() && req.user.role_id === 1) {
         const is_active = req.body.is_active;
@@ -69,7 +96,7 @@ router.put('/active/:id', (req, res) =>{
             res.sendStatus(200);
         }).catch((error) => {
             res.sendStatus(500);
-            console.log('error in update is_active: ', error);
+            console.log(`Error in PUT /api/admin/employee/active/:id, ${error}`);
         })
     } else {
         res.sendStatus(403);

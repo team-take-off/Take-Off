@@ -28,17 +28,17 @@ class AdminEditEmployeePage extends Component {
     }
 
     loadEmployeeState = () => {
-        console.log('loadEmployee');
         const id = parseInt(this.props.match.params.id);
         let employee = null;
-        for (let e of this.props.reduxStore.employees) {
-            if (e.id === id) {
-                employee = e;
+        for (let emp of this.props.reduxStore.employees) {
+            if (emp.id === id) {
+                employee = emp;
                 break;
             }
         }
         if (employee) {
             this.setState({
+                id: id,
                 first_name: employee.first_name,
                 last_name: employee.last_name,
                 username: employee.username,
@@ -59,7 +59,11 @@ class AdminEditEmployeePage extends Component {
 
     submit = (event) => {
         event.preventDefault();
-        console.log('submit()');
+        const action = {
+            type: 'UPDATE_EMPLOYEE',
+            payload: this.state
+        };
+        this.props.dispatch(action);
     }
 
     // Show this component on the DOM

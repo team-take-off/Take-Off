@@ -30,6 +30,16 @@ function* addEmployee(action) {
     }
 }
 
+function* updateEmployee(action) {
+    try {
+        yield axios.put('api/admin/employees/', action.payload);
+        yield put({ type: 'FETCH_EMPLOYEES' });
+    } catch (error) {
+        console.log('Error in UPDATE_EMPLOYEE:', error);
+        alert('Something Went Wrong')
+    }
+}
+
 function* deactivateEmployee(action) {
     try {
         const deactivate = { is_active: false };
@@ -54,6 +64,7 @@ function* employeesSaga() {
   yield takeLatest('FETCH_EMPLOYEES', fetchEmployees);
   yield takeLatest('DELETE_EMPLOYEE', deleteEmployee);
   yield takeLatest('ADD_EMPLOYEE', addEmployee);
+  yield takeLatest('UPDATE_EMPLOYEE', updateEmployee);
   yield takeLatest('DEACTIVATE_EMPLOYEE', deactivateEmployee);
   yield takeLatest('ACTIVATE_EMPLOYEE', activateEmployee);
 }
