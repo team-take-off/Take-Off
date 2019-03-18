@@ -44,7 +44,7 @@ class RequestForm extends Component {
             }
             this.props.dispatch(action);
             this.props.dispatch(action2);
-            this.props.history.push('/home');
+            this.props.history.push('/employee_requests');
         }
     }
 

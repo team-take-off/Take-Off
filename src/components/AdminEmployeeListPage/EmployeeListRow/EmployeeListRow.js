@@ -36,7 +36,7 @@ class EmployeeListRow extends Component {
 
     // Bring up a page for editing this row's employee data
     edit = () => {
-        console.log('In EmployeeListRow pressed edit()');
+        this.props.history.push(`/admin/edit_employee/${this.props.employee.id}`);
     }
 
     // Deactivate this row's employee
@@ -52,18 +52,18 @@ class EmployeeListRow extends Component {
 
                 if (willDelete) {
                     if (this.props.employee.is_active) {
-                        swal("Employee Access Revoked!", {
+                        swal("Employee access revoked!", {
                             icon: "success",
                         });
-                        console.log('In EmployeeListRow pressed deactivate()');
+                        const action = { type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id }
+                        this.props.dispatch(action);
                     } else {
-                        swal("Employee Access Restored!", {
+                        swal("Employee access restored!", {
                             icon: "success",
                         });
-                        console.log('In EmployeeListRow pressed activate()');
+                        const action = { type: 'ACTIVATE_EMPLOYEE', payload: this.props.employee.id }
+                        this.props.dispatch(action);
                     }
-                    const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
-                    this.props.dispatch(action);
                 } else {
                     swal("Employee Still has Access");
                 }
