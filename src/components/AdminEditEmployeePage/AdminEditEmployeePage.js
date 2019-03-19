@@ -71,6 +71,7 @@ class AdminEditEmployeePage extends Component {
             payload: this.state
         };
         this.props.dispatch(action);
+        this.props.history.push('/admin/list_employees');
     }
 
     // Show this component on the DOM
