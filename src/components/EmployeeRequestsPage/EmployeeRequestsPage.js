@@ -58,8 +58,7 @@ class EmployeeRequestsPage extends Component {
         
         return (
             <div className="page-container">
-                <select onChange={this.setYear}>
-                    <option value="" disabled selected>Select a Year</option>
+                <select onChange={this.setYear} defaultValue="all">
                     <option value="all">All Years</option>
                     {this.state.years.map((year, i) =>
                         <option key={i}>{year}</option>

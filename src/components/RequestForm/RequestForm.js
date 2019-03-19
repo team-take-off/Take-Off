@@ -4,9 +4,6 @@ const moment = require('moment-business-days');
 
 
 class RequestForm extends Component {
-    constructor(props){    
-        super(props) 
-    }
 
     setStartDate = (event) => {    
         let typeString = '';
@@ -114,7 +111,7 @@ class RequestForm extends Component {
             dateVal=this.props.type.endDate;
         }
         let fullHalf;
-        if (this.props.type.startDate== this.props.type.endDate){
+        if (this.props.type.startDate === this.props.type.endDate) {
             fullHalf = <select disabled onChange={this.setEndHours} value={this.props.reduxStore.vacationRequestDates.endHours} >
                 <option value="8">Full Day</option>
                 <option value="4">Half Day</option>
@@ -128,16 +125,16 @@ class RequestForm extends Component {
        
         return (
             <form onSubmit={this.submit}>
-                < input onChange={this.setStartDate} type="date" min={moment().format('YYYY-MM-DD')} value={this.props.reduxStore.vacationRequestDates.startDate}  />
+                < input onChange={this.setStartDate} type="date" min={moment().format('YYYY-MM-DD')} value={this.props.reduxStore.vacationRequestDates.startDate} />
                 <select onChange={this.setStartHours} value={this.props.reduxStore.vacationRequestDates.startHours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>
                 </select>
-                <input onChange={this.setEndDate} type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')}value={dateVal} />
+                <input onChange={this.setEndDate} type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')}nvalue={dateVal} />
                 {fullHalf}
                 <input type="submit" />
             </form>
-        );
+        ) 
     }
 }
 

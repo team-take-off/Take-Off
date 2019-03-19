@@ -9,8 +9,11 @@ router.get('/', (req, res) => {
     if (req.isAuthenticated() && req.user.is_active) {
         const queryText = `
         SELECT
-            "time_off_request".*,
-            "batch_of_requests"."date_requested" AS "date",
+            "time_off_request"."id",
+            "time_off_request"."off_date" AS "date",
+            "time_off_request"."off_hours" AS "hours",
+            "time_off_request"."batch_of_requests_id",
+            "batch_of_requests"."date_requested" AS "date_requested",
             "employee"."first_name",
             "employee"."last_name",
             "leave_type"."val" AS "type",
@@ -61,7 +64,7 @@ router.post('/', (req, res) => {
                     moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true){
                     const insertDateText = `
                     INSERT INTO "time_off_request"
-	                    ("date", "batch_of_requests_id", "hours" )
+	                    ("off_date", "batch_of_requests_id", "off_hours" )
                     VALUES
 	                    ($1, $2, $3);
                     `;
