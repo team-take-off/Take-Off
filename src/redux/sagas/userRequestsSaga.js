@@ -28,6 +28,7 @@ function* withdrawUserRequest(action) {
           const batchID = action.payload;
           yield axios.delete(`api/employee/request/${batchID}`);
           yield put({ type: 'FETCH_USER_REQUESTS' });
+          yield put({ type: 'FETCH_REQUESTS' });
       } catch (error) {
           console.log('Error in DELETE:', error);
       }

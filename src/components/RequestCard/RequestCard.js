@@ -129,7 +129,7 @@ class RequestCard extends Component {
         if (this.props.requestArray.length !== 0) {
             const id = this.props.requestArray[0].batch_of_requests_id;
             const action = {
-                type: 'DENY_REQUEST',
+                type: 'WITHDRAW_USER_REQUEST',
                 payload: id
             };
             this.props.dispatch(action);
