@@ -4,6 +4,7 @@ import classnames from 'classnames';
 
 import { connect } from 'react-redux';
 import LogOutButton from '../LogOutButton/LogOutButton';
+import ModeButton from '../ModeButton/ModeButton';
 import DynamicDrawer from './DynamicDrawer';
 import './Nav.css';
 
@@ -16,7 +17,7 @@ const styles  = {
             display: 'none'
         }
     },
-    desktop:{
+    desktop: {
         '@media (max-width:700px)' : {
             display: 'none'
         }
@@ -24,44 +25,41 @@ const styles  = {
 }
 
 class Nav extends Component {
+
+    renderNavRight = () => {
+        if (this.props.user.id) {
+            if (this.props.user.role_id === 1 && this.props.adminMode) {
+                return (
+                    <div className={classnames(styles.desktop, "nav-right")}>
+                        <Link className="nav-link" to="/admin/home">Home</Link>
+                        <Link className="nav-link" to="/admin/calendar">Calendar</Link>
+                        <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
+                        <Link className="nav-link" to="/admin/search_employee">Search Requests</Link>
+                        <ModeButton className="nav-link" />
+                        <LogOutButton className="nav-link" />
+                    </div>
+                );
+            } else {
+                return (
+                    <div className={classnames(styles.desktop, "nav-right")}>
+                        <Link className="nav-link" to="/home">Home</Link>
+                        <Link className="nav-link" to="/employee_requests">My Requests</Link>
+                        {this.props.user.role_id === 1 && <ModeButton className="nav-link" />}
+                        <LogOutButton className="nav-link" />
+                    </div>
+                )
+            }
+        }
+    }
+
     render() {
         const { classes } = this.props;
-
         return (  
             <div className="nav">
-            {/* Runs if the window width is less than 700px */}
                 <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer user={this.props.user} /></div>
-                <Link to="/home">
-                    <h2 className="nav-title">Take-Off</h2>
-                </Link>
+                <h2 className="nav-title">Take-Off</h2>
                 <div className="counter-balance"></div>
-                <div className={classnames(classes.desktop, "nav-right")}>
-
-                    {this.props.user.id && (
-                        this.props.user.role_id === 1 ? 
-                            <>
-                                <Link className="nav-link" to="/home">Employee Home</Link>
-                                <Link className="nav-link" to="/employee_requests">
-                                    {this.props.user.id && 'My Requests'}
-                                </Link>
-                                <Link className="nav-link" to="/admin/home">Admin Home</Link>
-                                <Link className="nav-link" to="/admin/calendar">Calendar</Link>
-                                <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
-                                <Link className="nav-link" to="/admin/search_employee">Search Requests</Link>
-                                <LogOutButton className="nav-link" />
-                            </>
-                        :
-                            <>
-                                <Link className="nav-link" to="/home">
-                                    {this.props.user.id ? 'Home' : 'Login / Register'}
-                                </Link>
-                                <Link className="nav-link" to="/employee_requests">
-                                    {this.props.user.id && 'My Requests'}
-                                </Link>
-                                <LogOutButton className="nav-link"/>
-                            </>
-                    )}
-                </div>
+                {this.renderNavRight()}
             </div>
         );
     }
@@ -69,6 +67,7 @@ class Nav extends Component {
 
 const mapReduxStoreToProps = reduxStore => ({
     user: reduxStore.user,
+    adminMode: reduxStore.adminMode
 });
 
 export default withStyles(styles)(connect(mapReduxStoreToProps)(Nav));
