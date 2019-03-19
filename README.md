@@ -18,8 +18,11 @@ This web application was built to manage requests for off days (vacation and sic
 # 1. Create PostgreSQL database named 'take_off'
 createdb take_off
 
-# 2. Create database tables using SQL create statements in 'database.sql'. 
-# (Optional: initalize database with sample data also found in 'database.sql')
+# 2. Create database tables using SQL create statements in 'database.sql'.
+psql -E -f database.sql -d take_off
+
+# Optional: initalize database with sample data found in 'sample.sql'.
+psql -E -f sample.sql -d take_off
 
 # 3. Install Node dependencies/libraries using NPM
 npm install
@@ -53,5 +56,5 @@ In the future this project will be deployed to Heroku
 
 ## Acknowledgements
 - We would like to thank Michael Friedman and the rest of the Legal Rights Center
-- We would like to thank our instructors Chris Black, Kris Szfranski and Ally Boyd, and Dane Smith
+- We would like to thank our instructors Chris Black, Kris Szfranski, Ally Boyd, and Dane Smith
 - Thanks to our Prime Digital Academy cohort Zaurak
