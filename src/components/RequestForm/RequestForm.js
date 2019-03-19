@@ -130,7 +130,7 @@ class RequestForm extends Component {
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>
                 </select>
-                <input onChange={this.setEndDate} type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')}nvalue={dateVal} />
+                <input onChange={this.setEndDate} type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')} value={dateVal} />
                 {fullHalf}
                 <input type="submit" />
             </form>
