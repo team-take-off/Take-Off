@@ -116,6 +116,25 @@ router.delete('/:id', async (req, res) => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
+
+            const hoursToGiveBack = `
+            SELECT SUM("off_hours") FROM "time_off_request" WHERE "batch_of_requests_id" = $1;`
+            let results = await client.query(hoursToGiveBack, [batchID]);
+            const typeOfLeave = `
+            SELECT "leave_type_id" FROM "batch_of_requests" WHERE id = $1;`;
+            let type= await client.query(typeOfLeave, [batchID]);
+            if(type===1){
+                let giveBackHoursText = `
+                UPDATE "employee" SET "vacation_hours" = "vacation_hours" + $1
+                WHERE "id" = $2`
+                await client.query(giveBackHoursText,[results, employeeID])
+            }else{
+                giveBackHoursText = `
+                UPDATE "employee" SET "sick_hours" = "sick_hours" + $1
+                WHERE "id" = $2`
+                await client.query(giveBackHoursText, [results.rows[0], employeeID])
+            }
+
             const deleteRequestsText = `
             DELETE FROM "time_off_request" 
             WHERE "batch_of_requests_id" = $1;
