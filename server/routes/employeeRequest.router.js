@@ -9,12 +9,19 @@ router.get('/', (req, res) => {
     if (req.isAuthenticated() && req.user.is_active) {
         const queryText = `
         SELECT
-            "batch_of_requests".*, "time_off_request".* , "employee"."first_name", "employee"."last_name", "type"."name" AS "type"
-            FROM "employee" 
-            JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
-            JOIN "type" ON "type".id = "batch_of_requests"."type_id"
-            JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
-            WHERE "employee"."id" = $1;
+            "time_off_request".*,
+            "batch_of_requests"."date_requested" AS "date",
+            "employee"."first_name",
+            "employee"."last_name",
+            "leave_type"."val" AS "type",
+            "request_status"."val" AS "status"
+        FROM "employee" 
+        JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
+        JOIN "leave_type" ON "leave_type"."id" = "batch_of_requests"."leave_type_id"
+        JOIN "request_status" ON "request_status"."id" = "batch_of_requests"."request_status_id"
+        JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
+        WHERE "employee"."id" = $1
+        ORDER BY "date_requested";
         `;
 
         pool.query(queryText, [req.user.id]).then((queryResponse) => {
@@ -43,7 +50,7 @@ router.post('/', (req, res) => {
                 await client.query('BEGIN');
                 const insertComparisonText = `
                 INSERT INTO "batch_of_requests"
-                    ("employee_id", "type_id")
+                    ("employee_id", "leave_type_id")
                 VALUES
                     ($1, $2)
                 RETURNING id;
@@ -68,7 +75,7 @@ router.post('/', (req, res) => {
                     if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true){
                     const insertDateText = `
                     INSERT INTO "time_off_request"
-	                    ("date", "batch_of_requests_id", "hours" )
+	                    ("off_date", "batch_of_requests_id", "off_hours" )
                     VALUES
 	                    ($1, $2, $3);
                     `;

@@ -8,7 +8,7 @@ class AdminEmployeeListPage extends Component {
 
     // When this component mounts get all employees from the database
     componentDidMount() {
-        this.props.dispatch({ type: 'FETCH_EMPLOYEES' })
+        this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
     }
 
     // Navigate to the page AdminAddEmployeePage
@@ -42,7 +42,7 @@ class AdminEmployeeListPage extends Component {
                             </thead>
                             <tbody>
                                 {this.props.reduxStore.employees.map((employee, i) =>
-                                    <EmployeeListRow key={i} employee={employee} />
+                                    <EmployeeListRow key={i} employee={employee} history={this.props.history} />
                                 )}
                             </tbody>
                         </table>
