@@ -1,28 +1,30 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 function* addLeave(action) {
-    console.log(action.payload);
     const additionalLeave = action.payload.leaveType
+    const POST = axios.post(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
+    const PUT = axios.put(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
+    
     try {
         switch (true) {
             case (additionalLeave === 'vacation'):
             try {
-                yield axios.post(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
-                yield axios.put(`/api/admin/addtime/vacation/${action.payload.id}`);
+                yield POST
+                yield PUT
                 yield put({type: 'FETCH_EMPLOYEES'});
             } catch (error) {
                 console.log('error in adding vacation time,', error);
             }
-            break;
+                break;
             case (additionalLeave === 'sick'):
             try {
-                yield axios.post(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
-                yield axios.put(`/api/admin/addtime/sick/${action.payload.id}`);
+                yield POST
+                yield PUT
                 yield put({type: 'FETCH_EMPLOYEES'});
             } catch (error) {
                 console.log('error in adding sick time,', error);
             }
-            break;
+                break;
             default:
                 break;
         }
@@ -32,8 +34,7 @@ function* addLeave(action) {
 }
 
 function* addTimeSaga() {
-  yield takeLatest('ADD_SICK_DAY', addLeave);
-  yield takeLatest('ADD_VACATION_DAY', addLeave);
+  yield takeLatest('ADD_LEAVE_DAY', addLeave);
 }
 
 export default addTimeSaga;
