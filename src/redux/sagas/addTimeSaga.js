@@ -2,21 +2,21 @@ import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 function* addLeave(action) {
     console.log(action.payload);
-    
+    const additionalLeave = action.payload.leaveType
     try {
         switch (true) {
-            case (action.payload.leaveType === 'vacation'):
+            case (additionalLeave === 'vacation'):
             try {
-                yield axios.post(`/api/admin/addtime/vacation/${action.payload.id}`);
+                yield axios.post(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
                 yield axios.put(`/api/admin/addtime/vacation/${action.payload.id}`);
                 yield put({type: 'FETCH_EMPLOYEES'});
             } catch (error) {
                 console.log('error in adding vacation time,', error);
             }
             break;
-            case (action.payload.leaveType === 'sick'):
+            case (additionalLeave === 'sick'):
             try {
-                yield axios.post(`/api/admin/addtime/sick/${action.payload.id}`);
+                yield axios.post(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
                 yield axios.put(`/api/admin/addtime/sick/${action.payload.id}`);
                 yield put({type: 'FETCH_EMPLOYEES'});
             } catch (error) {
