@@ -1,7 +1,8 @@
 const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
-
+const moment = require('moment-holiday');
+const moment1 = require('moment-business-days');
 // Route GET /api/employee/request
 // Returns an array of requested days off for one user (based on user ID)
 router.get('/', (req, res) => {
@@ -56,7 +57,22 @@ router.post('/', (req, res) => {
                 `;
                 const { rows } = await client.query(insertComparisonText, [userID, typeID]);
                 const batchID = rows[0].id;
+                if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date&&
+                    moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true){
+                    const insertDateText = `
+                    INSERT INTO "time_off_request"
+	                    ("date", "batch_of_requests_id", "hours" )
+                    VALUES
+	                    ($1, $2, $3);
+                    `;
+                    await client.query(insertDateText, [requestedDates[0].date, batchID, requestedDates[0].hours]);
+                    const updateEmployeeLeaveTable = `UPDATE "employee" SET 
+                    ${typeID === 1 ? "vacation_hours" : "sick_hours"} = ${typeID === 1 ? "vacation_hours" : "sick_hours"} - ${requestedDates[0].hours}
+                    WHERE "id" = $1`
+                    await client.query(updateEmployeeLeaveTable, [userID]);
+                }else{
                 for (let request of requestedDates) {
+                    if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true){
                     const insertDateText = `
                     INSERT INTO "time_off_request"
 	                    ("off_date", "batch_of_requests_id", "off_hours" )
@@ -68,7 +84,9 @@ router.post('/', (req, res) => {
                     ${typeID === 1 ? "vacation_hours" : "sick_hours"} = ${typeID === 1 ? "vacation_hours" : "sick_hours"} - ${request.hours}
                     WHERE "id" = $1`
                     await client.query(updateEmployeeLeaveTable, [userID]);
+                    }
                 }
+            }
                 await client.query('COMMIT');
                 await res.sendStatus(201);
             } catch (error) {

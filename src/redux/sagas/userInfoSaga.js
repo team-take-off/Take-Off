@@ -6,6 +6,7 @@ function* fetchUserInfo(action) {
     const serverResponse = yield axios.get(`api/employee/userinfo/`);
     yield put({
       type: 'SET_USER_INFO', payload: serverResponse.data});
+    yield put({type:'RESET_REQUEST'});
   } catch (error) {
       console.log('Error in axios GET:', error);
   }

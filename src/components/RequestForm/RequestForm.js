@@ -1,70 +1,140 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import RequestFormRow from './RequestFormRow/RequestFormRow';
 const moment = require('moment-business-days');
-moment().format();
+
 
 class RequestForm extends Component {
+    constructor(props){    
+        super(props) 
+    }
 
-    appendRequestDate = () => {
-        if(this.props.type ===1){
-        this.props.dispatch({ type: 'APPEND_VACATION_REQUEST',});
+    setStartDate = (event) => {    
+        let typeString = '';
+        if (this.props.typeid === 1) {
+            typeString = 'SET_VACATION_START_DATE';
+        } else {
+            typeString = 'SET_SICK_START_DATE';
         }
-        else{
-            this.props.dispatch({ type: 'APPEND_SICK_REQUEST' });
+        const action = {
+            type: typeString,
+            payload: event.target.value
+        };
+        this.props.dispatch(action);
+    }
+    setEndDate = (event) => {
+       
+        let typeString = '';
+        if (this.props.typeid === 1) {
+            typeString = 'SET_VACATION_END_DATE';
+        } else {
+            typeString = 'SET_SICK_END_DATE';
         }
+        const action = {
+            type: typeString,
+            payload: event.target.value
+
+        };
+        this.props.dispatch(action);
+    }
+
+    setStartHours = (event) => {
+        
+        let typeString = '';
+        if (this.props.typeid === 1) {
+            typeString = 'SET_VACATION_START_HOURS';
+        } else {
+            typeString = 'SET_SICK_START_HOURS';
+        }
+        const action = {
+            type: typeString,
+            payload: parseInt(event.target.value)
+
+        };
+        this.props.dispatch(action);
+    }
+
+    setEndHours = (event) => {
+      
+        let typeString = '';
+        if (this.props.typeid === 1) {
+            typeString = 'SET_VACATION_END_HOURS';
+        } else {
+            typeString = 'SET_SICK_END_HOURS';
+        }
+        const action = {
+            type: typeString,
+            payload: parseInt(event.target.value)
+        };
+        this.props.dispatch(action);
     }
 
     submit = (event) => {
         event.preventDefault();
-        if (this.props.type === 1) {
+        let numberOfDays = moment(this.props.type.endDate).diff(this.props.type.startDate, 'days');
+        let i = 0;
+        let requestArray = [{ date: this.props.type.startDate, hours: this.props.type.startHours }];
+        let dayToAdd = this.props.type.startDate
+        while (i < numberOfDays - 1) {
+            dayToAdd = moment(dayToAdd).add(1, 'days').format('YYYY-MM-DD')
+            requestArray.push({ date: dayToAdd, hours: 8 });
+            i++
+        }
+        requestArray.push({ date: this.props.type.endDate, hours: this.props.type.endHours })
+       
+        if (this.props.typeid === 1) {
             const action = {
                 type: 'ADD_USER_REQUEST',
                 payload: {
                     typeID: 1,
-                    requestedDates: this.props.reduxStore.vacationRequestDates
+                    requestedDates: requestArray
                 }
             };
-            const action2 = {
-                type: 'RESET_VACATION_REQUEST'
-            }
             this.props.dispatch(action);
-            this.props.dispatch(action2);
-            this.props.history.push('/home');
+            this.props.history.push('/employee_requests');
         } else {
             const action = {
                 type: 'ADD_USER_REQUEST',
                 payload: {
                     typeID: 2,
-                    requestedDates: this.props.reduxStore.sickRequestDates
+                    requestedDates: requestArray
                 }
             };
-           const action2 = {
-                type: 'RESET_SICK_REQUEST'
-            }
             this.props.dispatch(action);
-            this.props.dispatch(action2);
             this.props.history.push('/employee_requests');
         }
     }
 
     // Show this component on the DOM
     render() {
-        let type;
-        if(this.props.type===1){
-            type = 
-                this.props.reduxStore.vacationRequestDates.map((request, i) =>
-                    <RequestFormRow type={this.props.type} key={i} index={i} request={request} />
-                ) 
+    
+        let dateVal;
+        if(this.props.type.startDate>this.props.type.endDate){
+            dateVal = moment(this.props.type.startDate).format('YYYY-MM-DD');
         }else{
-            type = this.props.reduxStore.sickRequestDates.map((request, i) =>
-                <RequestFormRow type={this.props.type} key={i} index={i} request={request} />
-            )
+            dateVal=this.props.type.endDate;
         }
+        let fullHalf;
+        if (this.props.type.startDate== this.props.type.endDate){
+            fullHalf = <select disabled onChange={this.setEndHours} value={this.props.reduxStore.vacationRequestDates.endHours} >
+                <option value="8">Full Day</option>
+                <option value="4">Half Day</option>
+            </select>
+        }else{
+            fullHalf = <select onChange={this.setEndHours} value={this.props.reduxStore.vacationRequestDates.endHours}>
+                <option value="8">Full Day</option>
+                <option value="4">Half Day</option>
+            </select>
+        }
+       
         return (
             <form onSubmit={this.submit}>
-                            {type}
-                <input onClick={this.appendRequestDate} type="button" value="+" />
+                < input onChange={this.setStartDate} type="date" min={moment().format('YYYY-MM-DD')} value={this.props.reduxStore.vacationRequestDates.startDate}  />
+                <select onChange={this.setStartHours} value={this.props.reduxStore.vacationRequestDates.startHours}>
+                    <option value="8">Full Day</option>
+                    <option value="4">Half Day</option>
+                </select>
+                <input onChange={this.setEndDate} type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')}value={dateVal} />
+                {fullHalf}
                 <input type="submit" />
             </form>
         );
