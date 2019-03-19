@@ -23,15 +23,15 @@ class EmployeeListRow extends Component {
     // Add one day of vacation to this rows's employee
     addVacation = () => {
         console.log('In EmployeeListRow pressed addVacation()');
-        console.log(this.props.employee.id);
-        
-        this.props.dispatch({type: 'ADD_VACATION_DAY', payload: this.props.employee.id});
+        const emp_id = this.props.employee.id;
+        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'vacation'}});
     }
 
     // Add one day of sick and safe leave to this rows's employee
     addSick = () => {
         console.log('In EmployeeListRow pressed addSick()');
-        this.props.dispatch({type: 'ADD_SICK_DAY', payload: this.props.employee.id});
+        const emp_id = this.props.employee.id;
+        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'sick'}});
     }
 
     // Bring up a page for editing this row's employee data

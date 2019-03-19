@@ -13,7 +13,7 @@ vacationRequest = (event) =>{
 }
 
 sickRequest = (event) => {
-    this.props.history.push('/request_sick')
+    this.props.history.push('/request_sick') 
 }
     // Show this component on the DOM
     render() {

@@ -1,29 +1,40 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
-
-function* addSickDay(action) {
+function* addLeave(action) {
+    const additionalLeave = action.payload.leaveType
+    const POST = axios.post(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
+    const PUT = axios.put(`/api/admin/addtime/${action.payload.id}`, {leaveType: additionalLeave});
+    
     try {
-        yield axios.post(`/api/admin/addtime/sick/${action.payload}`);
-        yield axios.put(`/api/admin/addtime/sick/${action.payload}`);
-        yield put({type: 'FETCH_EMPLOYEES'});
+        switch (true) {
+            case (additionalLeave === 'vacation'):
+            try {
+                yield POST
+                yield PUT
+                yield put({type: 'FETCH_EMPLOYEES'});
+            } catch (error) {
+                console.log('error in adding vacation time,', error);
+            }
+                break;
+            case (additionalLeave === 'sick'):
+            try {
+                yield POST
+                yield PUT
+                yield put({type: 'FETCH_EMPLOYEES'});
+            } catch (error) {
+                console.log('error in adding sick time,', error);
+            }
+                break;
+            default:
+                break;
+        }
     } catch (error) {
-        console.log('Error in axios sick POST:', error);
-    }
-}
-
-function* addVacationDay(action) {
-    try {
-        yield axios.post(`/api/admin/addtime/vacation/${action.payload}`);
-        yield axios.put(`/api/admin/addtime/vacation/${action.payload}`);
-        yield put({type: 'FETCH_EMPLOYEES'});
-    } catch (error) {
-        console.log('Error in axios vacation POST:', error);
+        console.log('Error in leave request', error);
     }
 }
 
 function* addTimeSaga() {
-  yield takeLatest('ADD_SICK_DAY', addSickDay);
-  yield takeLatest('ADD_VACATION_DAY', addVacationDay);
+  yield takeLatest('ADD_LEAVE_DAY', addLeave);
 }
 
 export default addTimeSaga;

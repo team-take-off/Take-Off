@@ -16,6 +16,7 @@ const adminAddTimeRouter = require('./routes/adminAddTime.router');
 const adminEmployeeRouter = require('./routes/adminEmployee.router');
 const adminRequestRouter = require('./routes/adminRequest.router');
 const employeeUserInfoRouter = require('./routes/employeeUserInfo.router');
+const cronAddLeave = require('./routes/cronAddLeave.router');
 
 // Body parser middleware
 app.use(bodyParser.json());
@@ -35,6 +36,7 @@ app.use('/api/admin/addtime', adminAddTimeRouter);
 app.use('/api/admin/employees', adminEmployeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
 app.use('/api/employee/userinfo', employeeUserInfoRouter);
+app.use('/api/scheduled-task', cronAddLeave);
 
 // Serve static files
 app.use(express.static('build'));
