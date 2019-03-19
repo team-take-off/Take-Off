@@ -1,5 +1,5 @@
 import moment from 'moment';
-import momentBizz from 'moment-business-days';
+import 'moment-business-days';
 
 let defaultState = {
     startDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
