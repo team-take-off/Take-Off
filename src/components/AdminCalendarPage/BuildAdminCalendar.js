@@ -69,7 +69,7 @@ class BuildAdminCalendar extends Component {
     eventStyle = (event, start, end, isSelected) => {
         console.log(event);
         
-        var backgroundColor = event.title.includes('Vacation') ? 'green': 'red';
+        var backgroundColor = event.title.includes('Vacation') ? '#88BB92' : '#F7934C';
         var style = {
             backgroundColor: backgroundColor
         };
