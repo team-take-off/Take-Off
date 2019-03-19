@@ -1,27 +1,52 @@
-const moment = require('moment-business-days');
-moment().format();
-let defaultRequest = { date: moment().nextBusinessDay().format('YYYY-MM-DD'), hours: 8 };
+import moment from 'moment';
+import momentBizz from 'moment-business-days';
 
-const sickRequestDates = (state = [defaultRequest], action) => {
+let defaultState = {
+    startDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
+    startHours: 8,
+    endHours: 8,
+    endDate: moment().nextBusinessDay().format('YYYY-MM-DD')
+}
+const sickRequestDates = (state = defaultState, action) => {
     switch (action.type) {
-        case 'APPEND_SICK_REQUEST':
-            const nextDate = { date: moment(state[state.length - 1].date).nextBusinessDay().format('YYYY-MM-DD'), hours: 8 }
-            return [...state, nextDate];
-        case 'SET_SICK_REQUEST':
-            let index = action.payload.index;
-            const newRequest = action.payload.request;
-            state.splice(index, 1, newRequest);
-            return [...state];
-        case 'REMOVE_SICK_REQUEST':
-            if (state.length === 1) {
-                return [defaultRequest];
+        case 'SET_SICK_START_DATE':
+            let startRequest = action.payload;
+            state.startDate = startRequest
+            let endVal
+            if (state.startDate >= state.endDate) {
+                endVal = startRequest
             } else {
-                let index2 = action.payload.index;
-                state.splice(index2, 1);
-                return [...state];
+                endVal = state.endDate
             }
-        case 'RESET_SICK_REQUEST':
-            return state = [defaultRequest];
+            return {
+                ...state,
+                startDate: startRequest,
+                endDate: endVal
+            };
+        case 'SET_SICK_START_HOURS':
+            startRequest = action.payload;
+            state.startHours = startRequest
+            return {
+                ...state,
+                startHours: startRequest
+            };
+        case 'SET_SICK_END_DATE':
+            let endRequest = action.payload;
+            state.endDate = endRequest
+            return {
+                ...state,
+                endDate: endRequest
+            };
+        case 'SET_SICK_END_HOURS':
+            endRequest = action.payload;
+            state.endHours = endRequest
+            return {
+                ...state,
+                endHours: endRequest
+            };
+        case 'RESET_REQUEST':
+        state=defaultState;
+            return {...state};
         default:
             return state;
     }

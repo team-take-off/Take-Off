@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-const moment = require('moment');
-moment().format();
-let startDate = moment().format('YYYY-MM-DD');
 class RequestFromRow extends Component {
     constructor(props) {
         super(props);
         this.state = {
             date: this.props.request.date,
-            hours: this.props.request.hours,
-            
+            hours: this.props.request.hours,    
         }
     }
 
@@ -97,12 +93,17 @@ class RequestFromRow extends Component {
     render() {
         return (
             <div>
-                <input value="-" type="button" onClick={this.deleteRow}/>
-                <input onChange={this.setDate} type="date"  value={this.state.date} />
+                {/* <input value="-" type="button" onClick={this.deleteRow}/> */}
+                {/* <input onChange={this.setDate} type="date"  value={this.state.date} />
                 <select onChange={this.setHours} value={this.state.hours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>
                 </select>
+                <input onChange={this.setDate} type="date" value={this.state.date} />
+                <select onChange={this.setHours} value={this.state.hours}>
+                    <option value="8">Full Day</option>
+                    <option value="4">Half Day</option>
+                </select> */}
             </div>
         );
     }

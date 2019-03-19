@@ -15,7 +15,7 @@ class VacationRequestPage extends Component {
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
                     <div>
                         <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} Days</h2>
-                        <RequestForm history={this.props.history} type={1} />
+                        <RequestForm history={this.props.history} type={this.props.reduxStore.vacationRequestDates} typeid={1} />
                     </div>
                 )}
             </div>
