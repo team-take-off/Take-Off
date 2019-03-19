@@ -35,7 +35,7 @@ function* addLeave(action) {
 
 function* cronAddLeave() {
     try {
-        
+        yield axios.post(`/api/scheduled-task/`)
     } catch (error) {
         console.log('error in POSTING shceduled task', error);
     }
