@@ -23,6 +23,7 @@ class RequestExpanderCollection extends Component {
         const batchIDs = this.filterUniqueBatchIDs(requests);
         let pendingRequests = [];
         let approvedRequests = [];
+        let deniedRequests = [];
         let pastRequests = [];
         
         for (let id of batchIDs) {
@@ -36,10 +37,12 @@ class RequestExpanderCollection extends Component {
                 const lastTimeInBatch = this.getLastMoment(requestBatchArray);
                 if (currentTime > lastTimeInBatch) {
                     pastRequests.push(requestBatchArray);
+                } else if (requestBatchArray[0].status === 'pending') {
+                    pendingRequests.push(requestBatchArray);
                 } else if (requestBatchArray[0].status === 'approved') {
                     approvedRequests.push(requestBatchArray);
-                } else {
-                    pendingRequests.push(requestBatchArray);
+                } else if (requestBatchArray[0].status === 'denied') {
+                    deniedRequests.push(requestBatchArray);
                 }
             }
         }
@@ -47,6 +50,7 @@ class RequestExpanderCollection extends Component {
         return {
             pendingRequests: pendingRequests,
             approvedRequests: approvedRequests,
+            deniedRequests: deniedRequests,
             pastRequests: pastRequests
         };
     }
@@ -97,6 +101,13 @@ class RequestExpanderCollection extends Component {
                     title="Approved Requests"
                     open={true}
                     requests={this.state.approvedRequests}
+                    forAdmin={this.props.forAdmin}
+                    past={false}
+                />
+                <RequestExpander
+                    title="Denied Requests"
+                    open={true}
+                    requests={this.state.deniedRequests}
                     forAdmin={this.props.forAdmin}
                     past={false}
                 />
