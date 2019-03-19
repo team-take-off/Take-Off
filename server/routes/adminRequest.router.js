@@ -9,17 +9,17 @@ router.get('/', (req, res) => {
         const queryText = `
         SELECT
             "time_off_request".*,
-            "batch_of_requests"."date_requested",
+            "batch_of_requests"."date_requested" AS "date",
             "employee"."first_name",
             "employee"."last_name",
-            "type"."name" AS "type",
-            "request_status"."name" AS "status"
+            "leave_type"."val" AS "type",
+            "request_status"."val" AS "status"
         FROM "employee" 
         JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
-        JOIN "type" ON "type".id = "batch_of_requests"."type_id"
+        JOIN "leave_type" ON "leave_type"."id" = "batch_of_requests"."leave_type_id"
         JOIN "request_status" ON "request_status"."id" = "batch_of_requests"."request_status_id"
         JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
-        ORDER BY "date";
+        ORDER BY "date_requested";
         `;
         pool.query(queryText).then((result) => {
             res.send(result.rows);
@@ -78,7 +78,7 @@ router.post('/', (req, res) => {
                 for (let request of requestedDates) {
                     const insertDateText = `
                     INSERT INTO "time_off_request"
-	                    ("date", "batch_of_requests_id", "hours")
+	                    ("off_date", "batch_of_requests_id", "off_hours")
                     VALUES
 	                    ($1, $2, $3);
                     `;

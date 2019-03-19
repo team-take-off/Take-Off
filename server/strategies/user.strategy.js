@@ -17,7 +17,7 @@ passport.deserializeUser((id, done) => {
       done(null, false, { message: 'Incorrect credentials.' });
     } else {
       // user found
-      delete user.password; // remove password so it doesn't get sent
+      delete user.login_password; // remove password so it doesn't get sent
       done(null, user);
     }
   }).catch((err) => {
@@ -34,7 +34,7 @@ passport.use('local', new LocalStrategy({
     pool.query('SELECT * FROM employee WHERE username = $1', [username])
       .then((result) => {
         const user = result && result.rows && result.rows[0];
-        if (user && encryptLib.comparePassword(password, user.password)) {
+        if (user && encryptLib.comparePassword(password, user.login_password)) {
           // all good! Passwords match!
           done(null, user);
         } else if (user) {
