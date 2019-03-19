@@ -111,12 +111,19 @@ router.post('/', (req, res) => {
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', async (req, res) => {
     if (req.isAuthenticated () && req.user.is_active) {
-        const employeeID = req.user.id;
         const batchID = req.params.id;
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-
+            let employeeID;
+            if(req.user.role === 2){
+                employeeID = req.user.id;
+            }else{
+                const typeOfLeave = `
+            SELECT "employee_id" FROM "batch_of_requests" WHERE id = $1;`;
+                let person = await client.query(typeOfLeave, [batchID]);
+                employeeID = person.rows[0].employee_id;
+            }
             const hoursToGiveBack = `
             SELECT SUM("off_hours") FROM "time_off_request" WHERE "batch_of_requests_id" = $1;`
             let results = await client.query(hoursToGiveBack, [batchID]);
