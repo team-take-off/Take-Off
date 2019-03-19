@@ -123,16 +123,16 @@ router.delete('/:id', async (req, res) => {
             const typeOfLeave = `
             SELECT "leave_type_id" FROM "batch_of_requests" WHERE id = $1;`;
             let type= await client.query(typeOfLeave, [batchID]);
-            if(type===1){
+            if(type.rows[0].leave_type_id == 1){
                 let giveBackHoursText = `
                 UPDATE "employee" SET "vacation_hours" = "vacation_hours" + $1
                 WHERE "id" = $2`
-                await client.query(giveBackHoursText,[results, employeeID])
+                await client.query(giveBackHoursText,[results.rows[0].sum, employeeID])
             }else{
                 giveBackHoursText = `
                 UPDATE "employee" SET "sick_hours" = "sick_hours" + $1
                 WHERE "id" = $2`
-                await client.query(giveBackHoursText, [results.rows[0], employeeID])
+                await client.query(giveBackHoursText, [results.rows[0].sum, employeeID])
             }
 
             const deleteRequestsText = `
