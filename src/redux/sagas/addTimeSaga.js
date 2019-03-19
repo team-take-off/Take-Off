@@ -33,17 +33,8 @@ function* addLeave(action) {
     }
 }
 
-function* cronAddLeave() {
-    try {
-        yield axios.post(`/api/scheduled-task/`)
-    } catch (error) {
-        console.log('error in POSTING shceduled task', error);
-    }
-}
-
 function* addTimeSaga() {
   yield takeLatest('ADD_LEAVE_DAY', addLeave);
-  yield takeLatest('ADD_SCHEDULED_TIME', cronAddLeave);
 }
 
 export default addTimeSaga;

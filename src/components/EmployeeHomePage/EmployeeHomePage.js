@@ -6,7 +6,6 @@ class EmployeeHomePage extends Component {
     componentDidMount() {
         // this.addUserInfo();
         this.props.dispatch({type: 'FETCH_USER_INFO'});
-        this.props.dispatch({type: 'ADD_SCHEDULED_TIME'})
     }
 
 vacationRequest = (event) =>{
