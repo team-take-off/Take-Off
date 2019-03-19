@@ -6,6 +6,7 @@
 .employee-list-div {
     display: inline-block;
     margin: 0 auto;
+    overflow: scroll;
 }
 
 .employee-list-div table {
