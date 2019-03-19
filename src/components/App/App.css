@@ -85,6 +85,7 @@ table {
 
 /* Horizontal padding for page contents  */
 div.page-container {
+  min-height: 68vh;
   width: 95vw;
   margin: 0 auto;
 } 
