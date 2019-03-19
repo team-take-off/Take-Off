@@ -33,6 +33,10 @@ class BuildAdminCalendar extends Component {
             
             console.log(filteredRequest);
             for (let requestArray of filteredRequest) {
+                if (requestArray.length === 0) {
+                    continue;
+                }
+                
                 const firstRequest = requestArray[0];
                 const lastRequest = requestArray[requestArray.length - 1];
                 console.log('start leave: ', moment.utc(firstRequest.date).toDate());

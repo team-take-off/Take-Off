@@ -8,8 +8,11 @@ router.get('/', (req, res) => {
     if (req.isAuthenticated()) {
         const queryText = `
         SELECT
-            "time_off_request".*,
-            "batch_of_requests"."date_requested" AS "date",
+            "time_off_request"."id",
+            "time_off_request"."off_date" AS "date",
+            "time_off_request"."off_hours" AS "hours",
+            "time_off_request"."batch_of_requests_id",
+            "batch_of_requests"."date_requested" AS "date_requested",
             "employee"."first_name",
             "employee"."last_name",
             "leave_type"."val" AS "type",
@@ -38,7 +41,11 @@ router.get('/', (req, res) => {
 router.get('/batch', (req, res) => {
     if (req.isAuthenticated()) {
         const queryText = `
-        SELECT * FROM "batch_of_requests";
+        SELECT
+            "id",
+            "date_requested" AS "date",
+            "leave_type_id" AS "type"
+        FROM "batch_of_requests";
         `;
         pool.query(queryText).then((result) => {
             res.send(result.rows)
