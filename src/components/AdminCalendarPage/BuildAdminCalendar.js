@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import DateRange from '../../modules/DateRange';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -33,20 +32,23 @@ class BuildAdminCalendar extends Component {
             }
             
             console.log(filteredRequest);
-            filteredRequest.map((requestArray, index) => {
+            for (let requestArray of filteredRequest) {
                 const firstRequest = requestArray[0];
                 const lastRequest = requestArray[requestArray.length - 1];
                 console.log('start leave: ', moment.utc(firstRequest.date).toDate());
                 console.log('end leave: ', moment.utc(lastRequest.date).toDate());
                 
                 this.setState(prevState => ({
-                    calendar_events: [...prevState.calendar_events, {
-                        title: `${firstRequest.first_name}: ${firstRequest.type}`,
-                        start: moment.utc(firstRequest.date).toDate(),
-                        end: moment(moment.utc(lastRequest.date).toDate()).add(1, 'day'),
-                }],
+                    calendar_events: [
+                        ...prevState.calendar_events, 
+                        {
+                            title: `${firstRequest.first_name}: ${firstRequest.type}`,
+                            start: moment.utc(firstRequest.date).toDate(),
+                            end: moment(moment.utc(lastRequest.date).toDate()).add(1, 'day'),
+                        }
+                    ],
                 })) // end of setState
-            }); // end of map
+            }
         }
     }
     
