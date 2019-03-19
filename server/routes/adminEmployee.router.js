@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
             "sick_hours",
             "vacation_hours",
             "role_id",
-            "start_date",
+            "started_date" AS "start_date",
             "is_active"
         FROM "employee"
         ORDER BY "last_name", "first_name";
@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const queryText = `
         INSERT INTO "employee"
-            ("username", "password", "email", "first_name", "last_name", "company_employee_id", "start_date")
+            ("username", "password", "email", "first_name", "last_name", "company_employee_id", "started_date")
         VALUES
             ($1, $2, $3, $4, $5, $6, $7);
         `;
@@ -73,7 +73,7 @@ router.put('/', (req, res) => {
             "last_name" = $2,
             "username" = $3,
             "email" = $4,
-            "start_date" = $5,
+            "started_date" = $5,
             "vacation_hours" = $6,
             "sick_hours" = $7
         WHERE 

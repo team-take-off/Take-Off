@@ -17,7 +17,7 @@ function* fetchUserRequests(action) {
 function* addUserRequest(action) {
       try {
           yield axios.post('api/employee/request/', action.payload);
-          yield put({type: 'FETCH_USER_INFO'})
+          yield put({type: 'FETCH_USER_INFO'})    
       } catch (error) {
           console.log('Error in POST:', error);
       }

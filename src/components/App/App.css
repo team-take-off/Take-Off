@@ -25,7 +25,7 @@ input {
 }
 
 .log-in, .log-out, .register {
-  background-color: #9d2b33;
+  background-color: rgb(0, 127, 255);
   border-radius: 4px;
   color: #f8f8f8;
   min-height: 50px;
@@ -35,7 +35,7 @@ input {
 }
 
 .log-in:hover, .log-out:hover, .register:hover {
-  background-color: #b5000b;
+  background-color: rgb(84, 167, 250);
 }
 
 /* This line makes the "Register" and "Login" buttons look like links */
@@ -85,13 +85,14 @@ table {
 
 /* Horizontal padding for page contents  */
 div.page-container {
+  min-height: 68vh;
   width: 95vw;
   margin: 0 auto;
 } 
 
 /* Default styling for buttons */
 button {
-  background-color: #aaa;
+  background-color: #888;
   border: none;
   color: whitesmoke;
   border-radius: 5px;
@@ -101,10 +102,11 @@ button {
   display: inline-block;
   margin: 4px 2px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 input {
-  background-color: #aaa;
+  background-color: #888;
   border: none;
   color: whitesmoke;
   border-radius: 5px;
@@ -114,10 +116,11 @@ input {
   display: inline-block;
   margin: 4px 2px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 select {
-  background-color: #666;
+  background-color: rgb(0, 127, 255);
   border: none;
   color: whitesmoke;
   border-radius: 5px;
@@ -127,4 +130,5 @@ select {
   display: inline-block;
   margin: 4px 2px;
   cursor: pointer;
+  font-size: 1rem;
 }
