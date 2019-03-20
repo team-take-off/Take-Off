@@ -4,9 +4,10 @@ import 'moment-business-days';
 let defaultState = {
     startDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
     startHours: 8,
+    endDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
     endHours: 8,
-    endDate: moment().nextBusinessDay().format('YYYY-MM-DD')
-}
+};
+
 const vacationRequestDates = (state = defaultState, action) => {
     switch (action.type) {
         case 'SET_VACATION_START_DATE':
@@ -37,6 +38,8 @@ const vacationRequestDates = (state = defaultState, action) => {
             return {...state,
                 endHours: endRequest};
         case 'RESET_REQUEST':
+            return defaultState;
+        case 'LOGOUT':
             return defaultState;
         default:
             return state;

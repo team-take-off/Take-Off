@@ -1,52 +1,45 @@
 import moment from 'moment';
 import 'moment-business-days';
 
-let defaultState = {
+const DEFAULT_REQUEST = {
     startDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
     startHours: 8,
+    endDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
     endHours: 8,
-    endDate: moment().nextBusinessDay().format('YYYY-MM-DD')
-}
-const sickRequestDates = (state = defaultState, action) => {
+};
+
+const sickRequestDates = (state = DEFAULT_REQUEST, action) => {
     switch (action.type) {
         case 'SET_SICK_START_DATE':
-            let startRequest = action.payload;
-            state.startDate = startRequest
-            let endVal
-            if (state.startDate >= state.endDate) {
-                endVal = startRequest
-            } else {
-                endVal = state.endDate
+            const startDate = action.payload;
+            let endDate = state.endDate;
+            if (startDate >= endDate) {
+                endDate = startDate;
             }
             return {
                 ...state,
-                startDate: startRequest,
-                endDate: endVal
+                startDate: startDate,
+                endDate: endDate
             };
         case 'SET_SICK_START_HOURS':
-            startRequest = action.payload;
-            state.startHours = startRequest
             return {
                 ...state,
-                startHours: startRequest
+                startHours: action.payload
             };
         case 'SET_SICK_END_DATE':
-            let endRequest = action.payload;
-            state.endDate = endRequest
             return {
                 ...state,
-                endDate: endRequest
+                endDate: action.payload
             };
         case 'SET_SICK_END_HOURS':
-            endRequest = action.payload;
-            state.endHours = endRequest
             return {
                 ...state,
-                endHours: endRequest
+                endHours: action.payload
             };
         case 'RESET_REQUEST':
-        state=defaultState;
-            return {...state};
+            return DEFAULT_REQUEST;
+        case 'LOGOUT':
+            return DEFAULT_REQUEST;
         default:
             return state;
     }

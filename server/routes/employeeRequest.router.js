@@ -3,6 +3,7 @@ const pool = require('../modules/pool');
 const router = express.Router();
 const moment = require('moment-holiday');
 const moment1 = require('moment-business-days');
+
 // Route GET /api/employee/request
 // Returns an array of requested days off for one user (based on user ID)
 router.get('/', (req, res) => {

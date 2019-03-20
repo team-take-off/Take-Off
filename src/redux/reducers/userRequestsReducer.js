@@ -1,7 +1,11 @@
-const userRequests = (state = [], action) => {
+const DEFAULT_ARRAY = [];
+
+const userRequests = (state = DEFAULT_ARRAY, action) => {
     switch (action.type) {
         case 'SET_USER_REQUESTS':
             return action.payload;
+        case 'LOGOUT':
+            return DEFAULT_ARRAY;
         default:
             return state;
     }

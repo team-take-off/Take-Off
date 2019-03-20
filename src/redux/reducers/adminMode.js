@@ -1,7 +1,11 @@
-const adminMode = (state = true, action) => {
+const DEFAULT_STATE = true;
+
+const adminMode = (state = DEFAULT_STATE, action) => {
     switch (action.type) {
         case 'ADMIN_MODE_TOGGLE':
-            return !state;  
+            return !state;
+        case 'LOGOUT':
+            return DEFAULT_STATE;
         default:
             return state;
     }
