@@ -64,11 +64,8 @@ class DynamicDrawer extends Component {
     renderAdminList = () => {
         return (
             <List>
-                <ListItem button>
-                    <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>Employee Home</Button>
-                </ListItem>
                 <ListItem button >
-                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/home')}>Admin Home</Button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/home')}>Home</Button>
                 </ListItem>
                 <ListItem button>
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/calendar')}>Calendar</Button>
@@ -99,7 +96,7 @@ class DynamicDrawer extends Component {
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
                 </ListItem>
                 <ListItem button >
-                    <Button style={buttonStyle} onClick={() => this.props.history.push('/employee_requests')}>{this.props.user.id && 'My Requests'}</Button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/employee_requests')}>My Requests</Button>
                 </ListItem>
                 <Divider />
                 <ListItem button >
@@ -121,7 +118,7 @@ class DynamicDrawer extends Component {
     
     // Show this on the DOM
     render() {
-        const {classes} = this.props;
+        const { classes } = this.props;
         const sideList = (
             <div className={classes.list}>
                 {this.renderList()}
