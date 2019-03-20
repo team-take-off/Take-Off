@@ -4,7 +4,8 @@ import classnames from 'classnames';
 
 import { connect } from 'react-redux';
 import LogOutButton from '../LogOutButton/LogOutButton';
-import DynamicDrawer from './DynamicDrawer';
+import ModeButton from '../ModeButton/ModeButton';
+import DynamicDrawer from '../DynamicDrawer/DynamicDrawer';
 import './Nav.css';
 
 // material ui
@@ -25,49 +26,49 @@ const styles = {
 
 class Nav extends Component {
 
-  render() {
-    const { classes } = this.props
-    return (
-      <div className="nav">
-        {/* Runs if the window width is less than 700px */}
-        <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer user={this.props.user} /></div>
-        <Link to="/home">
-          <h2 className="nav-title">Take-Off</h2>
-        </Link>
-        <div className="counter-balance"></div>
-        <div className={classnames(classes.desktop, "nav-right")}>
+    renderNavRight = () => {
+        const { classes } = this.props;
+        if (this.props.user.id) {
+            if (this.props.user.role_id === 1 && this.props.adminMode) {
+                return (
+                    <div className={classnames(classes.desktop, "nav-right")}>
+                        <Link className="nav-link" to="/admin/home">Home</Link>
+                        <Link className="nav-link" to="/admin/calendar">Calendar</Link>
+                        <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
+                        <Link className="nav-link" to="/admin/search_employee">Search Requests</Link>
+                        <ModeButton className="nav-link" />
+                        <LogOutButton className="nav-link" />
+                    </div>
+                );
+            } else {
+                return (
+                    <div className={classnames(classes.desktop, "nav-right")}>
+                        <Link className="nav-link" to="/home">Home</Link>
+                        <Link className="nav-link" to="/employee_requests">My Requests</Link>
+                        {this.props.user.role_id === 1 && <ModeButton className="nav-link" />}
+                        <LogOutButton className="nav-link" />
+                    </div>
+                )
+            }
+        }
+    }
 
-          {this.props.user.id && (
-            this.props.user.role_id === 1 ?
-              <>
-                <Link className="nav-link" to="/home">Employee Home</Link>
-                <Link className="nav-link" to="/admin/home">Admin Home</Link>
-                <Link className="nav-link" to="/admin/calendar">Calendar</Link>
-                <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
-                <Link className="nav-link" to="/admin/search_employee">Search Employees</Link>
-                <LogOutButton className="nav-link" />
-              </>
-              :
-              <>
-                <Link className="nav-link" to="/home">
-                  {this.props.user.id ? 'Home' : 'Login / Register'}
-                </Link>
-                <Link className="nav-link" to="/employee_requests">
-                  {this.props.user.id && 'My Requests'}
-                </Link>
-                <Link className="nav-link" to="/employee_calendar">
-                  {this.props.user.id && 'Calendar'}
-                </Link>
-                <LogOutButton className="nav-link" />
-              </>
-          )}
-        </div>
-      </div>
-    );
-  }
+    render() {
+        const { classes } = this.props;
+        return (  
+            <div className="nav">
+                <div className={classnames(classes.mobile, "menu-icon")}><DynamicDrawer user={this.props.user} /></div>
+                <h2 className="nav-title">Take-Off</h2>
+                <div className="counter-balance"></div>
+                {this.renderNavRight()}
+            </div>
+        );
+    }
 }
-const mapStateToProps = state => ({
-  user: state.user,
+
+const mapReduxStoreToProps = reduxStore => ({
+    user: reduxStore.user,
+    adminMode: reduxStore.adminMode
 });
 
-export default withStyles(styles)(connect(mapStateToProps)(Nav));
+export default withStyles(styles)(connect(mapReduxStoreToProps)(Nav));
