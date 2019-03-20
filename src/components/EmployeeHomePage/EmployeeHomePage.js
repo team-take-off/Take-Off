@@ -7,7 +7,7 @@ class EmployeeHomePage extends Component {
         // this.addUserInfo();
         this.props.dispatch({type: 'FETCH_USER_INFO'});
         
-        if (this.props.reduxStore.user.role_id === 1) {
+        if (this.props.reduxStore.user.role_id === 1 && this.props.reduxStore.adminMode) {
             this.props.history.push('/admin/home');
         }
     }
