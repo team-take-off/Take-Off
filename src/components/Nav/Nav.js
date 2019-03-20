@@ -5,7 +5,7 @@ import classnames from 'classnames';
 import { connect } from 'react-redux';
 import LogOutButton from '../LogOutButton/LogOutButton';
 import ModeButton from '../ModeButton/ModeButton';
-import DynamicDrawer from './DynamicDrawer';
+import DynamicDrawer from '../DynamicDrawer/DynamicDrawer';
 import './Nav.css';
 
 // material ui
@@ -27,10 +27,11 @@ const styles  = {
 class Nav extends Component {
 
     renderNavRight = () => {
+        const { classes } = this.props;
         if (this.props.user.id) {
             if (this.props.user.role_id === 1 && this.props.adminMode) {
                 return (
-                    <div className={classnames(styles.desktop, "nav-right")}>
+                    <div className={classnames(classes.desktop, "nav-right")}>
                         <Link className="nav-link" to="/admin/home">Home</Link>
                         <Link className="nav-link" to="/admin/calendar">Calendar</Link>
                         <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
@@ -41,7 +42,7 @@ class Nav extends Component {
                 );
             } else {
                 return (
-                    <div className={classnames(styles.desktop, "nav-right")}>
+                    <div className={classnames(classes.desktop, "nav-right")}>
                         <Link className="nav-link" to="/home">Home</Link>
                         <Link className="nav-link" to="/employee_requests">My Requests</Link>
                         {this.props.user.role_id === 1 && <ModeButton className="nav-link" />}

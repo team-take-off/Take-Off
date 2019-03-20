@@ -8,11 +8,6 @@ import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-// import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import InboxIcon from '@material-ui/icons/MoveToInbox';
-// import MailIcon from '@material-ui/icons/Mail';
-// import PowerIcon from '@material-ui/icons/PowerSettingsNewTwoTone'
 import MenuIcon from '@material-ui/icons/Menu';
 
 const styles = {
@@ -50,11 +45,51 @@ class DynamicDrawer extends Component {
         }
     }
 
+    renderList = () => {
+        if (this.props.user.id) {
+            if (this.props.user.role_id === 1) {
+                return this.renderAdminList();
+            } else {
+                return this.renderEmployeeList();
+            }
+        }
+    }
+
+    renderAdminList = () => {
+        return (
+            <List>
+                <ListItem button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>Employee Home</Button>
+                </ListItem>
+                <ListItem button >
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/home')}>Admin Home</Button>
+                </ListItem>
+                <ListItem button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/calendar')}>Calendar</Button>
+                </ListItem>
+                <ListItem button >
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/list_employees')}>Manage Employees</Button>
+                </ListItem>
+                <ListItem button >
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/search_employee')}>Search Employees</Button>
+                </ListItem>
+                <Divider />
+                <ListItem button >
+                    <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
+                </ListItem>
+            </List>
+        );
+    }
+
+    renderEmployeeList = () => {
+
+    }
+
     toggleDrawer = (side, open) => () => {
         this.setState({
           [side]: open,
         });
-      };
+    };
     
     render() {
         const {classes} = this.props;
