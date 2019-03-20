@@ -6,7 +6,7 @@ import user from './userReducer';
 import requests from './requestsReducers';
 import userRequests from './userRequestsReducer';
 import employees from './employeesReducer';
-// import userInfo from './userInfoReducer';
+import userInfo from './userInfoReducer';
 import vacationRequestDates from './vacationRequestDatesReducer';
 import sickRequestDates from './sickRequestDatesReducer';
 
@@ -24,7 +24,7 @@ const rootReducer = combineReducers({
   requests,
   userRequests,
   employees,
-  // userInfo,
+  userInfo,
   vacationRequestDates,
   sickRequestDates
 });
