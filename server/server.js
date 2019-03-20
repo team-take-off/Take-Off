@@ -6,7 +6,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const sessionMiddleware = require('./modules/session-middleware');
 
-const passport = require('./strategies/user.strategy');
+require('./strategies/user.strategy'); // This should eventually be turned off
+const passport = require('./strategies/google.strategy');
 
 // Route includes
 const userRouter = require('./routes/user.router');
@@ -18,6 +19,10 @@ const adminRequestRouter = require('./routes/adminRequest.router');
 const employeeUserInfoRouter = require('./routes/employeeUserInfo.router');
 const cronAddLeave = require('./routes/cronAddLeave.router');
 
+
+if(process.env.NODE_ENV === 'development') {
+  app.use(cors());
+}
 // Body parser middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,6 +48,8 @@ app.use(express.static('build'));
 
 // App Set //
 const PORT = process.env.PORT || 5000;
+
+
 
 /** Listen * */
 app.listen(PORT, () => {

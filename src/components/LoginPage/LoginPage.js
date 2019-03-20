@@ -40,6 +40,9 @@ class LoginPage extends Component {
             {this.props.errors.loginMessage}
           </h2>
         )}
+        {/* http://localhost:5000 should be an environment variable */}
+        <a href="/api/user/auth/google">Sign in with Gmail</a>
+
         <form onSubmit={this.login}>
           <h1>Login</h1>
           <div>

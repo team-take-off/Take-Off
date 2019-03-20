@@ -3,29 +3,6 @@ const LocalStrategy = require('passport-local').Strategy;
 const encryptLib = require('../modules/encryption');
 const pool = require('../modules/pool');
 
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  pool.query('SELECT * FROM employee WHERE id = $1', [id]).then((result) => {
-    // Handle Errors
-    const user = result && result.rows && result.rows[0];
-
-    if (!user) {
-      // user not found
-      done(null, false, { message: 'Incorrect credentials.' });
-    } else {
-      // user found
-      delete user.login_password; // remove password so it doesn't get sent
-      done(null, user);
-    }
-  }).catch((err) => {
-    console.log('query err ', err);
-    done(err);
-  });
-});
-
 // Does actual work of logging in
 passport.use('local', new LocalStrategy({
   passReqToCallback: true,
