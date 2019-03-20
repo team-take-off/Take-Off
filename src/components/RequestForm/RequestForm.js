@@ -112,12 +112,12 @@ class RequestForm extends Component {
         }
         let fullHalf;
         if (this.props.type.startDate === this.props.type.endDate) {
-            fullHalf = <select disabled onChange={this.setEndHours} value={this.props.reduxStore.vacationRequestDates.endHours} >
+            fullHalf = <select disabled onChange={this.setEndHours} value={this.props.type.endHours} >
                 <option value="8">Full Day</option>
                 <option value="4">Half Day</option>
             </select>
         }else{
-            fullHalf = <select onChange={this.setEndHours} value={this.props.reduxStore.vacationRequestDates.endHours}>
+            fullHalf = <select onChange={this.setEndHours} value={this.props.type.endHours}>
                 <option value="8">Full Day</option>
                 <option value="4">Half Day</option>
             </select>
@@ -125,8 +125,8 @@ class RequestForm extends Component {
        
         return (
             <form onSubmit={this.submit}>
-                <input onChange={this.setStartDate} type="date" min={moment().format('YYYY-MM-DD')} value={this.props.reduxStore.vacationRequestDates.startDate} />
-                <select onChange={this.setStartHours} value={this.props.reduxStore.vacationRequestDates.startHours}>
+                <input onChange={this.setStartDate} type="date" min={moment().subtract(7, 'days').format('YYYY-MM-DD')} value={this.props.type.startDate} />
+                <select onChange={this.setStartHours} value={this.props.type.startHours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>
                 </select>
