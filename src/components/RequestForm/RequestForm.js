@@ -125,7 +125,7 @@ class RequestForm extends Component {
        
         return (
             <form onSubmit={this.submit}>
-                < input onChange={this.setStartDate} type="date" min={moment().format('YYYY-MM-DD')} value={this.props.reduxStore.vacationRequestDates.startDate} />
+                <input onChange={this.setStartDate} type="date" min={moment().format('YYYY-MM-DD')} value={this.props.reduxStore.vacationRequestDates.startDate} />
                 <select onChange={this.setStartHours} value={this.props.reduxStore.vacationRequestDates.startHours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>

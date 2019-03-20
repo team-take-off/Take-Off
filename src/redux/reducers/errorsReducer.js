@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
 
+const DEFAULT_MESSAGE = '';
+
 // loginMessage holds the string that will display
 // on the login screen if there's an error
-const loginMessage = (state = '', action) => {
+const loginMessage = (state = DEFAULT_MESSAGE, action) => {
   switch (action.type) {
     case 'CLEAR_LOGIN_ERROR':
       return '';
@@ -12,6 +14,8 @@ const loginMessage = (state = '', action) => {
       return 'Oops! The username and password didn\'t match. Try again!';
     case 'LOGIN_FAILED_NO_CODE':
       return 'Oops! Something went wrong! Is the server running?';
+    case 'LOGOUT':
+      return DEFAULT_MESSAGE;
     default:
       return state;
   }
@@ -19,7 +23,7 @@ const loginMessage = (state = '', action) => {
 
 // registrationMessage holds the string that will display
 // on the registration screen if there's an error
-const registrationMessage = (state = '', action) => {
+const registrationMessage = (state = DEFAULT_MESSAGE, action) => {
   switch (action.type) {
     case 'CLEAR_REGISTRATION_ERROR':
       return '';
@@ -27,6 +31,8 @@ const registrationMessage = (state = '', action) => {
       return 'Choose a username and password!';
     case 'REGISTRATION_FAILED':
       return 'Oops! That didn\'t work. The username might already be taken. Try again!';
+    case 'LOGOUT':
+      return DEFAULT_MESSAGE;
     default:
       return state;
   }
