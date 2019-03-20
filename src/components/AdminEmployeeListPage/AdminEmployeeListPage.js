@@ -42,7 +42,7 @@ class AdminEmployeeListPage extends Component {
                             </thead>
                             <tbody>
                                 {this.props.reduxStore.employees.map((employee, i) =>
-                                    <EmployeeListRow key={i} employee={employee} history={this.props.history} />
+                                    <EmployeeListRow key={i} employee={employee} />
                                 )}
                             </tbody>
                         </table>
