@@ -31,16 +31,23 @@ class BuildAdminCalendar extends Component {
                 filteredRequest.push(requestBatchArray)
             }
             
-            console.log(filteredRequest);
             for (let requestArray of filteredRequest) {
+
+                let asd = requestArray.sort((a,b) => {
+
+                    a = moment(a.date);
+                    b = moment(b.date);
+                    // return a<b ? -1 : a>b ? 1 : 0;
+                    return a.diff(b);
+                }) 
                 if (requestArray.length === 0) {
                     continue;
                 }
                 
                 const firstRequest = requestArray[0];
                 const lastRequest = requestArray[requestArray.length - 1];
-                console.log('start leave: ', moment.utc(firstRequest.date).toDate());
-                console.log('end leave: ', moment.utc(lastRequest.date).toDate());
+                // console.log('start leave: ', moment.utc(firstRequest.date).toDate());
+                // console.log('end leave: ', moment.utc(lastRequest.date).toDate());
                 
                 this.setState(prevState => ({
                     calendar_events: [
@@ -67,11 +74,13 @@ class BuildAdminCalendar extends Component {
         for (let id in uniqueObject) {
             uniqueArray.push(parseInt(id));
         }
+        console.log(uniqueArray);
+        
         return uniqueArray;
     }
 
     eventStyle = (event, start, end, isSelected) => {
-        console.log(event);
+        // console.log(event);
         
         var backgroundColor = event.title.includes('Vacation') ? '#88BB92' : '#F7934C';
         var style = {
@@ -85,10 +94,11 @@ class BuildAdminCalendar extends Component {
       
     // Show this component on the DOM
     render() {
-        console.log('current state', this.state.calendar_events);
+        // console.log('current state', this.state.calendar_events);
         const localizer = BigCalendar.momentLocalizer(moment);
     return (
       <div>
+          {/* {JSON.stringify(this.props.requests)} */}
             <div style={{ height: '100vh' }}>
                 <BigCalendar
                     localizer={localizer}
