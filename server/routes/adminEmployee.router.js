@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const queryText = `
         INSERT INTO "employee"
-            ("username", "password", "email", "first_name", "last_name", "company_employee_id", "started_date")
+            ("username", "login_password", "email", "first_name", "last_name", "company_employee_id", "started_date")
         VALUES
             ($1, $2, $3, $4, $5, $6, $7);
         `;
