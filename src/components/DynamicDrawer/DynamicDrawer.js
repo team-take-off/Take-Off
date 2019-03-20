@@ -10,6 +10,8 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import MenuIcon from '@material-ui/icons/Menu';
 
+import ModeButton from '../ModeButton/ModeButton';
+
 const styles = {
     list: {
         width: '70vw',
@@ -24,7 +26,9 @@ const buttonStyle = {
     backgroundColor: '#222d31',
     textTransform: 'none',
     fontWeight: 'bold',
+    fontSize: '12px',
     width: '100%',
+    height: '5vh',
 }
 
 const logoutButtonStyle = {
@@ -32,22 +36,23 @@ const logoutButtonStyle = {
     backgroundColor: '#9d2b33',
     textTransform: 'none',
     fontWeight: 'bold',
+    fontSize: '12px',
     width: '100%',
+    height: '5vh',
 }
 
 class DynamicDrawer extends Component {
-    
     constructor(props) {
-        super(props)
-
+        super(props);
         this.state = {
             left: false,
-        }
+        };
     }
 
+    // Render the list of buttons in the drawer
     renderList = () => {
         if (this.props.user.id) {
-            if (this.props.user.role_id === 1) {
+            if (this.props.user.role_id === 1 && this.props.adminMode) {
                 return this.renderAdminList();
             } else {
                 return this.renderEmployeeList();
@@ -55,6 +60,7 @@ class DynamicDrawer extends Component {
         }
     }
 
+    // Render the list of buttons for an administrator with admin-mode on
     renderAdminList = () => {
         return (
             <List>
@@ -75,67 +81,50 @@ class DynamicDrawer extends Component {
                 </ListItem>
                 <Divider />
                 <ListItem button >
+                    <ModeButton style={logoutButtonStyle} />
+                </ListItem>
+                <ListItem button >
                     <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
                 </ListItem>
             </List>
         );
     }
 
+    // Render the list of buttons for an employee (or an administrator with 
+    // admin-mode off).
     renderEmployeeList = () => {
-
+        return (
+            <List>
+                <ListItem button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
+                </ListItem>
+                <ListItem button >
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/employee_requests')}>{this.props.user.id && 'My Requests'}</Button>
+                </ListItem>
+                <Divider />
+                <ListItem button >
+                    {this.props.user.role_id === 1 && <ModeButton style={logoutButtonStyle} />}
+                </ListItem>
+                <ListItem button >
+                    <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
+                </ListItem>
+            </List>
+        );
     }
 
+    // Open or close this drawer
     toggleDrawer = (side, open) => () => {
         this.setState({
           [side]: open,
         });
     };
     
+    // Show this on the DOM
     render() {
         const {classes} = this.props;
         const sideList = (
             <div className={classes.list}>
-                {this.props.user.id && (
-                this.props.user.role_id === 1 ? 
-                    <>
-                        <List>
-                            <ListItem button>
-                                <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>Employee Home</Button>
-                            </ListItem>
-                            <ListItem button >
-                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/home')}>Admin Home</Button>
-                            </ListItem>
-                            <ListItem button>
-                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/calendar')}>Calendar</Button>
-                            </ListItem>
-                            <ListItem button >
-                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/list_employees')}>Manage Employees</Button>
-                            </ListItem>
-                            <ListItem button >
-                                <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/search_employee')}>Search Employees</Button>
-                            </ListItem>
-                            <Divider />
-                            <ListItem button >
-                                <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
-                            </ListItem>
-                        </List>
-                    
-                    </>
-                :
-                    <>
-                        <ListItem button>
-                            <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
-                        </ListItem>
-                        <ListItem button >
-                            <Button style={buttonStyle} onClick={() => this.props.history.push('/employee_requests')}>{this.props.user.id && 'My Requests'}</Button>
-                        </ListItem>
-                        <Divider />
-                        <ListItem button >
-                            <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
-                        </ListItem>
-                    </>
-                    
-                )}
+                {this.renderList()}
             </div>
           );
       
@@ -157,4 +146,8 @@ class DynamicDrawer extends Component {
     }
 }
 
-export default connect()(withStyles(styles)(withRouter(DynamicDrawer)));
+const mapReduxStoreToProps = reduxStore => ({
+    adminMode: reduxStore.adminMode
+});
+
+export default connect(mapReduxStoreToProps)(withStyles(styles)(withRouter(DynamicDrawer)));
