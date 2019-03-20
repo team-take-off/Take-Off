@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
@@ -11,17 +11,17 @@ import './Nav.css';
 // material ui
 import { withStyles } from '@material-ui/core/styles';
 
-const styles  = {
-    mobile: {
-        '@media (min-width:700px)' : {
-            display: 'none'
-        }
-    },
-    desktop: {
-        '@media (max-width:700px)' : {
-            display: 'none'
-        }
-    },
+const styles = {
+  mobile: {
+    '@media (min-width:700px)': {
+      display: 'none'
+    }
+  },
+  desktop: {
+    '@media (max-width:700px)': {
+      display: 'none'
+    }
+  },
 }
 
 class Nav extends Component {
