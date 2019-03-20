@@ -31,7 +31,7 @@ class BuildEmployeeCalendar extends Component {
                 filteredRequest.push(requestBatchArray)
             }
 
-            console.log(filteredRequest);
+            // console.log(filteredRequest);
             for (let requestArray of filteredRequest) {
                 if (requestArray.length === 0) {
                     continue;
@@ -39,8 +39,8 @@ class BuildEmployeeCalendar extends Component {
 
                 const firstRequest = requestArray[0];
                 const lastRequest = requestArray[requestArray.length - 1];
-                console.log('start leave: ', moment.utc(firstRequest.date).toDate());
-                console.log('end leave: ', moment.utc(lastRequest.date).toDate());
+                // console.log('start leave: ', moment.utc(firstRequest.date).toDate());
+                // console.log('end leave: ', moment.utc(lastRequest.date).toDate());
 
                 this.setState(prevState => ({
                     calendar_events: [

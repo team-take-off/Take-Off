@@ -33,7 +33,7 @@ class BuildAdminCalendar extends Component {
             
             for (let requestArray of filteredRequest) {
 
-                let asd = requestArray.sort((a,b) => {
+                requestArray.sort((a,b) => {
 
                     a = moment(a.date);
                     b = moment(b.date);
