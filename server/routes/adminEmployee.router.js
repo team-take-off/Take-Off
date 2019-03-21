@@ -13,7 +13,6 @@ router.get('/', (req, res) => {
             "email",
             "first_name",
             "last_name",
-            "company_employee_id",
             "sick_hours",
             "vacation_hours",
             "role_id",
@@ -39,17 +38,16 @@ router.post('/', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const queryText = `
         INSERT INTO "employee"
-            ("username", "password", "email", "first_name", "last_name", "company_employee_id", "started_date")
+            ("username", "login_password", "email", "first_name", "last_name", "started_date")
         VALUES
-            ($1, $2, $3, $4, $5, $6, $7);
+            ($1, $2, $3, $4, $5, $6);
         `;
         const insertArray = [
-            req.body.username, 
+            '', 
             '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 
-            req.body.username, 
+            req.body.email, 
             req.body.first_name, 
-            req.body.last_name, 
-            '00000', 
+            req.body.last_name,
             req.body.start_date
         ];
         pool.query(queryText, insertArray).catch((error) => {

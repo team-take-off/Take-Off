@@ -50,12 +50,11 @@ VALUES
 CREATE TABLE employee
 (
 	id SERIAL PRIMARY KEY,
-	username VARCHAR (80) UNIQUE NOT NULL,
+	username VARCHAR (80) DEFAULT NULL,
 	login_password VARCHAR (1000) NOT NULL,
-	email VARCHAR(75) UNIQUE NOT NULL,
+	email VARCHAR(100) UNIQUE NOT NULL,
 	first_name VARCHAR(25) NOT NULL,
 	last_name VARCHAR(25) NOT NULL,
-	company_employee_id VARCHAR(10),
 	sick_hours INTEGER NOT NULL DEFAULT 0,
 	vacation_hours INTEGER NOT NULL DEFAULT 0,
 	role_id INTEGER REFERENCES employee_role(id) DEFAULT 2,
