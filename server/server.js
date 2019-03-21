@@ -18,6 +18,7 @@ const adminEmployeeRouter = require('./routes/adminEmployee.router');
 const adminRequestRouter = require('./routes/adminRequest.router');
 const employeeUserInfoRouter = require('./routes/employeeUserInfo.router');
 const cronAddLeave = require('./routes/cronAddLeave.router');
+const testCron = require('./routes/testCron.router');
 
 
 if(process.env.NODE_ENV === 'development') {
@@ -42,6 +43,7 @@ app.use('/api/admin/employees', adminEmployeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
 app.use('/api/employee/userinfo', employeeUserInfoRouter);
 app.use('/api/scheduled-task', cronAddLeave);
+app.use('/api/test-cron', testCron);
 
 // Serve static files
 app.use(express.static('build'));
