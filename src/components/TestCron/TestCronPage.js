@@ -7,12 +7,12 @@ class TestCronPage extends Component {
     constructor(props){
         super(props)
         this.state={
-            Years:'',
-            StartDate: '',
-            EndDate: '',
+            years:'',
+            startDate: '',
+            endDate: '',
             vacationStartDays: '',
-            vacationEndDays: '',
             sickStartDays: '',
+            vacationEndDays: '',
             sickEndDays: ''
         }
     }
@@ -45,18 +45,35 @@ class TestCronPage extends Component {
     setStartDate = (event) => {
         this.setState({
             ...this.state,
-            StartDate: event.target.value
+            startDate: event.target.value
         });
     }
 
     setEndDate = (event) => {
         this.setState({
             ...this.state,
-            EndDate: event.target.value
+            endDate: event.target.value
         });
     }
 
-    
+    submitData = (event) =>{
+        let request = {
+            years: this.state.years,
+            startDate: this.state.startDate,
+            endDate: this.state.endDate,
+            vacationStartDays: this.state.vacationStartDays,
+            sickStartDays: this.state.sickStartDays
+        }
+        axios({
+            method: 'POST',
+            url: '/api/test-cron',
+            data: request
+        }).then((response)=>{
+            console.log('repsonse post TestCronPage', response);          
+        }).catch((error)=>{
+            console.log('error in axios post TestCronPage', error);   
+        })
+    }
 
     // Show this component on the DOM
     render() {
@@ -64,13 +81,15 @@ class TestCronPage extends Component {
             <div className="page-container">
                 Start Vacation Days <input onChange={this.setVacationStartDays} type="number" />
                 Start Sick Days<input onChange={this.setSickStartDays} type="number" />
-                Years At LRC <input onChange={this.setYears} type="number"/>
-                <br></br>
-                Start Date<input onChange={this.setStartDate} type="date"/>
-                End Date<input onChange={this.setEndDate} type="date" />
-                <br></br>
-                End Vacation Days<input type="text" readOnly/>
+                End Vacation Days<input type="text" readOnly />
                 End Sick Days<input type="text" value="" readOnly />
+                <br></br>
+                Start Date<input onChange={this.setStartDate} type="date" />
+                End Date<input onChange={this.setEndDate} type="date" />
+                Years At LRC <input onChange={this.setYears} type="number" />
+                <button onClick={this.submitData}>Submit</button>
+                <br></br>
+                
                 <br></br>
                 {JSON.stringify(this.state)}
             </div>
