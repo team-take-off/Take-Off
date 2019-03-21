@@ -78,13 +78,7 @@ class RequestCard extends Component {
                         </button>
                     </div>
                 );
-            } else {
-                return (
-                    <button onClick={this.cancel}>
-                        Cancel Request
-                    </button>
-                );
-            } 
+            }
         }
     }
 
