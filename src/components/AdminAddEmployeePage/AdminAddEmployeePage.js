@@ -37,10 +37,22 @@ class AdminAddEmployeePage extends Component {
             <div className="page-container">
                 <h2>Add Employee</h2>
                 <form onSubmit={this.submit}>
-                    <input onChange={this.handleChange} name="first_name" placeholder="First Name" type="text" />
-                    <input onChange={this.handleChange} name="last_name" placeholder="Last Name" type="text" />
-                    <input onChange={this.handleChange} name="username" placeholder="username" type="text" />
+                    <label htmlFor="first_name">First Name:</label>
+                    <br />
+                    <input onChange={this.handleChange} name="first_name" type="text" />
+                    <br />
+                    <label htmlFor="last_name">Last Name:</label>
+                    <br />
+                    <input onChange={this.handleChange} name="last_name" type="text" />
+                    <br />
+                    <label htmlFor="last_name">Email:</label>
+                    <br />
+                    <input onChange={this.handleChange} name="email" type="text" />
+                    <br />
+                    <label htmlFor="last_name">Start Date:</label>
+                    <br />
                     <input onChange={this.handleChange} name="start_date" type="date" />
+                    <br />
                     <input type="submit" value="Submit" />
                 </form>
             </div>
