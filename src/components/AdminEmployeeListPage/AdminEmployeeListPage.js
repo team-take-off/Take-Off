@@ -31,7 +31,7 @@ class AdminEmployeeListPage extends Component {
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Username</th>
+                                    <th>Email</th>
                                     <th>Start Date</th>
                                     <th>Vacation</th>
                                     <th>Sick & Safe</th>
@@ -41,7 +41,7 @@ class AdminEmployeeListPage extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.props.reduxStore.employees.map((employee, i) =>
+                                {this.props.employees.map((employee, i) =>
                                     <EmployeeListRow key={i} employee={employee} />
                                 )}
                             </tbody>
@@ -54,7 +54,7 @@ class AdminEmployeeListPage extends Component {
 }
 
 const mapReduxStoreToProps = reduxStore => ({
-    reduxStore
+    employees: reduxStore.employees
 });
 
 export default connect(mapReduxStoreToProps)(AdminEmployeeListPage);
