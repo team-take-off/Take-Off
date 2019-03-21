@@ -15,13 +15,12 @@ import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
 
 import AdminAddEmployeePage from '../AdminAddEmployeePage/AdminAddEmployeePage';
 import AdminEditEmployeePage from '../AdminEditEmployeePage/AdminEditEmployeePage';
-import AdminCalendarPage from '../AdminCalendarPage/AdminCalendarPage';
 import AdminEmployeeListPage from '../AdminEmployeeListPage/AdminEmployeeListPage';
 import AdminSearchEmployeePage from '../AdminSearchEmployeePage/AdminSearchEmployeePage';
 import AdminHomePage from '../AdminHomePage/AdminHomePage';
+import CalendarPage from '../CalendarPage/CalendarPage';
 import EmployeeHomePage from '../EmployeeHomePage/EmployeeHomePage';
 import EmployeeRequestsPage from '../EmployeeRequestsPage/EmployeeRequestsPage';
-import EmployeeCalendarPage from '../EmployeeCalendarPage/EmployeeCalendarPage';
 import SickRequestPage from '../SickRequestPage/SickRequestPage';
 import VacationRequestPage from '../VacationRequestPage/VacationRequestPage';
 
@@ -56,9 +55,6 @@ class App extends Component {
             <ProtectedRoute exact path="/employee_requests"
               component={EmployeeRequestsPage}
             />
-            <ProtectedRoute exact path="/employee_calendar"
-              component={EmployeeCalendarPage}
-            />
             <ProtectedRoute exact path="/request_vacation"
               component={VacationRequestPage}
             />
@@ -68,8 +64,8 @@ class App extends Component {
             <ProtectedRoute exact path="/admin/home" 
               component={AdminHomePage}
             />
-            <ProtectedRoute exact path="/admin/calendar"
-              component={AdminCalendarPage}
+            <ProtectedRoute exact path="/calendar"
+              component={CalendarPage}
             />
             <ProtectedRoute exact path="/admin/search_employee"
               component={AdminSearchEmployeePage}

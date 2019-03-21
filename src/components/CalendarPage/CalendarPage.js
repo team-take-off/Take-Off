@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import BuildAdminCalendar from './BuildAdminCalendar';
+import BuildCalendar from './BuildCalendar';
 
 class AdminCalendarPage extends Component {
     componentDidMount() { 
@@ -11,7 +11,7 @@ class AdminCalendarPage extends Component {
     render() {
     return (
       <div>
-          <BuildAdminCalendar requests={this.props.requests} />
+          <BuildCalendar requests={this.props.requests} />
         </div>
         );
     }
