@@ -25,8 +25,15 @@ class BuildAdminCalendar extends Component {
             let requestBatchArray;
             for (let id of batchIDs) {
                 // Sort requests into batches based on their 'batch_of_requests_id'
+                // Also ignores any requests that are not 'pending' or 'approved'
                 requestBatchArray = requests.filter(
-                    request => request.batch_of_requests_id === id
+                    (request) => {
+                        if (request.batch_of_requests_id === id && (request.status === 'pending' || request.status === 'approved')) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
                 );
                 filteredRequest.push(requestBatchArray)
             }
