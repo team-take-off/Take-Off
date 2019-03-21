@@ -31,7 +31,7 @@ class AdminEmployeeListPage extends Component {
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Username</th>
+                                    <th>Email</th>
                                     <th>Start Date</th>
                                     <th>Vacation</th>
                                     <th>Sick & Safe</th>

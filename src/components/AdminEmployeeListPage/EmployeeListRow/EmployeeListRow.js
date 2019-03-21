@@ -120,7 +120,7 @@ class EmployeeListRow extends Component {
             
             <tr>
                 <td>{employee.first_name} {employee.last_name}</td>
-                <td>{employee.username}</td>
+                <td>{employee.email}</td>
                 <td>{moment(employee.start_date).format('MMM DD, YYYY')}</td>
                 <td>{this.displayHoursAsDays(employee.vacation_hours)} <button onClick={this.addVacation}>+</button></td>
                 <td>
