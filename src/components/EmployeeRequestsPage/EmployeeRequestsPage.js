@@ -39,9 +39,9 @@ class EmployeeRequestsPage extends Component {
     render() {
             let userRequests = [];
             if (this.state.year === '') {
-                for (let request of this.props.reduxStore.userRequests) {
-                    userRequests.push(request);
-                }
+                this.props.reduxStore.userRequests.map(request=>{
+                   return userRequests.push(request);
+                })
             }
             else if (this.state.year !== '' && this.state.year !== 'all') {
 
