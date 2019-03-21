@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import logo from './google-logo.png';
 
 const styleContainer = {
   display: 'flex',
@@ -15,7 +16,7 @@ class LoginPage extends Component {
         {/* http://localhost:5000 should be an environment variable */}
         {/* <a href="/api/user/auth/google">Sign in with Gmail</a> */}
         <div style={styleContainer}>
-          <button className="login-button" onClick={() => window.location='/api/user/auth/google'}>Login using LRC account</button>
+          <button className="login-button" onClick={() => window.location = '/api/user/auth/google'}><img src={logo} alt="" height="40" /> Login using LRC account</button>
         </div>
       </div>
     );
