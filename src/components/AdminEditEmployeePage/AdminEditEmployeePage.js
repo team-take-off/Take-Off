@@ -5,16 +5,15 @@ import moment from 'moment';
 class AdminEditEmployeePage extends Component {
     constructor(props) {
         super(props);
+        // legalrightscenter.org
         this.state = {
+            email: '',
             first_name: '',
             last_name: '',
-            username: '',
-            email: '',
             start_date: '',
             vacation_hours: '',
             sick_hours: ''
         };
-        this.loadEmployeeState();
     }
 
     // As soon as this component mounts request all employee data from the 
@@ -44,10 +43,9 @@ class AdminEditEmployeePage extends Component {
         if (employee) {
             this.setState({
                 id: id,
+                email: employee.email,
                 first_name: employee.first_name,
                 last_name: employee.last_name,
-                username: employee.username,
-                email: employee.email,
                 start_date: moment(employee.start_date).format('YYYY-MM-DD'),
                 vacation_hours: employee.vacation_hours,
                 sick_hours: employee.sick_hours
@@ -81,24 +79,27 @@ class AdminEditEmployeePage extends Component {
                 <h2>Edit Employee</h2>
                 <form onSubmit={this.submit}>
                     <label htmlFor="first_name">First Name:</label>
+                    <br />
                     <input onChange={this.handleChange} name="first_name" value={this.state.first_name} type="text" />
                     <br />
                     <label htmlFor="last_name">Last Name:</label>
+                    <br />
                     <input onChange={this.handleChange} name="last_name" value={this.state.last_name} type="text" />
                     <br />
-                    <label htmlFor="username">Username:</label>
-                    <input onChange={this.handleChange} name="username" value={this.state.username} type="text" />
-                    <br />
                     <label htmlFor="email">Email:</label>
+                    <br />
                     <input onChange={this.handleChange} name="email" value={this.state.email} type="text" />
                     <br />
                     <label htmlFor="start_date">Start Date:</label>
+                    <br />
                     <input onChange={this.handleChange} name="start_date" value={this.state.start_date} type="date" />
                     <br />
                     <label htmlFor="vacation_hours">Vacation (hours):</label>
+                    <br />
                     <input onChange={this.handleChange} name="vacation_hours" value={this.state.vacation_hours} type="number" />
                     <br />
                     <label htmlFor="sick_hours">Sick & Safe (hours):</label>
+                    <br />
                     <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
                     <br />
                     <input type="submit" />
