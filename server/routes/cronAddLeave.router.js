@@ -22,21 +22,25 @@ let currentTime;
 // - 3rd-10th year employees earn a total of 20 PTO days.
 // - 11th-13th year employees earn a total of 22 PTO days.
 // - 14th-∞ year employees earn a total of 25 PTO days.
+function runAtLoad() {
 
 const queryText = `SELECT * FROM "employee"`;
 pool.query(queryText).then(response => {
-    // console.log('all employees:', response.rows);
     response.rows.map(person => {
         // will grab all of employees vacation hours
         console.log('employee vacation', person.vacation_hours);
-        let allowedCarryOverHours = 50
-        while(person.vacation_hours > allowedCarryOverHours) {
-            pool.query(`UPDATE "employee" SET "vacation_hours" = "vacation_hours" -1`)
-            .then(response => console.log(response.rows)
-            )
+        let allowedCarryOverHours = 5
+        if (person.vacation_hours > allowedCarryOverHours ) {
+            while (person.vacation_hours > allowedCarryOverHours ) {
+            person.vacation_hours -= 1 
+            }
+            
         }
+        console.log('new year vacation;', person.vacation_hours); 
+        pool.query(`UPDATE "employee" SET "vacation_hours" = ${person.vacation_hours} WHERE "id" = ${person.id}`)
     });
 });
+}
 
 // testCronTask = () => {
 //     console.log('hghg');
@@ -53,21 +57,21 @@ pool.query(queryText).then(response => {
 //     })
 // }
 
-testCronTask = () => {
-    console.log('hghg');
+// testCronTask = () => {
+//     console.log('hghg');
     
-    task = cron.schedule("*/30 * * * *", () => {
-        // if (task) {
-        //     task.stop();
-        // }
-        // add queries below
-        console.log('Runs every 30 minutes');
-        const queryText = `UPDATE "employee" 
-                        SET "vacation_hours" = "vacation_hours" + 8;`
-        pool.query(queryText).then(response => console.log(response.rows));
-    })
-}
+//     task = cron.schedule("*/30 * * * *", () => {
+//         // if (task) {
+//         //     task.stop();
+//         // }
+//         // add queries below
+//         console.log('Runs every 30 minutes');
+//         const queryText = `UPDATE "employee" 
+//                         SET "vacation_hours" = "vacation_hours" + 8;`
+//         pool.query(queryText).then(response => console.log(response.rows));
+//     })
+// } 
 
-
-testCronTask();
+runAtLoad();
+// testCronTask();
 module.exports = router;
