@@ -121,19 +121,19 @@ class EmployeeListRow extends Component {
     render() {
         const employee = this.props.employee;
         return (
-            <tr className="employee-row">
+            <tr className={employee.is_active ? "employee-row" : "employee-row deactivated-row"}>
                 <td>{employee.first_name} {employee.last_name}</td>
                 <td>{employee.email}</td>
                 <td>{moment(employee.start_date).format('MMM DD, YYYY')}</td>
                 <td>
                     {this.displayHoursAsDays(employee.vacation_hours)}
-                    <button onClick={this.addVacation}>+</button>
-                    <button onClick={this.subtractVacation}>-</button>
+                    <button onClick={this.addVacation} className="add-days">+</button>
+                    <button onClick={this.subtractVacation} className="sub-days">-</button>
                 </td>
                 <td>
                     {this.displayHoursAsDays(employee.sick_hours)}
-                    <button onClick={this.addSick}>+</button>
-                    <button onClick={this.subtractSick}>-</button>
+                    <button onClick={this.addSick} className="add-days">+</button>
+                    <button onClick={this.subtractSick} className="sub-days">-</button>
                 </td>
                 <td>
                     <IconButton onClick={this.edit} aria-label="Edit">
