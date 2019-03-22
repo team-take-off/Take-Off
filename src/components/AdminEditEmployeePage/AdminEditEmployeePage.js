@@ -61,6 +61,20 @@ class AdminEditEmployeePage extends Component {
         });
     }
 
+    handleChangeVacationDays = (event) => {
+        this.setState({
+            ...this.state,
+            vacation_hours: event.target.value * 8.0
+        });
+    }
+
+    handleChangeSickDays = (event) => {
+        this.setState({
+            ...this.state,
+            sick_hours: event.target.value * 8.0
+        });
+    }
+
     // Update the employee's data from state
     submit = (event) => {
         event.preventDefault();
@@ -94,12 +108,16 @@ class AdminEditEmployeePage extends Component {
                     <br />
                     <input onChange={this.handleChange} name="start_date" value={this.state.start_date} type="date" />
                     <br />
-                    <label htmlFor="vacation_hours">Vacation (hours):</label>
+                    <label htmlFor="vacation_days">Vacation (days):</label>
+                    <label htmlFor="vacation_hours">------------------ Vacation (hours):</label>
                     <br />
+                    <input onChange={this.handleChangeVacationDays} name="vacation_days" value={this.state.vacation_hours / 8.0} type="number" />
                     <input onChange={this.handleChange} name="vacation_hours" value={this.state.vacation_hours} type="number" />
                     <br />
-                    <label htmlFor="sick_hours">Sick & Safe (hours):</label>
+                    <label htmlFor="sick_days">Sick & Safe (days):</label>
+                    <label htmlFor="sick_hours">--------------- Sick & Safe (hours):</label>
                     <br />
+                    <input onChange={this.handleChangeSickDays} name="sick_days" value={this.state.sick_hours / 8.0} type="number" />
                     <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
                     <br />
                     <input type="submit" />
