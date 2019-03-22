@@ -10,6 +10,8 @@ import moment from 'moment';
 
 import './EmployeeListRow.css';
 
+const HOURS_PER_DAY = 8;
+
 class EmployeeListRow extends Component {
     constructor(props){
         super(props);
@@ -21,21 +23,32 @@ class EmployeeListRow extends Component {
     // Convert hours to nicely formatted representation of days
     // Note: Based on an 8 hour workday
     displayHoursAsDays = (hours) => {
-        return (hours / 8.0).toFixed(1);
+        return (hours / HOURS_PER_DAY).toFixed(1);
     }
 
     // Add one day of vacation to this rows's employee
     addVacation = () => {
-        console.log('In EmployeeListRow pressed addVacation()');
         const emp_id = this.props.employee.id;
-        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'vacation'}});
+        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'vacation', hours: HOURS_PER_DAY}});
+    }
+
+    // Remove one day of vacation from this rows's employee
+    subtractVacation = () => {
+        const emp_id = this.props.employee.id;
+        this.props.dispatch({type: 'SUB_LEAVE_DAY', payload: { id: emp_id, leaveType: 'vacation', hours: -HOURS_PER_DAY}});
     }
 
     // Add one day of sick and safe leave to this rows's employee
     addSick = () => {
         console.log('In EmployeeListRow pressed addSick()');
         const emp_id = this.props.employee.id;
-        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'sick'}});
+        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'sick', hours: HOURS_PER_DAY}});
+    }
+
+    // Remove one day of sick leave from this rows's employee
+    subtractSick = () => {
+        const emp_id = this.props.employee.id;
+        this.props.dispatch({type: 'SUB_LEAVE_DAY', payload: { id: emp_id, leaveType: 'sick', hours: -HOURS_PER_DAY}});
     }
 
     // Bring up a page for editing this row's employee data
@@ -112,10 +125,15 @@ class EmployeeListRow extends Component {
                 <td>{employee.first_name} {employee.last_name}</td>
                 <td>{employee.email}</td>
                 <td>{moment(employee.start_date).format('MMM DD, YYYY')}</td>
-                <td>{this.displayHoursAsDays(employee.vacation_hours)} <button onClick={this.addVacation}>+</button></td>
+                <td>
+                    {this.displayHoursAsDays(employee.vacation_hours)}
+                    <button onClick={this.addVacation}>+</button>
+                    <button onClick={this.subtractVacation}>-</button>
+                </td>
                 <td>
                     {this.displayHoursAsDays(employee.sick_hours)}
                     <button onClick={this.addSick}>+</button>
+                    <button onClick={this.subtractSick}>-</button>
                 </td>
                 <td>
                     <IconButton onClick={this.edit} aria-label="Edit">
