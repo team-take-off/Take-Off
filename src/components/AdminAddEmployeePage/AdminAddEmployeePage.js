@@ -8,7 +8,7 @@ class AdminAddEmployeePage extends Component {
         this.state = {
             first_name: '',
             last_name: '',
-            username: '',
+            email: '',
             start_date: ''
         };
     }
@@ -21,7 +21,6 @@ class AdminAddEmployeePage extends Component {
     }
 
     submit = (event) => {
-        console.log(this.state);
         event.preventDefault();
         const action = {
             type: 'ADD_EMPLOYEE',

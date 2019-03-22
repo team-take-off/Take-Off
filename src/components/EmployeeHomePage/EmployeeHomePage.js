@@ -22,7 +22,7 @@ sickRequest = (event) => {
     // Show this component on the DOM
     render() {
         return (
-            <div className="page-container">
+            <center><div className="page-container">
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
                     <div>
                         <h1>Welcome, {this.props.reduxStore.userInfo[0].first_name}</h1>
@@ -32,7 +32,7 @@ sickRequest = (event) => {
                 <button onClick={this.sickRequest}>Request Sick and Safe</button>
                     </div>
                 )}
-            </div>
+            </div></center>
         );
     }
 }

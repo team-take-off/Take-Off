@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 
+const HOURS_PER_DAY = 8.0;
+
 class AdminEditEmployeePage extends Component {
     constructor(props) {
         super(props);
-        // legalrightscenter.org
         this.state = {
             email: '',
             first_name: '',
@@ -25,7 +26,7 @@ class AdminEditEmployeePage extends Component {
     // If any of the input data changes reload the selected employee data that 
     // is loaded into the form.
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.reduxStore.employees !== this.props.reduxStore.employees || prevProps.match.params.id !== this.props.match.params.id) {
+        if (prevProps.employees !== this.props.employees || prevProps.match.params.id !== this.props.match.params.id) {
             this.loadEmployeeState();
         }
     }
@@ -34,7 +35,7 @@ class AdminEditEmployeePage extends Component {
     loadEmployeeState = () => {
         const id = parseInt(this.props.match.params.id);
         let employee = null;
-        for (let emp of this.props.reduxStore.employees) {
+        for (let emp of this.props.employees) {
             if (emp.id === id) {
                 employee = emp;
                 break;
@@ -61,6 +62,24 @@ class AdminEditEmployeePage extends Component {
         });
     }
 
+    // Special handler function for setting vacation hours based on changes to
+    // vacation days
+    handleChangeVacationDays = (event) => {
+        this.setState({
+            ...this.state,
+            vacation_hours: event.target.value * HOURS_PER_DAY
+        });
+    }
+
+    // Special handler function for setting sick hours based on changes to
+    // sick days
+    handleChangeSickDays = (event) => {
+        this.setState({
+            ...this.state,
+            sick_hours: event.target.value * HOURS_PER_DAY
+        });
+    }
+
     // Update the employee's data from state
     submit = (event) => {
         event.preventDefault();
@@ -69,6 +88,11 @@ class AdminEditEmployeePage extends Component {
             payload: this.state
         };
         this.props.dispatch(action);
+        this.props.history.push('/admin/list_employees');
+    }
+
+    // Cancel using this form and navigate back to the employee list
+    cancel = () => {
         this.props.history.push('/admin/list_employees');
     }
 
@@ -94,15 +118,24 @@ class AdminEditEmployeePage extends Component {
                     <br />
                     <input onChange={this.handleChange} name="start_date" value={this.state.start_date} type="date" />
                     <br />
+                    <label htmlFor="vacation_days">Vacation (days):</label>
+                    <br />
+                    <input onChange={this.handleChangeVacationDays} name="vacation_days" value={this.state.vacation_hours / 8.0} type="number" />
+                    <br />
                     <label htmlFor="vacation_hours">Vacation (hours):</label>
                     <br />
                     <input onChange={this.handleChange} name="vacation_hours" value={this.state.vacation_hours} type="number" />
+                    <br />
+                    <label htmlFor="sick_days">Sick & Safe (days):</label>
+                    <br />
+                    <input onChange={this.handleChangeSickDays} name="sick_days" value={this.state.sick_hours / 8.0} type="number" />
                     <br />
                     <label htmlFor="sick_hours">Sick & Safe (hours):</label>
                     <br />
                     <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
                     <br />
                     <input type="submit" />
+                    <input onClick={this.cancel} type="button" value="Cancel" />
                 </form>
             </div>
         );
@@ -110,7 +143,7 @@ class AdminEditEmployeePage extends Component {
 }
 
 const mapStateToProps = reduxStore => ({
-    reduxStore
+    employees: reduxStore.employees
 });
 
 export default connect(mapStateToProps)(AdminEditEmployeePage);

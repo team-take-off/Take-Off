@@ -1,0 +1,28 @@
+tr.employee-row td {
+    padding: 0.8rem 10px 0.8rem 5px;
+}
+
+.deactivated-row {
+    background-color: #f0f0f0;
+    color: rgb(153, 152, 152);
+}
+
+.employee-row button  {
+  border-radius: 2px;
+  padding: 0.2rem 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+button.add-days {
+    background-color: rgb(117, 184, 117);
+}
+
+button.sub-days {
+    background-color: rgb(110, 76, 76);
+}
