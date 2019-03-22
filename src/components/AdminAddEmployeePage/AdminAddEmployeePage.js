@@ -8,7 +8,7 @@ class AdminAddEmployeePage extends Component {
         this.state = {
             first_name: '',
             last_name: '',
-            username: '',
+            email: '',
             start_date: ''
         };
     }

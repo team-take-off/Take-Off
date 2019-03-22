@@ -9,7 +9,6 @@ router.get('/', (req, res) => {
         const queryText = `
         SELECT 
             "id",
-            "username",
             "email",
             "first_name",
             "last_name",
@@ -32,19 +31,17 @@ router.get('/', (req, res) => {
     }
 });
 
-// Route POST /api/admin/employees
+// Route POST /api/admin/employee
 // Allow the administrator to add a new employee to the database
 router.post('/', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const queryText = `
         INSERT INTO "employee"
-            ("username", "login_password", "email", "first_name", "last_name", "started_date")
+            ("email", "first_name", "last_name", "started_date")
         VALUES
-            ($1, $2, $3, $4, $5, $6);
+            ($1, $2, $3, $4);
         `;
         const insertArray = [
-            '', 
-            '$2b$10$oy0t5N4snauzLT7NOWYknuD9AT1Xv2yGfACuBrhjufylt3nOBjERe', 
             req.body.email, 
             req.body.first_name, 
             req.body.last_name,
@@ -69,14 +66,13 @@ router.put('/', (req, res) => {
         SET 
             "first_name" = $1,
             "last_name" = $2,
-            "username" = $3,
-            "email" = $4,
-            "started_date" = $5,
-            "vacation_hours" = $6,
-            "sick_hours" = $7
+            "email" = $3,
+            "started_date" = $4,
+            "vacation_hours" = $5,
+            "sick_hours" = $6
         WHERE 
-            "id" = $8;`;
-        queryArray = [employee.first_name, employee.last_name, employee.username, employee.email, employee.start_date, employee.vacation_hours, employee.sick_hours, employee.id];
+            "id" = $7;`;
+        queryArray = [employee.first_name, employee.last_name, employee.email, employee.start_date, employee.vacation_hours, employee.sick_hours, employee.id];
         pool.query(queryText, queryArray).then((response) => {
             res.sendStatus(200);
         }).catch((error) => {
