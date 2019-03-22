@@ -8,6 +8,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import swal from 'sweetalert';
 import moment from 'moment';
 
+import './EmployeeListRow.css';
+
 class EmployeeListRow extends Component {
     constructor(props){
         super(props);
@@ -105,20 +107,8 @@ class EmployeeListRow extends Component {
     // Show this component on the DOM
     render() {
         const employee = this.props.employee;
-
-        // let content = 'Deactivate';
-        // if(this.state.clicked) {
-        //     console.log('In EmployeeListRow pressed deactivate()');
-        //     const action = {type: 'DEACTIVATE_EMPLOYEE', payload: this.props.employee.id}
-        //     this.props.dispatch(action);
-        //     content = <button>Activate</button>
-        //     } else {
-        //         content = <button>Deactivate</button>
-        //     }
         return (
-            
-            
-            <tr>
+            <tr className="employee-row">
                 <td>{employee.first_name} {employee.last_name}</td>
                 <td>{employee.email}</td>
                 <td>{moment(employee.start_date).format('MMM DD, YYYY')}</td>

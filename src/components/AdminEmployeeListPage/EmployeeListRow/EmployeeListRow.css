@@ -1,0 +1,15 @@
+tr.employee-row td {
+    padding: 0.8rem 0;
+}
+
+.employee-row button  {
+  
+  border-radius: 5px;
+  padding: 0.2rem 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
