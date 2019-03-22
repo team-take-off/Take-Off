@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
+import ArrowDownIcon from '@material-ui/icons/ArrowDropDown';
 
+import './RequestExpander.css';
 import RequestCard from '../RequestCard/RequestCard';
 
 class RequestExpander extends Component {
@@ -10,13 +13,14 @@ class RequestExpander extends Component {
         }
     }
 
-    // Render a button for toggling between open and closed
-    renderToggleButton = () => {
-        if (this.state.open) {
-            return <button onClick={this.toggleOpen}>[ - ]</button>;
-        } else {
-            return <button onClick={this.toggleOpen}>[ + ]</button>;
-        }
+    // Render a title with a button for toggling between open and closed
+    renderTitle = () => {
+        return (
+            <div onClick={this.toggleOpen} className="request-expander-title">
+                <h3>{this.props.title}</h3>
+                <button>{this.state.open ? <ArrowDownIcon /> : <ArrowLeftIcon />}</button>
+            </div>
+        );
     }
 
     // Toggle this expanding div between open and closed
@@ -52,8 +56,7 @@ class RequestExpander extends Component {
     render() {
         return (
             <div>
-                <h3>{this.props.title}</h3>
-                {this.renderToggleButton()}
+                {this.renderTitle()}
                 {this.renderCards()}
             </div>
         );
