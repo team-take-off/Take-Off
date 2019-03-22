@@ -86,6 +86,10 @@ class AdminEditEmployeePage extends Component {
         this.props.history.push('/admin/list_employees');
     }
 
+    cancel = () => {
+        this.props.history.push('/admin/list_employees');
+    }
+
     // Show this component on the DOM
     render() {
         return (
@@ -125,6 +129,7 @@ class AdminEditEmployeePage extends Component {
                     <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
                     <br />
                     <input type="submit" />
+                    <input onClick={this.cancel} type="button" value="Cancel" />
                 </form>
             </div>
         );
