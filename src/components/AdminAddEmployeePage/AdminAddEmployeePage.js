@@ -21,7 +21,6 @@ class AdminAddEmployeePage extends Component {
     }
 
     submit = (event) => {
-        console.log(this.state);
         event.preventDefault();
         const action = {
             type: 'ADD_EMPLOYEE',
