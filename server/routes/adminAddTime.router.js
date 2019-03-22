@@ -10,9 +10,9 @@ router.post('/:id', (req, res) => {
                 queryText = `
                 INSERT INTO "accrued_time" 
                     ("sick_hours", "vacation_hours", "employee_id")
-                VALUES (0, 8, $1)`
+                VALUES (0, $1, $2)`
                 
-                pool.query(queryText, [req.params.id])
+                pool.query(queryText, [req.body.hours, req.params.id])
                 .then(() => res.sendStatus(200))
                 .catch(error => {
                     console.log('error in POST', error);
@@ -23,9 +23,9 @@ router.post('/:id', (req, res) => {
                 queryText = `
                     INSERT INTO "accrued_time" 
                         ("sick_hours", "vacation_hours", "employee_id")
-                    VALUES (8, 0, $1)`
+                    VALUES ($1, 0, $2)`
                     
-                pool.query(queryText, [req.params.id])
+                pool.query(queryText, [req.body.hours, req.params.id])
                 .then(() => res.sendStatus(200))
                 .catch(error => {
                     console.log('error in POST', error);
@@ -41,20 +41,20 @@ router.post('/:id', (req, res) => {
 }); // END OF POST
 
 router.put('/:id', (req,res) => {
-    if (req.isAuthenticated()) {
+    if (req.isAuthenticated() && req.user.role_id === 1) {
         let queryText;
         switch (true) {
             case (req.body.leaveType === 'vacation'):
-                queryText = `UPDATE "employee" SET "vacation_hours" = "vacation_hours" + 8 WHERE "id" = $1;`;
-                pool.query(queryText, [req.params.id]).then(() => res.sendStatus(200))
+                queryText = `UPDATE "employee" SET "vacation_hours" = "vacation_hours" + $1 WHERE "id" = $2;`;
+                pool.query(queryText, [req.body.hours, req.params.id]).then(() => res.sendStatus(200))
                 .catch(error => {
                     console.log('error in making vacation UPDATE', error);
                     res.sendStatus(500);
                 });
                 break;
             case (req.body.leaveType === 'sick'):
-                queryText = `UPDATE "employee" SET "sick_hours" = "sick_hours" + 8 WHERE "id" = $1;`;
-                pool.query(queryText, [req.params.id]).then(() => res.sendStatus(200))
+                queryText = `UPDATE "employee" SET "sick_hours" = "sick_hours" + $1 WHERE "id" = $2;`;
+                pool.query(queryText, [req.body.hours, req.params.id]).then(() => res.sendStatus(200))
                 .catch(error => {
                     console.log('error in making sick UPDATE', error);
                     res.sendStatus(500);
