@@ -51,13 +51,13 @@ input {
 
 /* This line makes the "Register" and "Login" buttons look like links */
 .link-button {
-    background:none;
-    color:inherit;
-    border:none;
-    padding:0;
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
     font: inherit;
-    outline:0;
-    border-bottom:1px solid #444; 
+    outline: 0;
+    border-bottom: 1px solid #444; 
     cursor: pointer;
 }
 
@@ -99,6 +99,7 @@ div.page-container {
   min-height: 68vh;
   width: 95vw;
   margin: 0 auto;
+  max-width: 900px;
 } 
 
 /* Default styling for buttons */

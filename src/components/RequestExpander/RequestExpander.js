@@ -15,10 +15,17 @@ class RequestExpander extends Component {
 
     // Render a title with a button for toggling between open and closed
     renderTitle = () => {
+        let buttonContent = '';
+        if (this.state.open) {
+            buttonContent = (<span>collapse <ArrowDownIcon /></span>);
+        } else {
+            buttonContent = (<span>expand <ArrowLeftIcon /></span>);
+        }
+
         return (
             <div onClick={this.toggleOpen} className="request-expander-title">
                 <h3>{this.props.title}</h3>
-                <button>{this.state.open ? <ArrowDownIcon /> : <ArrowLeftIcon />}</button>
+                <button>{buttonContent}</button>
             </div>
         );
     }

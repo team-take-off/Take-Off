@@ -1,7 +1,41 @@
 .request-expander-title {
-    background-color: rgb(230, 230, 230);
+    margin-top: 0.2rem;
+    cursor: pointer;
+    padding: 0.2rem 5px;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
 }
 
+.request-expander-title:hover {
+    background-color: #f8f8f8;
+}
+
+
 .request-expander-title h3 {
-    float: left;
+    margin: 0;
+}
+
+.request-expander-title button span {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.request-expander-title button {
+    padding: 0.2rem 40px;
+    margin: 0;
+    background-color: inherit;
+    font-size: 1rem;
+    color: rgb(0, 127, 255);
+    outline: none;
+}
+
+.request-expander-title button:hover {
+    color: rgb(84, 167, 250);
 }
