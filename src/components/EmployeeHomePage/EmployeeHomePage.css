@@ -1,0 +1,38 @@
+.employee-home-div h1 {
+    margin-bottom: 2rem;
+}
+
+.employee-home-div h2 {
+    margin-bottom: 0.8rem;
+}
+
+.employee-home-div button {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+    padding: 1rem 20px;
+    width: 380px;
+}
+
+@media only screen and (max-width: 422px) {
+    .employee-home-div button {
+        width: 90vw;
+    }
+}
+
+button.request-vacation {
+    background-color: #88BB92;
+    border: 2px solid rgb(99, 136, 106);
+}
+
+button.request-vacation:hover {
+    background-color: rgb(99, 136, 106);
+}
+
+button.request-sick {
+    background-color: #F7934C;
+    border: 2px solid rgb(201, 120, 62);
+}
+
+button.request-sick:hover {
+    background-color: rgb(201, 120, 62);
+}

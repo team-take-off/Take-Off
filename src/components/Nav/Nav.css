@@ -26,7 +26,7 @@
 
   .menu-icon {
     color: #f2f2f2;
-    margin: 0.4rem 0 0.4rem 5vw;
+    margin-left: 5vw;
   }
 
   .counter-balance {
@@ -42,6 +42,7 @@
   background-color: #222d31;
   text-align: center;
   padding: 24px 10px;
+  margin: 0;
   text-decoration: none;
   font-size: 15px;
 

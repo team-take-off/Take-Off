@@ -128,12 +128,12 @@ class EmployeeListRow extends Component {
                 <td>
                     {this.displayHoursAsDays(employee.vacation_hours)}
                     <button onClick={this.addVacation} className="add-days">+</button>
-                    <button onClick={this.subtractVacation} className="sub-days">-</button>
+                    <button onClick={this.subtractVacation} className="sub-days">&#8722;</button>
                 </td>
                 <td>
                     {this.displayHoursAsDays(employee.sick_hours)}
                     <button onClick={this.addSick} className="add-days">+</button>
-                    <button onClick={this.subtractSick} className="sub-days">-</button>
+                    <button onClick={this.subtractSick} className="sub-days">&#8722;</button>
                 </td>
                 <td>
                     <IconButton onClick={this.edit} aria-label="Edit">

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import axios from 'axios';
+
+import './EmployeeHomePage.css';
+import SickDaysHeading from '../SickDaysHeading/SickDaysHeading';
+import VacationDaysHeading from '../VacationDaysHeading/VacationDaysHeading';
 
 class EmployeeHomePage extends Component {
     componentDidMount() {
@@ -24,12 +27,12 @@ sickRequest = (event) => {
         return (
             <center><div className="page-container">
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
-                    <div>
+                    <div className="employee-home-div">
                         <h1>Welcome, {this.props.reduxStore.userInfo[0].first_name}</h1>
-                <h2>Vacation Time: {(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} Days</h2>
-                <button onClick={this.vacationRequest}>Request Vacation</button>
-                <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} Days</h2>
-                <button onClick={this.sickRequest}>Request Sick and Safe</button>
+                        <VacationDaysHeading days={(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} />
+                        <button onClick={this.vacationRequest} className="request-vacation" >Request Vacation</button>
+                        <SickDaysHeading days={(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} />
+                        <button onClick={this.sickRequest} className="request-sick">Request Sick and Safe</button>
                     </div>
                 )}
             </div></center>
