@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import swal from 'sweetalert';
 const moment = require('moment-business-days');
 
 
@@ -67,16 +68,28 @@ class RequestForm extends Component {
 
     submit = (event) => {
         event.preventDefault();
-        let numberOfDays = moment(this.props.type.endDate).diff(this.props.type.startDate, 'days');
-        let i = 0;
-        let requestArray = [{ date: this.props.type.startDate, hours: this.props.type.startHours }];
-        let dayToAdd = this.props.type.startDate
-        while (i < numberOfDays - 1) {
-            dayToAdd = moment(dayToAdd).add(1, 'days').format('YYYY-MM-DD')
-            requestArray.push({ date: dayToAdd, hours: 8 });
-            i++
-        }
-        requestArray.push({ date: this.props.type.endDate, hours: this.props.type.endHours })
+        swal({
+                title: "Submit Request?",
+                text: "Your Request will be submitted",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        swal("Request Submitted", {
+                        icon: "success",
+                        });
+                        let numberOfDays = moment(this.props.type.endDate).diff(this.props.type.startDate, 'days');
+                let i = 0;
+                let requestArray = [{ date: this.props.type.startDate, hours: this.props.type.startHours }];
+                let dayToAdd = this.props.type.startDate
+                while (i < numberOfDays - 1) {
+                    dayToAdd = moment(dayToAdd).add(1, 'days').format('YYYY-MM-DD')
+                    requestArray.push({ date: dayToAdd, hours: 8 });
+                    i++
+                }
+                requestArray.push({ date: this.props.type.endDate, hours: this.props.type.endHours })
        
         if (this.props.typeid === 1) {
             const action = {
@@ -99,6 +112,11 @@ class RequestForm extends Component {
             this.props.dispatch(action);
             this.props.history.push('/employee_requests');
         }
+                    } else {
+                        swal("Rquest Cancelled");
+                    }
+                }); //alert for submitting request
+        
     }
 
     // Show this component on the DOM
