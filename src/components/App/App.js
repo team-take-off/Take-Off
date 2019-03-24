@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {
   HashRouter as Router,
-  Route,
   Redirect,
   Switch,
 } from 'react-router-dom';
@@ -23,6 +22,7 @@ import EmployeeHomePage from '../EmployeeHomePage/EmployeeHomePage';
 import EmployeeRequestsPage from '../EmployeeRequestsPage/EmployeeRequestsPage';
 import SickRequestPage from '../SickRequestPage/SickRequestPage';
 import VacationRequestPage from '../VacationRequestPage/VacationRequestPage';
+import TestCronPage from '../TestCron/TestCronPage';
 
 import './App.css';
 
@@ -54,6 +54,9 @@ class App extends Component {
             />
             <ProtectedRoute exact path="/employee_requests"
               component={EmployeeRequestsPage}
+            />
+            <ProtectedRoute exact path="/test_cron"
+              component={TestCronPage}
             />
             <ProtectedRoute exact path="/request_vacation"
               component={VacationRequestPage}

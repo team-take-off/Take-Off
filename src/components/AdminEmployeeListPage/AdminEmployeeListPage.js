@@ -41,8 +41,8 @@ class AdminEmployeeListPage extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.props.employees.map((employee, i) =>
-                                    <EmployeeListRow key={i} employee={employee} />
+                                {this.props.employees.map(employee =>
+                                    <EmployeeListRow key={employee.id} employee={employee} />
                                 )}
                             </tbody>
                         </table>

@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import ArrowLeftIcon from '@material-ui/icons/ArrowLeft';
+import ArrowDownIcon from '@material-ui/icons/ArrowDropDown';
 
+import './RequestExpander.css';
 import RequestCard from '../RequestCard/RequestCard';
 
 class RequestExpander extends Component {
@@ -10,13 +13,21 @@ class RequestExpander extends Component {
         }
     }
 
-    // Render a button for toggling between open and closed
-    renderToggleButton = () => {
+    // Render a title with a button for toggling between open and closed
+    renderTitle = () => {
+        let buttonContent = '';
         if (this.state.open) {
-            return <button onClick={this.toggleOpen}>[ - ]</button>;
+            buttonContent = (<span>collapse <ArrowDownIcon /></span>);
         } else {
-            return <button onClick={this.toggleOpen}>[ + ]</button>;
+            buttonContent = (<span>expand <ArrowLeftIcon /></span>);
         }
+
+        return (
+            <div onClick={this.toggleOpen} className="request-expander-title">
+                <h3>{this.props.title}</h3>
+                <button>{buttonContent}</button>
+            </div>
+        );
     }
 
     // Toggle this expanding div between open and closed
@@ -30,7 +41,11 @@ class RequestExpander extends Component {
     renderCards = () => {
         if (this.state.open) {
             if (this.props.requests.length === 0) {
-                return <p>[ No requests in this category ]</p>
+                return (
+                    <span className="no-requests-span">
+                        <p>[ No requests in this category ]</p>
+                    </span>
+                );
             } else {
                 return (
                     <div>
@@ -52,8 +67,7 @@ class RequestExpander extends Component {
     render() {
         return (
             <div>
-                <h3>{this.props.title}</h3>
-                {this.renderToggleButton()}
+                {this.renderTitle()}
                 {this.renderCards()}
             </div>
         );

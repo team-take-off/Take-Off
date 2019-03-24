@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+
 import RequestForm from '../RequestForm/RequestForm';
+import SickDaysHeading from '../SickDaysHeading/SickDaysHeading';
 
 class SickRequestPage extends Component {
 
@@ -14,7 +16,7 @@ class SickRequestPage extends Component {
             <div className="page-container">
                 {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
                     <div>
-                        <h2>Sick and Safe Time: {(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} Days</h2>
+                        <SickDaysHeading days={(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} />
                         <RequestForm history={this.props.history} type={this.props.reduxStore.sickRequestDates} typeid={2}/>
                     </div>
                 )}

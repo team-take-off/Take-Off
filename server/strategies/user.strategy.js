@@ -10,8 +10,10 @@ passport.use('local', new LocalStrategy({
 }, ((req, username, password, done) => {
     pool.query('SELECT * FROM employee WHERE username = $1', [username])
       .then((result) => {
+        // console.log(result.rows);
         const user = result && result.rows && result.rows[0];
-        if (user && encryptLib.comparePassword(password, user.login_password)) {
+        const is_active = (result.rows[0]).is_active
+        if (user && encryptLib.comparePassword(password, user.login_password) && is_active == true) {
           // all good! Passwords match!
           done(null, user);
         } else if (user) {

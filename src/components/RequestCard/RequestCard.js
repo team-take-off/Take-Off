@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import './RequestCard.css';
 import DateRange from '../../modules/DateRange';
-
-// TODO: Remove or replace eventually
-const tempStyle = {
-    backgroundColor: '#ddd'
-};
 
 class RequestCard extends Component {
 
@@ -34,10 +30,24 @@ class RequestCard extends Component {
     // Show the type of request 'Vacation' or 'Sick and Safe Leave' if possible
     renderType = () => {
         const requestArray = this.props.requestArray;
+        let blocks = '';
+        for (let i = 0; i < requestArray.length; i++) {
+            blocks += ' ◼';
+        }
         if (requestArray.length === 0) {
             return '[Unknown Type]';
         } else {
-            return requestArray[0].type;
+            if (requestArray[0].type === 'Sick and Safe Leave') {
+                return (<span className="sick">{requestArray[0].type}: {blocks}</span>);
+            } else if (requestArray[0].type === 'Vacation') {
+                return (<span className="vacation">{requestArray[0].type}: {blocks}</span>);
+            } else {
+                return (
+                    <span>
+                        {requestArray[0].type}
+                    </span>
+                );
+            }
         }
     }
 
@@ -145,9 +155,10 @@ class RequestCard extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div style={tempStyle}>
-                <h4>{this.renderName()} - {this.renderDateRange()}</h4>
-                <h5>{this.renderType()}</h5>
+            <div className="request-card">
+                <h4>{this.renderName()}</h4>
+                <h5>{this.renderDateRange()}</h5>
+                <h6>{this.renderType()}</h6>
                 {this.renderConflicts()}
                 {this.renderAdminButtons()}
                 {this.renderEmployeeButtons()}

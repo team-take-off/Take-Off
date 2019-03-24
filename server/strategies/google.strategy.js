@@ -48,12 +48,18 @@ passport.use(new GoogleStrategy({
                     done(err);
                 }
                 user = result.rows[0];
+                console.log('this is the user', user);
+                const is_active = result.rows[0].is_active
                 if (!user) {
                     // user not found
                     return done(null, false, {
                         message: 'Incorrect credentials.'
                     });
-                } else {
+                } else if (is_active == false){
+                    return done(null, false, {
+                        message: 'YOU DONT HAVE ACCESS'
+                    })
+                }else {
                     // user found
                     console.log('User row ', user);
                     // Done sets user on the req (e.g. req.user = user) for the session

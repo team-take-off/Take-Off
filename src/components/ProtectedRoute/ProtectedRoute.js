@@ -2,7 +2,7 @@ import React from 'react';
 import {Route} from 'react-router-dom'
 import {connect} from 'react-redux';
 import LoginPage from '../LoginPage/LoginPage';
-import RegisterPage from '../RegisterPage/RegisterPage';
+import WarningPage from '../WarningPage/WarningPage';
 
 // A Custom Wrapper Component -- This will keep our code DRY.
 // Responsible for watching redux state, and returning an appropriate component
@@ -37,8 +37,8 @@ const ProtectedRoute = (props) => {
     ComponentToShow = LoginPage;
   } else {
     // the the user is not logged in and the mode is not 'login'
-    // show the RegisterPage
-    ComponentToShow = RegisterPage;
+    // show the WarningPage
+    ComponentToShow = WarningPage;
   }
 
   // We return a Route component that gets added to our list of routes
