@@ -5,7 +5,10 @@ import DateRange from '../../modules/DateRange';
 
 // TODO: Remove or replace eventually
 const tempStyle = {
-    backgroundColor: '#ddd'
+    backgroundColor: '#ddd',
+    maxWidth: '600px',
+    padding: '0rem 30px 1rem 30px',
+    margin: '0rem 10px 1rem 10px'
 };
 
 class RequestCard extends Component {
