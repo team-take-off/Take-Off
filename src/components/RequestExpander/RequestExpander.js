@@ -41,7 +41,11 @@ class RequestExpander extends Component {
     renderCards = () => {
         if (this.state.open) {
             if (this.props.requests.length === 0) {
-                return <p>[ No requests in this category ]</p>
+                return (
+                    <span className="no-requests-span">
+                        <p>[ No requests in this category ]</p>
+                    </span>
+                );
             } else {
                 return (
                     <div>

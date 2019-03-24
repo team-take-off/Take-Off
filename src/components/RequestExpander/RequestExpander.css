@@ -39,3 +39,9 @@
 .request-expander-title button:hover {
     color: rgb(84, 167, 250);
 }
+
+.no-requests-span p {
+    margin-left: 40px;
+    font-weight: bold;
+    color: #888;
+}

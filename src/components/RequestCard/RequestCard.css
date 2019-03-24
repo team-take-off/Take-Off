@@ -1,0 +1,30 @@
+.request-card {
+    border: 1px solid rgb(182, 182, 182);
+    max-width: 600px;
+    padding: 1.4rem 30px 1.4rem 30px;
+    margin: 0rem 10px 1rem 10px;
+    background-color: white;
+    box-shadow: 2px 2px 9px -1px rgba(0,0,0,0.25);
+}
+
+h4, h5, h6 {
+    margin: 0;
+}
+
+h4 {
+    margin-bottom: 0.4rem;
+}
+
+h5, h6 {
+    font-size: 0.8rem;
+    margin-left: 10px;
+    margin-bottom: 0.8rem;
+}
+
+.vacation {
+    color: rgb(99, 136, 106);
+}
+
+.sick {
+    color: rgb(201, 120, 62);
+}
