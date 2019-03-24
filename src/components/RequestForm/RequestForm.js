@@ -115,7 +115,7 @@ class RequestForm extends Component {
                     } else {
                         swal("Rquest Cancelled");
                     }
-                });
+                }); //alert for submitting request
         
     }
 
