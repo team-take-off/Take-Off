@@ -20,19 +20,19 @@
 }
 
 button.request-vacation {
-    background-color: #88BB92;
-    border: 2px solid rgb(99, 136, 106);
+    background-color: rgb(75, 129, 85);
+    border: 2px solid rgb(52, 92, 60);
 }
 
 button.request-vacation:hover {
-    background-color: rgb(99, 136, 106);
+    background-color: rgb(52, 92, 60);
 }
 
 button.request-sick {
-    background-color: #F7934C;
-    border: 2px solid rgb(201, 120, 62);
+    background-color: rgb(196, 102, 36);
+    border: 2px solid rgb(148, 75, 24);
 }
 
 button.request-sick:hover {
-    background-color: rgb(201, 120, 62);
+    background-color: rgb(148, 75, 24);
 }
