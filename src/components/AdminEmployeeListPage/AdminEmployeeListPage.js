@@ -37,7 +37,7 @@ class AdminEmployeeListPage extends Component {
                                     <th>Sick & Safe</th>
                                     <th>Edit</th>
                                     <th>Active</th>
-                                    <th>Delete</th>
+                                    {/* <th>Delete</th> */}
                                 </tr>
                             </thead>
                             <tbody>

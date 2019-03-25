@@ -142,11 +142,11 @@ class EmployeeListRow extends Component {
                 </td>
 
                 <td><button onClick={this.deactivate}>{employee.is_active ? 'Deactivate' : 'Activate'}</button></td>
-                <td>
+                {/* <td>
                     <IconButton onClick={this.delete} aria-label="Delete">
                         <DeleteIcon />
                     </IconButton>
-                </td>
+                </td> */}
             </tr>
         );
     }
