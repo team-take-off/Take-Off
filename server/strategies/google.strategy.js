@@ -34,7 +34,7 @@ passport.use(new GoogleStrategy({
         callbackURL: process.env.CALLBACK_URL,
         passReqToCallback: true
     }, function (req, accessToken, refreshToken, profile, done) {
-        console.log("THIS IS THE PROFILE", profile);
+        // console.log("THIS IS THE PROFILE", profile);
         //console.log("THIS IS THE PROFILE NAME", profile.displayName);
         //console.log("THIS IS THE PROFILE EMAIL", profile.emails[0].value);
         //console.log("THIS IS THE PROFILE PIC", profile.photos[0].value );
@@ -48,20 +48,20 @@ passport.use(new GoogleStrategy({
                     done(err);
                 }
                 user = result.rows[0];
-                console.log('this is the user', user);
-                const is_active = result.rows[0].is_active
+                // console.log('this is the user', user);
+                // const is_active = result.rows[0].is_active
                 if (!user) {
                     // user not found
                     return done(null, false, {
                         message: 'Incorrect credentials.'
                     });
-                } else if (is_active == false){
+                } else if (user.is_active === false) {
                     return done(null, false, {
                         message: 'YOU DONT HAVE ACCESS'
                     })
-                }else {
+                } else {
                     // user found
-                    console.log('User row ', user);
+                    // console.log('User row ', user);
                     // Done sets user on the req (e.g. req.user = user) for the session
                     done(null, user);
                 }
