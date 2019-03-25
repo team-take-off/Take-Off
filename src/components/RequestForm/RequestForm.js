@@ -143,13 +143,21 @@ class RequestForm extends Component {
        
         return (
             <form onSubmit={this.submit}>
-                <input onChange={this.setStartDate} type="date" min={moment().subtract(7, 'days').format('YYYY-MM-DD')} value={this.props.type.startDate} />
+                <label htmlFor="start_date">Start Date:</label>
+                <br />
+                <input onChange={this.setStartDate} name="start_date" type="date" min={moment().subtract(7, 'days').format('YYYY-MM-DD')} value={this.props.type.startDate} />
                 <select onChange={this.setStartHours} value={this.props.type.startHours}>
                     <option value="8">Full Day</option>
                     <option value="4">Half Day</option>
                 </select>
-                <input onChange={this.setEndDate} type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')} value={dateVal} />
+                <br />
+                <br />
+                <label htmlFor="end_date">End Date:</label>
+                <br />
+                <input onChange={this.setEndDate} name="end_date" type="date" min={moment(this.props.type.startDate).format('YYYY-MM-DD')} value={dateVal} />
                 {fullHalf}
+                <br />
+                <br />
                 <input type="submit" />
             </form>
         ) 
