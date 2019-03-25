@@ -4,6 +4,10 @@ import { connect } from 'react-redux';
 import './AdminEmployeeListPage.css';
 import EmployeeListRow from './EmployeeListRow/EmployeeListRow';
 
+const styleDiv = {
+    maxWidth: '1000px'
+};
+
 class AdminEmployeeListPage extends Component {
 
     // When this component mounts get all employees from the database
@@ -19,7 +23,7 @@ class AdminEmployeeListPage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div className="page-container">
+            <div className="page-container" style={styleDiv}>
                 <h2>Manage Employees</h2>
                 <button onClick={this.addEmployee}>
                     Add New Employee
