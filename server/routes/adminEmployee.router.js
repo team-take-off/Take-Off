@@ -47,7 +47,9 @@ router.post('/', (req, res) => {
             req.body.last_name,
             req.body.start_date
         ];
-        pool.query(queryText, insertArray).catch((error) => {
+        pool.query(queryText, insertArray).then((response) => {
+            res.setStatus(200);
+        }).catch((error) => {
             console.log(`Error in POST /api/admin/employee, ${error}`);
             res.sendStatus(500);
         });
