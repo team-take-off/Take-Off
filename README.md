@@ -47,8 +47,12 @@ Users login using their google accounts. Google OAuth was implemented for authen
 #### Employee Login View
 When an employee logs in, they see the number of days they have available for Vacation and Sick and safe Time.
 
-<img src="public/images/emp_login.gif" alt="employee login" width="250" height="500">
-<img src="public/images/emp_request.gif" alt="employee login" width="250" height="500">
+Solarized dark             |  Solarized Ocean
+:-------------------------:|:-------------------------:
+<img src="public/images/emp_login.gif" alt="employee login" width="250" height="500">              |<img src="public/images/emp_request.gif" alt="employee                             login" width="250" height="500">
+
+
+
 #### Admin Login View
 When the admin logs in, the application verifies if the user logging in is the admin. The admin has access to all the employee request, can approve or deny requests for the home page.
 
