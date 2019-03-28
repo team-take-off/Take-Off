@@ -58,6 +58,7 @@ On Submit Query, the request is sent to the admin for approval, and the user is 
 
 
 #### Admin Page
+The admin has access to all the employees requests and information.
 
 ## Utilized Web Stack
 - `User Interface` - React, CSS, react-big-callendar, Material.ui, Sweetalert
