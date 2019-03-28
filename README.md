@@ -47,9 +47,10 @@ Users login using their google accounts. Google OAuth was implemented for authen
 #### Employee Login View
 When an employee logs in, they see the number of days they have available for Vacation and Sick and safe Time.
 
-Solarized dark             |  Solarized Ocean
-:-------------------------:|:-------------------------:
+Employee Login             |  Employee Makes Request   | Employee Calendar
+:-------------------------:|:-------------------------:|:-------------------------:
 <img src="public/images/emp_login.gif" alt="employee login" width="250" height="500">              |<img src="public/images/emp_request.gif" alt="employee                             login" width="250" height="500">
+| <img src="public/images/emp_calendar.gif" alt="employee                             login" width="250" height="500">
 
 
 
