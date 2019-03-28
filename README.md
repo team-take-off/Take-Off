@@ -46,6 +46,9 @@ Users login using their google accounts. Google OAuth was implemented for authen
 
 #### Employee Login View
 When an employee logs in, they see the number of days they have available for Vacation and Sick and safe Time.
+The application is mobile friendly, seeing most employees would access this on mobile devices.
+
+
 
 <!-- Employee Login             |  Employee Makes Request   | Employee Calendar
 :-------------------------:|:-------------------------:|:-------------------------:
@@ -59,10 +62,19 @@ When an employee logs in, they see the number of days they have available for Va
 </p>
 
 
+
 #### Admin Login View
 When the admin logs in, the application verifies if the user logging in is the admin. The admin has access to all the employee request, can approve or deny requests for the home page.
 
 ![](public/images/admin_login.gif)
+
+
+#### Employee Request
+When an employee logs in, they are taken to the home page, the home page dispays the vacation and sick and safe days available. Clicking on the vacattion request, you are taken to the calendar page, which shows the start date; in a calendar form, and end date. You have the option of a half day (4 hours) or ful day (8 hours) to request. The application knows to track either the half day or full day.
+On Submit Query, the request is sent to the admin for approval, and the user is taken to their request page. This shows all the requests: Pending, Approved and Denied.
+
+
+#### Admin Page
 
 ## Utilized Web Stack
 - `User Interface` - React, CSS, react-big-callendar, Material.ui, Sweetalert
