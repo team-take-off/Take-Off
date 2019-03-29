@@ -7,7 +7,6 @@ A calendar view available to employees and administrators shows all active reque
 
 The application is mobile friendly.
 
-
 ## Setup and Run
 You will need to follow the steps below to setup the database to get this up and running.
 
@@ -35,6 +34,19 @@ npm run client
 ### 7. Login/Aunthentication
 You will need to insert your email account into the employee table, because the application checks against the authenticated email google sends back against list of employees.
 
+### 8. Configure .env File
+```bash
+# Configure your .env file with the following environment variables.
+# Note: Do not put your .env file into version control. It will contain sensitive secret information
+
+SERVER_SESSION_SECRET= # A Random String
+CLIENT_ID= # Your Google Authentication Client ID
+CLIENT_SECRET= # Your Google Authentication Client Secret
+CALLBACK_URL=http://localhost:5000/api/user/auth/google/callback
+SUCCESS_REDIRECT=http://localhost:3000/#/home
+FAIL_REDIRECT=http://localhost:3000/#/login
+
+```
 
 ## Description
 
@@ -48,8 +60,6 @@ Users login using their google accounts. Google OAuth was implemented for authen
 When an employee logs in, they see the number of days they have available for Vacation and Sick and safe Time.
 The application is mobile friendly, seeing most employees would access this on mobile devices.
 
-
-
 <!-- Employee Login             |  Employee Makes Request   | Employee Calendar
 :-------------------------:|:-------------------------:|:-------------------------:
 <img src="public/images/emp_login.gif" alt="employee login" width="250" height="500">              |<img src="public/images/emp_request.gif" alt="employee                             login" width="250" height="500">
@@ -61,18 +71,14 @@ The application is mobile friendly, seeing most employees would access this on m
     <img src="public/images/emp_calendar.gif" alt="employee login" width="250" height="500">
 </p>
 
-
-
 #### Admin Login View
 When the admin logs in, the application verifies if the user logging in is the admin. The admin has access to all the employee request, can approve or deny requests for the home page.
 
 ![](public/images/admin_login.gif)
 
-
 #### Employee Request
 When an employee logs in, they are taken to the home page, the home page dispays the vacation and sick and safe days available. Clicking on the vacattion request, you are taken to the calendar page, which shows the start date; in a calendar form, and end date. You have the option of a half day (4 hours) or ful day (8 hours) to request. The application knows to track either the half day or full day.
 On Submit Query, the request is sent to the admin for approval, and the user is taken to their request page. This shows all the requests: Pending, Approved and Denied.
-
 
 #### Admin Page
 
@@ -82,27 +88,11 @@ On Submit Query, the request is sent to the admin for approval, and the user is 
 - `Server` - Node.js, Express, Node-Cron
 - `Database` - PostgreSQL
 
-
 ## Requirements
 - Git
 - Web browser
 - Node and npm
 - PostgreSQL
-
-
-
-```bash
-# 7. Configure your .env file with the following environment variables.
-# Note: Do not put your .env file into version control. It will contain sensitive secret information
-
-SERVER_SESSION_SECRET= # A Random String
-CLIENT_ID= # Your Google Authentication Client ID
-CLIENT_SECRET= # Your Google Authentication Client Secret
-CALLBACK_URL=http://localhost:5000/api/user/auth/google/callback
-SUCCESS_REDIRECT=http://localhost:3000/#/home
-FAIL_REDIRECT=http://localhost:3000/#/login
-
-```
 
 ## Features
 
