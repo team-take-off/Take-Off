@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 
 import './RequestCard.css';
 import DateRange from '../../modules/DateRange';
@@ -79,12 +81,12 @@ class RequestCard extends Component {
         if (this.props.forAdmin && !this.props.past) {
             if (this.props.requestArray.length > 0 && this.props.requestArray[0].status === 'pending') {
                 return (
-                    <div>
-                        <button onClick={this.approve}>
-                            Approve
-                        </button>
+                    <div className="request-card-buttons">
                         <button onClick={this.deny}>
-                            Deny
+                            <RemoveCircleIcon fontSize="small" /> Deny
+                        </button>
+                        <button onClick={this.approve} className="approve">
+                            <CheckCircleIcon fontSize="small" /> Approve
                         </button>
                     </div>
                 );
@@ -97,9 +99,11 @@ class RequestCard extends Component {
     renderEmployeeButtons = () => {
         if (!this.props.forAdmin && !this.props.past) {
             return (
-                <button onClick={this.withdraw}>
-                    Cancel Request
-                </button>
+                <div className="request-card-buttons">
+                    <button onClick={this.withdraw}>
+                        <RemoveCircleIcon fontSize="small" /> Cancel Request
+                    </button>
+                </div>
             );
         }
     }

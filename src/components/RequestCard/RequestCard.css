@@ -4,7 +4,20 @@
     padding: 1.4rem 30px 1.4rem 30px;
     margin: 0rem 10px 1rem 10px;
     background-color: white;
+
     box-shadow: 2px 2px 9px -1px rgba(0,0,0,0.25);
+}
+
+.request-card-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+@media only screen and (max-width: 700px) { 
+    .request-card-buttons {
+        justify-content: flex-end;
+    }
 }
 
 h4, h5, h6 {
@@ -19,6 +32,41 @@ h5, h6 {
     font-size: 0.8rem;
     margin-left: 10px;
     margin-bottom: 0.8rem;
+}
+
+.request-card-buttons button {
+    padding: 0.4rem 15px;
+    margin-left: 5px;
+
+    outline: none;
+    border: 2px solid #888;
+    box-shadow: 2px 1px 2px 1px rgba(0,0,0,0.1);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+}
+
+.request-card-buttons button *:first-child {
+    margin-right: 10px;
+}
+
+.request-card-buttons button:hover, .request-card-buttons button:active {
+    color: #9d2b33;
+    background-color: #fdf7f8;
+    border: 2px solid #9d2b33;
+}
+
+.request-card-buttons button.approve {
+    background-color: rgb(0, 127, 255);
+    border: 2px solid rgb(0, 127, 255);
+}
+
+.request-card-buttons button.approve:hover, .request-card-buttons button.approve:active {
+    color: white;
+    background-color: rgb(0, 98, 196);
+    border: 2px solid rgb(1, 74, 148);
 }
 
 .vacation {
