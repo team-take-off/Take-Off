@@ -1,7 +1,7 @@
 .request-card {
     border: 1px solid rgb(182, 182, 182);
     max-width: 600px;
-    padding: 1.4rem 30px 1.4rem 30px;
+    padding: 1.4rem 30px;
     margin: 0rem 10px 1rem 10px;
     background-color: white;
 
@@ -14,7 +14,11 @@
     justify-content: flex-start;
 }
 
-@media only screen and (max-width: 700px) { 
+@media only screen and (max-width: 700px) {
+    .request-card {
+        padding: 1.4rem 20px;
+    }
+    
     .request-card-buttons {
         justify-content: flex-end;
     }
