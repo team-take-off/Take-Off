@@ -4,7 +4,6 @@ import registrationSaga from './registrationSaga';
 import userSaga from './userSaga';
 import requestsSaga from './requestsSaga';
 import userRequestsSaga from './userRequestsSaga';
-import userInfoSaga from './userInfoSaga';
 import employeesSaga from './employeesSaga';
 import addTimeSaga from './addTimeSaga';
 
@@ -22,7 +21,6 @@ export default function* rootSaga() {
     userSaga(),
     requestsSaga(),
     userRequestsSaga(),
-    userInfoSaga(),
     employeesSaga(),
     addTimeSaga(),
   ]);
