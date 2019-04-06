@@ -1,3 +1,5 @@
+const ADMINISTRATOR_ROLE_ID = 1;
+
 const rejectUnauthenticated = (req, res, next) => {
   // check if logged in
   if (req.isAuthenticated()) {
@@ -11,7 +13,7 @@ const rejectUnauthenticated = (req, res, next) => {
 };
 
 const rejectNonAdmin = (req, res, next) => {
-  if (req.isAuthenticated() && req.user.role_id === 1) {
+  if (req.isAuthenticated() && req.user.role_id === ADMINISTRATOR_ROLE_ID) {
     next();
   } else {
     res.sendStatus(403);
