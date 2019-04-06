@@ -5,7 +5,7 @@ import userSaga from './userSaga';
 import requestsSaga from './requestsSaga';
 import userRequestsSaga from './userRequestsSaga';
 import employeesSaga from './employeesSaga';
-import addTimeSaga from './addTimeSaga';
+import accruedTimeSaga from './accruedTimeSaga';
 
 // rootSaga is the primary saga.
 // It bundles up all of the other sagas so our project can use them.
@@ -22,6 +22,6 @@ export default function* rootSaga() {
     requestsSaga(),
     userRequestsSaga(),
     employeesSaga(),
-    addTimeSaga(),
+    accruedTimeSaga(),
   ]);
 }
