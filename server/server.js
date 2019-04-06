@@ -6,7 +6,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const sessionMiddleware = require('./modules/session-middleware');
 
-require('./strategies/user.strategy'); // This should eventually be turned off
 const passport = require('./strategies/google.strategy');
 
 // Route includes

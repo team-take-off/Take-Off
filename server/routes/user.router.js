@@ -1,8 +1,5 @@
 const express = require('express');
 const { rejectUnauthenticated } = require('../modules/authentication-middleware');
-const encryptLib = require('../modules/encryption');
-const pool = require('../modules/pool');
-const userStrategy = require('../strategies/user.strategy');
 const googleStrategy = require('passport');
 const router = express.Router();
 
@@ -22,14 +19,6 @@ router.get('/auth/google/callback', googleStrategy.authenticate('google', {
   successRedirect: process.env.SUCCESS_REDIRECT,
   failureRedirect: process.env.FAIL_REDIRECT
 }));
-
-// Handles login form authenticate/login POST
-// userStrategy.authenticate('local') is middleware that we run on this route
-// this middleware will run our POST if successful
-// this middleware will send a 404 if not successful
-router.post('/login', userStrategy.authenticate('local'), (req, res) => {
-  res.sendStatus(200);
-});
 
 // clear all server session information about this user
 router.post('/logout', (req, res) => {
