@@ -33,7 +33,7 @@ function* denyRequest(action) {
 function* withdrawRequest(action) {
   try {
     const batchID = action.payload;
-    yield axios.delete(`api/admin/request/${batchID}`);
+    yield axios.delete(`api/request/${batchID}`);
     yield put({ type: 'FETCH_REQUESTS' });
   } catch (error) {
     console.log('Error in DELETE:', error);

@@ -5,6 +5,11 @@ const router = express.Router();
 const moment = require('moment-holiday');
 const moment1 = require('moment-business-days');
 
+const ADMINISTRATOR_ROLE = 1;
+const VACATION_TYPE = 1;
+const SICK_TYPE = 2;
+const PENDING_STATUS = 1;
+
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
@@ -146,6 +151,90 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
     }).catch((queryError) => {
         console.log('SQL error using PUT /api/request/:id,', queryError);
         res.sendStatus(500);
+    });
+});
+
+// Route DELETE /api/request/:id
+// Removes a batch of requested days off belonging to one user (based on batch ID)
+router.delete('/:id', rejectUnauthenticated, (req, res) => {
+    const batchID = req.params.id;
+
+    (async () => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            let employeeID = req.user.id;
+            const typeOfLeave = `
+            SELECT 
+                employee_id, 
+                request_status_id, 
+                leave_type_id
+            FROM batch_of_requests 
+            WHERE id = $1;
+            `;
+            const batch = await client.query(typeOfLeave, [batchID]);
+            const selectID = batch.rows[0].employee_id;
+            const requestStatusID = batch.rows[0].request_status_id;
+            const leaveTypeID = batch.rows[0].leave_type_id;
+            if (req.user.role_id === ADMINISTRATOR_ROLE) {
+                employeeID = selectID;
+            } else if (employeeID !== selectID) {
+                throw new Error('Attempted unautharized query on route DELETE /api/request/:id.');
+            }
+
+            if (requestStatusID === PENDING_STATUS) {
+                // TODO: This should include a check to see if the deleted request is in the future and 
+                // Prevent non-admin users from deleting in that case.
+                const selectRefundHoursText = `
+                SELECT 
+                    SUM(off_hours) 
+                    FROM time_off_request 
+                    WHERE batch_of_requests_id = $1;
+                `;
+                const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
+                const refundHours = selectRefundHours.rows[0].sum;
+                if (leaveTypeID === VACATION_TYPE) {
+                    const updateRefundText = `
+                    UPDATE employee
+                        SET vacation_hours = vacation_hours + $1
+                        WHERE id = $2
+                    `;
+                    await client.query(updateRefundText, [refundHours, employeeID])
+                } else if (leaveTypeID === SICK_TYPE) {
+                    const updateRefundText = `
+                    UPDATE employee
+                        SET sick_hours = sick_hours + $1
+                        WHERE id = $2
+                    `;
+                    await client.query(updateRefundText, [refundHours, employeeID])
+                }
+            }
+
+            const deleteRequestsText = `
+            DELETE 
+                FROM time_off_request
+                WHERE batch_of_requests_id = $1;
+            `;
+            await client.query(deleteRequestsText, [batchID]);
+            const deleteBatchText = `
+            DELETE 
+                FROM batch_of_requests
+                WHERE id = $1 AND employee_id = $2
+                RETURNING *;
+            `;
+            await client.query(deleteBatchText, [batchID, employeeID]);
+            await client.query('COMMIT');
+            res.sendStatus(200);
+        } catch (queryError) {
+            await client.query('ROLLBACK');
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using DELETE /api/request/:id');
     });
 });
 

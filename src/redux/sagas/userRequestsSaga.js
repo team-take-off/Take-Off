@@ -27,7 +27,7 @@ function* addUserRequest(action) {
 function* withdrawUserRequest(action) {
       try {
           const batchID = action.payload;
-          yield axios.delete(`api/employee/request/${batchID}`);
+          yield axios.delete(`api/request/${batchID}`);
           yield put({ type: 'FETCH_USER_REQUESTS' });
           yield put({ type: 'FETCH_REQUESTS' });
       } catch (error) {

@@ -13,8 +13,6 @@ const accruedTimeRouter = require('./routes/accruedTime.router');
 const cronAddLeave = require('./routes/cronAddLeave.router');
 const employeeRouter = require('./routes/employee.router');
 const requestRouter = require('./routes/request.router');
-const adminRequestRouter = require('./routes/adminRequest.router');
-const employeeRequestRouter = require('./routes/employeeRequest.router');
 const testCron = require('./routes/testCron.router');
 const userRouter = require('./routes/user.router');
 
@@ -38,8 +36,6 @@ app.use('/api/accrued-time', accruedTimeRouter);
 app.use('/api/scheduled-task', cronAddLeave);
 app.use('/api/employee', employeeRouter);
 app.use('/api/request', requestRouter);
-app.use('/api/admin/request', adminRequestRouter);
-app.use('/api/employee/request', employeeRequestRouter);
 app.use('/api/test-cron', testCron);
 app.use('/api/user', userRouter);
 
