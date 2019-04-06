@@ -2,6 +2,8 @@ const express = require('express');
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
+const moment = require('moment-holiday');
+const moment1 = require('moment-business-days');
 
 // Route GET /api/request
 // Returns an array all requested days off for all users
@@ -59,6 +61,73 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
     }).catch((queryError) => {
         console.log('SQL error using route GET /api/request/current-user,', queryError);
         res.sendStatus(500);
+    });
+});
+
+// Route POST /api/request
+// User adds requested time-off to the database
+router.post('/', rejectUnauthenticated, (req, res) => {
+    const userID = req.user.id;
+    const typeID = req.body.typeID;
+    const requestedDates = req.body.requestedDates;
+
+    (async () => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            const insertComparisonText = `
+            INSERT INTO batch_of_requests
+                (employee_id, leave_type_id)
+            VALUES
+                ($1, $2)
+            RETURNING id;
+            `;
+            const { rows } = await client.query(insertComparisonText, [userID, typeID]);
+            const batchID = rows[0].id;
+            if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date &&
+                moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true) {
+                const insertDateText = `
+                INSERT INTO time_off_request
+                    (off_date, batch_of_requests_id, off_hours)
+                VALUES
+                    ($1, $2, $3);
+                `;
+                await client.query(insertDateText, [requestedDates[0].date, batchID, requestedDates[0].hours]);
+                const updateEmployeeLeaveTable = `
+                UPDATE employee SET 
+                    ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} = ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} - ${requestedDates[0].hours}
+                WHERE id = $1`
+                await client.query(updateEmployeeLeaveTable, [userID]);
+            } else {
+                for (let request of requestedDates) {
+                    if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true) {
+                        const insertDateText = `
+                        INSERT INTO time_off_request
+                            (off_date, batch_of_requests_id, off_hours)
+                        VALUES
+                            ($1, $2, $3);
+                        `;
+                        await client.query(insertDateText, [request.date, batchID, request.hours]);
+                        const updateEmployeeLeaveTable = `
+                        UPDATE employee SET 
+                        ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} = ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} - ${request.hours}
+                        WHERE id = $1`
+                        await client.query(updateEmployeeLeaveTable, [userID]);
+                    }
+                }
+            }
+            await client.query('COMMIT');
+            await res.sendStatus(201);
+        } catch (error) {
+            await client.query('ROLLBACK');
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using route POST /api/request');
     });
 });
 
