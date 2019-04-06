@@ -4,42 +4,6 @@ const router = express.Router();
 const moment = require('moment-holiday');
 const moment1 = require('moment-business-days');
 
-// Route GET /api/employee/request
-// Returns an array of requested days off for one user (based on user ID)
-router.get('/', (req, res) => {
-    if (req.isAuthenticated() && req.user.is_active) {
-        const queryText = `
-        SELECT
-            "time_off_request"."id",
-            "time_off_request"."off_date" AS "date",
-            "time_off_request"."off_hours" AS "hours",
-            "time_off_request"."batch_of_requests_id",
-            "batch_of_requests"."date_requested" AS "date_requested",
-            "employee"."first_name",
-            "employee"."last_name",
-            "leave_type"."val" AS "type",
-            "request_status"."val" AS "status"
-        FROM "employee" 
-        JOIN "batch_of_requests" ON "employee"."id" = "batch_of_requests"."employee_id"
-        JOIN "leave_type" ON "leave_type"."id" = "batch_of_requests"."leave_type_id"
-        JOIN "request_status" ON "request_status"."id" = "batch_of_requests"."request_status_id"
-        JOIN "time_off_request" ON "batch_of_requests"."id" = "time_off_request"."batch_of_requests_id"
-        WHERE "employee"."id" = $1
-        ORDER BY "date_requested";
-        `;
-
-        pool.query(queryText, [req.user.id]).then((queryResponse) => {
-            res.send(queryResponse.rows);
-        }).catch((queryError) => {
-            const errorMessage = `SQL error using GET /api/employee/request, ${queryError}`;
-            console.log(errorMessage);
-            res.sendStatus(500);
-        });
-    } else {
-        res.sendStatus(403);
-    }
-});
-
 // Route POST /api/employee/request
 // User adds requested time-off to the database
 router.post('/', (req, res) => {
