@@ -12,7 +12,7 @@ const passport = require('./strategies/google.strategy');
 // Route includes
 const userRouter = require('./routes/user.router');
 const employeeRequestRouter = require('./routes/employeeRequest.router');
-const adminAddTimeRouter = require('./routes/adminAddTime.router');
+const accruedTimeRouter = require('./routes/accruedTime.router');
 
 const employeeRouter = require('./routes/employee.router');
 const adminRequestRouter = require('./routes/adminRequest.router');
@@ -37,7 +37,7 @@ app.use(passport.session());
 /* Routes */
 app.use('/api/user', userRouter);
 app.use('/api/employee/request', employeeRequestRouter);
-app.use('/api/accrued-time', adminAddTimeRouter);
+app.use('/api/accrued-time', accruedTimeRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
 app.use('/api/scheduled-task', cronAddLeave);
