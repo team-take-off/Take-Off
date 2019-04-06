@@ -9,14 +9,13 @@ const sessionMiddleware = require('./modules/session-middleware');
 const passport = require('./strategies/google.strategy');
 
 // Route includes
-const userRouter = require('./routes/user.router');
-const employeeRequestRouter = require('./routes/employeeRequest.router');
 const accruedTimeRouter = require('./routes/accruedTime.router');
-
+const cronAddLeave = require('./routes/cronAddLeave.router');
 const employeeRouter = require('./routes/employee.router');
 const adminRequestRouter = require('./routes/adminRequest.router');
-const cronAddLeave = require('./routes/cronAddLeave.router');
+const employeeRequestRouter = require('./routes/employeeRequest.router');
 const testCron = require('./routes/testCron.router');
+const userRouter = require('./routes/user.router');
 
 
 if(process.env.NODE_ENV === 'development') {
@@ -34,13 +33,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 /* Routes */
-app.use('/api/user', userRouter);
-app.use('/api/employee/request', employeeRequestRouter);
 app.use('/api/accrued-time', accruedTimeRouter);
+app.use('/api/scheduled-task', cronAddLeave);
 app.use('/api/employee', employeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
-app.use('/api/scheduled-task', cronAddLeave);
+app.use('/api/employee/request', employeeRequestRouter);
 app.use('/api/test-cron', testCron);
+app.use('/api/user', userRouter);
 
 // Serve static files
 app.use(express.static('build'));
