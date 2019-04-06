@@ -14,7 +14,7 @@ const userRouter = require('./routes/user.router');
 const employeeRequestRouter = require('./routes/employeeRequest.router');
 const adminAddTimeRouter = require('./routes/adminAddTime.router');
 
-const adminEmployeeRouter = require('./routes/adminEmployee.router');
+const employeeRouter = require('./routes/employee.router');
 const adminRequestRouter = require('./routes/adminRequest.router');
 const cronAddLeave = require('./routes/cronAddLeave.router');
 const testCron = require('./routes/testCron.router');
@@ -38,7 +38,7 @@ app.use(passport.session());
 app.use('/api/user', userRouter);
 app.use('/api/employee/request', employeeRequestRouter);
 app.use('/api/admin/addtime', adminAddTimeRouter);
-app.use('/api/admin/employees', adminEmployeeRouter);
+app.use('/api/employee', employeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
 app.use('/api/scheduled-task', cronAddLeave);
 app.use('/api/test-cron', testCron);

@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function* fetchEmployees() {
     try {
-        const serverResponse = yield axios.get(`api/admin/employees`);
+        const serverResponse = yield axios.get(`api/employee`);
         yield put({type: 'SET_EMPLOYEES', payload: serverResponse.data});
     } catch (error) {
         console.log('Error in SET_EMPLOYEES:', error);
@@ -12,7 +12,7 @@ function* fetchEmployees() {
 
 function* deleteEmployee(action) {
     try {
-        yield axios.delete(`api/admin/employees/${action.payload}`);
+        yield axios.delete(`api/employee/${action.payload}`);
         const nextAction = { type: 'FETCH_EMPLOYEES' };
         yield put(nextAction);
     } catch (error) {
@@ -23,7 +23,7 @@ function* deleteEmployee(action) {
 
 function* addEmployee(action) {
     try {
-        yield axios.post('api/admin/employees', action.payload);
+        yield axios.post('api/employee', action.payload);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in ADD_EMPLOYEE:', error);
@@ -32,7 +32,7 @@ function* addEmployee(action) {
 
 function* updateEmployee(action) {
     try {
-        yield axios.put('api/admin/employees/', action.payload);
+        yield axios.put('api/employee', action.payload);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in UPDATE_EMPLOYEE:', error);
@@ -43,7 +43,7 @@ function* updateEmployee(action) {
 function* deactivateEmployee(action) {
     try {
         const deactivate = { is_active: false };
-        yield axios.put(`api/admin/employees/active/${action.payload}`, deactivate);
+        yield axios.put(`api/employee/active/${action.payload}`, deactivate);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in DEACTIVATE_EMPLOYEE:', error);
@@ -54,7 +54,7 @@ function* deactivateEmployee(action) {
 function* activateEmployee(action) {
     try {
         const activate = { is_active: true };
-        yield axios.put(`api/admin/employees/active/${action.payload}`, activate);
+        yield axios.put(`api/employee/active/${action.payload}`, activate);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('Error in ACTIVATE_EMPLOYEE:', error);
