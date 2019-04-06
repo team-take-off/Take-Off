@@ -37,7 +37,7 @@ app.use(passport.session());
 /* Routes */
 app.use('/api/user', userRouter);
 app.use('/api/employee/request', employeeRequestRouter);
-app.use('/api/admin/addtime', adminAddTimeRouter);
+app.use('/api/accrued-time', adminAddTimeRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/admin/request', adminRequestRouter);
 app.use('/api/scheduled-task', cronAddLeave);
