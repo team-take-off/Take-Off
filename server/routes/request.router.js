@@ -131,4 +131,22 @@ router.post('/', rejectUnauthenticated, (req, res) => {
     });
 });
 
+// Route PUT /api/request/:id
+// Update the value of approved for a batch of requested days off
+router.put('/:id', rejectNonAdmin, (req, res) => {
+    const batchID = req.params.id;
+    const requestStatus = req.body.requestStatus;
+    const queryText = `
+    UPDATE batch_of_requests
+        SET request_status_id = $1
+        WHERE id = $2;
+    `;
+    pool.query(queryText, [requestStatus, batchID]).then((queryResult) => {
+        res.sendStatus(200);
+    }).catch((queryError) => {
+        console.log('SQL error using PUT /api/request/:id,', queryError);
+        res.sendStatus(500);
+    });
+});
+
 module.exports = router;

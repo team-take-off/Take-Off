@@ -13,7 +13,7 @@ function* fetchRequests() {
 function* approveRequest(action) {
     try {
         const batchID = action.payload;
-        yield axios.put(`api/admin/request/${batchID}`, { requestStatus: 2 });
+        yield axios.put(`api/request/${batchID}`, { requestStatus: 2 });
         yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
         console.log('Error in POST:', error);
@@ -23,7 +23,7 @@ function* approveRequest(action) {
 function* denyRequest(action) {
     try {
       const batchID = action.payload;
-      yield axios.put(`api/admin/request/${batchID}`, { requestStatus: 3 });
+      yield axios.put(`api/request/${batchID}`, { requestStatus: 3 });
       yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
         console.log('Error in DELETE:', error);

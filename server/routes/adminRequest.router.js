@@ -2,30 +2,6 @@ const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
 
-
-// Route PUT /api/admin/request/:id
-// Update the value of approved for a batch of requested days off
-router.put('/:id', (req, res) => {
-    if (req.isAuthenticated() && req.user.role_id === 1) {
-        const batchID = req.params.id;
-        const requestStatus = req.body.requestStatus;
-        const queryText = `
-        UPDATE "batch_of_requests"
-        SET "request_status_id" = $1
-        WHERE "id" = $2;
-        `;
-        pool.query(queryText, [requestStatus, batchID]).then((queryResult) => {
-            res.sendStatus(200);
-        }).catch((queryError) => {
-            const errorMessage = `SQL error using PUT /api/admin/request/:id, ${queryError}`;
-            console.log(errorMessage);
-            res.sendStatus(500);
-        });
-    } else {
-        res.sendStatus(403);
-    }
-});
-
 // Route DELETE /api/admin/request/:id
 // Remove a batch of requested days off
 router.delete('/:id', (req, res) => {
