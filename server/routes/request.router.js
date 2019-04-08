@@ -9,6 +9,7 @@ const ADMINISTRATOR_ROLE = 1;
 const VACATION_TYPE = 1;
 const SICK_TYPE = 2;
 const PENDING_STATUS = 1;
+const DENIED_STATUS = 3;
 
 // Route GET /api/request
 // Returns an array all requested days off for all users
@@ -140,22 +141,55 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 // Update the value of approved for a batch of requested days off
 router.put('/:id', rejectNonAdmin, (req, res) => {
     const batchID = req.params.id;
-    const requestStatus = req.body.requestStatus;
+    const newRequestStatus = req.body.requestStatus;
 
     (async () => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            
-            const queryText = `
+            const selectCurrentStatusText = `
+            SELECT request_status_id, employee_id, leave_type_id
+                FROM batch_of_requests 
+                WHERE id = $1;
+            `;
+            const selectCurrentStatus = await client.query(selectCurrentStatusText, [batchID]);
+            const requestStatus = selectCurrentStatus.rows[0].request_status_id;
+            const employeeID = selectCurrentStatus.rows[0].employee_id;
+            const leaveTypeID = selectCurrentStatus.rows[0].leave_type_id;
+            const updateText = `
             UPDATE batch_of_requests
                 SET request_status_id = $1
                 WHERE id = $2;
             `;
-            await client.query(queryText, [requestStatus, batchID]);
+            await client.query(updateText, [newRequestStatus, batchID]);
+            if (newRequestStatus !== requestStatus && newRequestStatus === DENIED_STATUS) {
+                const selectRefundHoursText = `
+                SELECT 
+                    SUM(off_hours)
+                    FROM time_off_request
+                    WHERE batch_of_requests_id = $1;
+                `;
+                const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
+                const refundHours = selectRefundHours.rows[0].sum;
+                if (leaveTypeID === VACATION_TYPE) {
+                    const updateRefundText = `
+                    UPDATE employee
+                        SET vacation_hours = vacation_hours + $1
+                        WHERE id = $2
+                    `;
+                    await client.query(updateRefundText, [refundHours, employeeID])
+                } else if (leaveTypeID === SICK_TYPE) {
+                    const updateRefundText = `
+                    UPDATE employee
+                        SET sick_hours = sick_hours + $1
+                        WHERE id = $2
+                    `;
+                    await client.query(updateRefundText, [refundHours, employeeID])
+                }
+            }
             await client.query('COMMIT');
             res.sendStatus(200);
-        } catch (queryError) {
+        } catch (error) {
             await client.query('ROLLBACK');
             await res.sendStatus(500);
             throw error;
