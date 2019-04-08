@@ -15,6 +15,8 @@ function* approveRequest(action) {
         const batchID = action.payload;
         yield axios.put(`api/request/${batchID}`, { requestStatus: 2 });
         yield put({ type: 'FETCH_REQUESTS' });
+        yield put({ type: 'FETCH_USER_REQUESTS' });
+        yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in POST:', error);
     }
@@ -22,22 +24,26 @@ function* approveRequest(action) {
 
 function* denyRequest(action) {
     try {
-      const batchID = action.payload;
-      yield axios.put(`api/request/${batchID}`, { requestStatus: 3 });
-      yield put({ type: 'FETCH_REQUESTS' });
+        const batchID = action.payload;
+        yield axios.put(`api/request/${batchID}`, { requestStatus: 3 });
+        yield put({ type: 'FETCH_REQUESTS' });
+        yield put({ type: 'FETCH_USER_REQUESTS' });
+        yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in DELETE:', error);
     }
 }
 
 function* withdrawRequest(action) {
-  try {
-    const batchID = action.payload;
-    yield axios.delete(`api/request/${batchID}`);
-    yield put({ type: 'FETCH_REQUESTS' });
-  } catch (error) {
-    console.log('Error in DELETE:', error);
-  }
+    try {
+        const batchID = action.payload;
+        yield axios.delete(`api/request/${batchID}`);
+        yield put({ type: 'FETCH_REQUESTS' });
+        yield put({ type: 'FETCH_USER_REQUESTS' });
+        yield put({ type: 'FETCH_USER_INFO' });
+    } catch (error) {
+        console.log('Error in DELETE:', error);
+    }
 }
 
 function* requestsSaga() {
