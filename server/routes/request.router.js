@@ -141,17 +141,32 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 router.put('/:id', rejectNonAdmin, (req, res) => {
     const batchID = req.params.id;
     const requestStatus = req.body.requestStatus;
-    const queryText = `
-    UPDATE batch_of_requests
-        SET request_status_id = $1
-        WHERE id = $2;
-    `;
-    pool.query(queryText, [requestStatus, batchID]).then((queryResult) => {
-        res.sendStatus(200);
-    }).catch((queryError) => {
-        console.log('SQL error using PUT /api/request/:id,', queryError);
-        res.sendStatus(500);
+
+    (async () => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            
+            const queryText = `
+            UPDATE batch_of_requests
+                SET request_status_id = $1
+                WHERE id = $2;
+            `;
+            await client.query(queryText, [requestStatus, batchID]);
+            await client.query('COMMIT');
+            res.sendStatus(200);
+        } catch (queryError) {
+            await client.query('ROLLBACK');
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using PUT /api/request/:id');
     });
+    
 });
 
 // Route DELETE /api/request/:id
