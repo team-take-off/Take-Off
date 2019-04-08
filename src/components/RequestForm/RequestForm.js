@@ -113,7 +113,7 @@ class RequestForm extends Component {
             this.props.history.push('/employee_requests');
         }
                     } else {
-                        swal("Rquest Cancelled");
+                        swal("Request Cancelled");
                     }
                 }); //alert for submitting request
         

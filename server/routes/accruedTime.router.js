@@ -10,7 +10,7 @@ router.post('/:id', (req, res) => {
                 queryText = `
                 INSERT INTO "accrued_time" 
                     ("sick_hours", "vacation_hours", "employee_id")
-                VALUES (0, $1, $2)`
+                VALUES (0, $1, $2);`;
                 
                 pool.query(queryText, [req.body.hours, req.params.id])
                 .then(() => res.sendStatus(200))
@@ -23,7 +23,7 @@ router.post('/:id', (req, res) => {
                 queryText = `
                     INSERT INTO "accrued_time" 
                         ("sick_hours", "vacation_hours", "employee_id")
-                    VALUES ($1, 0, $2)`
+                    VALUES ($1, 0, $2);`;
                     
                 pool.query(queryText, [req.body.hours, req.params.id])
                 .then(() => res.sendStatus(200))

@@ -44,7 +44,7 @@ router.post('/', rejectNonAdmin, (req, res) => {
         req.body.start_date
     ];
     pool.query(queryText, insertArray).then((response) => {
-        res.sendStatus(200);
+        res.sendStatus(201);
     }).catch((error) => {
         console.log('Error in route POST /api/employee,', error);
         res.sendStatus(500);
