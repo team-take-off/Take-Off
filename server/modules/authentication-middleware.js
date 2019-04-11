@@ -1,6 +1,8 @@
+const ADMINISTRATOR_ROLE_ID = 1;
+
 const rejectUnauthenticated = (req, res, next) => {
   // check if logged in
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && req.user.is_active) {
     // They were authenticated! User may do the next thing
     // Note! They may not be Authorized to do all things
     next();
@@ -11,7 +13,7 @@ const rejectUnauthenticated = (req, res, next) => {
 };
 
 const rejectNonAdmin = (req, res, next) => {
-  if (req.isAuthenticated() && req.user.role_id === 1) {
+  if (req.isAuthenticated() && req.user.is_active && req.user.role_id === ADMINISTRATOR_ROLE_ID) {
     next();
   } else {
     res.sendStatus(403);

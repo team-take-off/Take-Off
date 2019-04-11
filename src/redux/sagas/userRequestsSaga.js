@@ -3,36 +3,41 @@ import axios from 'axios';
 
 function* fetchUserRequests(action) {
     try {
-        const serverResponse = yield axios.get(`api/employee/request`);
+        const serverResponse = yield axios.get(`api/request/current-user`);
         const nextAction = {
             type: 'SET_USER_REQUESTS',
             payload: serverResponse.data
         }
         yield put(nextAction);
     } catch (error) {
-        console.log('Error in axios GET:', error);
+        console.log('Error in saga fetchUserRequests,', error);
+        alert('Unable to get users\'s time-off requests');
     }
 }
 
 function* addUserRequest(action) {
-      try {
-          yield axios.post('api/employee/request/', action.payload);
-          yield put({type: 'FETCH_USER_INFO'}) 
-          yield put({ type: 'FETCH_USER_REQUESTS' });   
-      } catch (error) {
-          console.log('Error in POST:', error);
-      }
+    try {
+        yield axios.post('api/request/', action.payload);
+        yield put({type: 'FETCH_USER_INFO' }); 
+        yield put({ type: 'FETCH_USER_REQUESTS' });
+        yield put({ type: 'FETCH_REQUESTS' });
+    } catch (error) {
+        console.log('Error in saga addUserRequest(),', error);
+        alert('Unable to add new request for time-off');
+    }
   }
 
 function* withdrawUserRequest(action) {
-      try {
-          const batchID = action.payload;
-          yield axios.delete(`api/employee/request/${batchID}`);
-          yield put({ type: 'FETCH_USER_REQUESTS' });
-          yield put({ type: 'FETCH_REQUESTS' });
-      } catch (error) {
-          console.log('Error in DELETE:', error);
-      }
+    try {
+        const batchID = action.payload;
+        yield axios.delete(`api/request/${batchID}`);
+        yield put({ type: 'FETCH_USER_INFO' });
+        yield put({ type: 'FETCH_USER_REQUESTS' });
+        yield put({ type: 'FETCH_REQUESTS' });
+    } catch (error) {
+        console.log('Error in saga withdrawUserRequest(),', error);
+        alert('Unable to witdraw time-off request');
+    }
   }
 
 function* userRequestsSaga() {

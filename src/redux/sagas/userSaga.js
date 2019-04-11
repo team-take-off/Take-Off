@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { put, takeLatest } from 'redux-saga/effects';
 
-// worker Saga: will be fired on "FETCH_USER" actions
+// worker Saga: will be fired on "FETCH_USER_INFO" actions
 function* fetchUser() {
   try {
     const config = {
@@ -26,7 +26,7 @@ console.log('usersage:',response);
 }
 
 function* userSaga() {
-  yield takeLatest('FETCH_USER', fetchUser);
+  yield takeLatest('FETCH_USER_INFO', fetchUser);
 }
 
 export default userSaga;

@@ -45,18 +45,18 @@ class AdminSearchEmployeePage extends Component {
 
         return (
                 <div className="page-container">
-                    <select onChange={this.setPerson}>
-                        <option value="" disabled selected>Select an Employee</option>
+                    <select onChange={this.setPerson} defaultValue="">
+                        <option value="" disabled>Select an Employee</option>
 
                         {this.props.reduxStore.employees.map((employee) => {
-                            return <option value={employee.first_name}>{employee.first_name} {employee.last_name}</option>
+                            return <option key={employee.id} value={employee.first_name}>{employee.first_name} {employee.last_name}</option>
                         })}
 
                     </select>
-                    <select onChange={this.setYear}>
-                        <option value="" disabled selected>Select a Year</option>
+                    <select onChange={this.setYear} defaultValue="">
+                        <option value="" disabled>Select a Year</option>
                         {requestDates.map((request) => {
-                            return <option>{request}</option>
+                            return <option key={request}>{request}</option>
                         })}
                     </select>
                 <RequestExpanderCollection requests={userRequests} forAdmin={true} />
