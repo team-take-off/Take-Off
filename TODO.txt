@@ -1,0 +1,7 @@
+# Improve Request Router
+Throw a 500 status when vacation goes negative
+Move SQL queries into functions to improve readability
+Use async/await to sort request statuses instead of performing sorting on the client-side
+Move check for weekends to the server-side
+Add a check for holidays to the server-side
+Admin dashboard for configuring company holidays

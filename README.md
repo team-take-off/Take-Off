@@ -10,32 +10,32 @@ The application is mobile friendly.
 ## Setup and Run
 You will need to follow the steps below to setup the database to get this up and running.
 
-### 1. Create PostgreSQL database named 'take_off'
+```bash
+# 1. Create PostgreSQL database named 'take_off'
 create db take_off (same as below but creating using SQL statements in terminal)
 
-### 2. Create database tables using SQL create statements in 'database.sql'.
+# 2. Create database tables using SQL create statements in 'database.sql'.
 Run the statmesnt below in terminal:
 psql -E -f database.sql -d take_off
 
-### Optional: initalize database with sample data found in 'sample.sql'.
+# Optional: initalize database with sample data found in 'sample.sql'.
 psql -E -f sample.sql -d take_off
 
-### 3. Install Node dependencies/libraries using NPM
+# 3. Install Node dependencies/libraries using NPM
 npm install
 
-### 4. Start the server
+# 4. Start the server
 npm run server
 
-### 5. Start the client
+# 5. Start the client
 npm run client
 
-### 6. Application runs locally on PORT 3000
+# 6. Application will run locally on PORT 3000
 
-### 7. Login/Aunthentication
+# 7. Login/Aunthentication
 You will need to insert your email account into the employee table, because the application checks against the authenticated email google sends back against list of employees.
 
-### 8. Configure .env File
-```bash
+# 8. Configure .env File
 # Configure your .env file with the following environment variables.
 # Note: Do not put your .env file into version control. It will contain sensitive secret information
 
@@ -45,7 +45,6 @@ CLIENT_SECRET= # Your Google Authentication Client Secret
 CALLBACK_URL=http://localhost:5000/api/user/auth/google/callback
 SUCCESS_REDIRECT=http://localhost:3000/#/home
 FAIL_REDIRECT=http://localhost:3000/#/login
-
 ```
 
 ## Description
@@ -110,7 +109,6 @@ On Submit Query, the request is sent to the admin for approval, and the user is 
 - [ ] Add accrued employee vacation and sick time throughout the year with Node-cron tasks
 - [ ] Allow more flexible back and forth between employees and administrators such as an in-app way for employees the request retroactive changes to their requests 
 - [ ] Add employee images to their request cards from their Google accounts
-- [ ] Improve UX particularly with regard to request card buttons. These cards currently have somewhat flat and non-descript buttons. The buttons would ideally float right, include icons, and have colors suggestive of their functions.
 
 ## Deploy to Heroku
 ```bash
