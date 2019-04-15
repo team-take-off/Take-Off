@@ -1,66 +1,39 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
+import { number } from 'prop-types';
 const moment = require('moment-business-days');
 
 
 class RequestForm extends Component {
 
-    setStartDate = (event) => {    
-        let typeString = '';
-        if (this.props.typeid === 1) {
-            typeString = 'SET_VACATION_START_DATE';
-        } else {
-            typeString = 'SET_SICK_START_DATE';
-        }
+    setStartDate = (event) => {
         const action = {
-            type: typeString,
+            type: (this.props.typeid === 1 ? 'SET_VACATION_START_DATE' : 'SET_SICK_START_DATE'),
             payload: event.target.value
         };
         this.props.dispatch(action);
     }
-    setEndDate = (event) => {
-       
-        let typeString = '';
-        if (this.props.typeid === 1) {
-            typeString = 'SET_VACATION_END_DATE';
-        } else {
-            typeString = 'SET_SICK_END_DATE';
-        }
-        const action = {
-            type: typeString,
-            payload: event.target.value
 
+    setEndDate = (event) => {
+        const action = {
+            type: (this.props.typeid === 1 ? 'SET_VACATION_END_DATE' : 'SET_SICK_END_DATE'),
+            payload: event.target.value
         };
         this.props.dispatch(action);
     }
 
     setStartHours = (event) => {
-        
-        let typeString = '';
-        if (this.props.typeid === 1) {
-            typeString = 'SET_VACATION_START_HOURS';
-        } else {
-            typeString = 'SET_SICK_START_HOURS';
-        }
         const action = {
-            type: typeString,
+            type: (this.props.typeid === 1 ? 'SET_VACATION_START_HOURS' : 'SET_SICK_START_HOURS'),
             payload: parseInt(event.target.value)
-
         };
         this.props.dispatch(action);
     }
 
     setEndHours = (event) => {
-      
-        let typeString = '';
-        if (this.props.typeid === 1) {
-            typeString = 'SET_VACATION_END_HOURS';
-        } else {
-            typeString = 'SET_SICK_END_HOURS';
-        }
         const action = {
-            type: typeString,
+            type: (this.props.typeid === 1 ? 'SET_VACATION_END_HOURS' : 'SET_SICK_END_HOURS'),
             payload: parseInt(event.target.value)
         };
         this.props.dispatch(action);
@@ -69,76 +42,69 @@ class RequestForm extends Component {
     submit = (event) => {
         event.preventDefault();
         swal({
-                title: "Submit Request?",
-                text: "Your Request will be submitted",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        swal("Request Submitted", {
-                        icon: "success",
-                        });
-                        let numberOfDays = moment(this.props.type.endDate).diff(this.props.type.startDate, 'days');
-                let i = 0;
-                let requestArray = [{ date: this.props.type.startDate, hours: this.props.type.startHours }];
-                let dayToAdd = this.props.type.startDate
-                while (i < numberOfDays - 1) {
-                    dayToAdd = moment(dayToAdd).add(1, 'days').format('YYYY-MM-DD')
-                    requestArray.push({ date: dayToAdd, hours: 8 });
-                    i++
-                }
-                requestArray.push({ date: this.props.type.endDate, hours: this.props.type.endHours })
-       
-        if (this.props.typeid === 1) {
-            const action = {
-                type: 'ADD_USER_REQUEST',
-                payload: {
-                    typeID: 1,
-                    requestedDates: requestArray
-                }
-            };
-            this.props.dispatch(action);
-            this.props.history.push('/employee_requests');
-        } else {
-            const action = {
-                type: 'ADD_USER_REQUEST',
-                payload: {
-                    typeID: 2,
-                    requestedDates: requestArray
-                }
-            };
-            this.props.dispatch(action);
-            this.props.history.push('/employee_requests');
-        }
+            title: 'Submit Request?',
+            text: 'Your request will be submitted',
+            icon: 'info',
+            buttons: true,
+        }).then((willRequest) => {
+            if (willRequest) {
+                const startDate = moment(this.props.type.startDate, 'YYYY-MM-DD');
+                const endDate = moment(this.props.type.endDate, 'YYYY-MM-DD');
+                const numberOfDays = endDate.diff(startDate, 'days') + 1;
+                let requestArray = [];
+                for (let i = 0; i < numberOfDays; i++) {
+                    const dateString = startDate.add(i, 'days').format('YYYY-MM-DD');
+                    if (i === 0) {
+                        requestArray.push({ date: dateString, hours: this.props.type.startHours });
+                    } else if (i === numberOfDays - 1) {
+                        requestArray.push({ date: dateString, hours: this.props.type.endHours });
                     } else {
-                        swal("Request Cancelled");
+                        requestArray.push({ date: dateString, hours: 8 });
                     }
-                }); //alert for submitting request
-        
+                }
+
+                const action = {
+                    type: 'ADD_USER_REQUEST',
+                    payload: {
+                        typeID: this.props.typeid,
+                        requestedDates: requestArray
+                    }
+                };
+                this.props.dispatch(action);
+                this.props.history.push('/employee_requests');
+                swal('Request Submitted', {
+                    icon: 'success',
+                });
+            } else {
+                swal("Request Cancelled");
+            }
+        });
     }
 
     // Show this component on the DOM
     render() {
     
         let dateVal;
-        if(this.props.type.startDate>this.props.type.endDate){
+        if (this.props.type.startDate>this.props.type.endDate) {
             dateVal = moment(this.props.type.startDate).format('YYYY-MM-DD');
-        }else{
+        } else {
             dateVal=this.props.type.endDate;
         }
         let fullHalf;
         if (this.props.type.startDate === this.props.type.endDate) {
-            fullHalf = <select disabled onChange={this.setEndHours} value={this.props.type.endHours} >
-                <option value="8">Full Day</option>
-                <option value="4">Half Day</option>
-            </select>
-        }else{
-            fullHalf = <select onChange={this.setEndHours} value={this.props.type.endHours}>
-                <option value="8">Full Day</option>
-                <option value="4">Half Day</option>
-            </select>
+            fullHalf = (
+                <select disabled onChange={this.setEndHours} value={this.props.type.endHours} >
+                    <option value="8">Full Day</option>
+                    <option value="4">Half Day</option>
+                </select>
+            );
+        } else {
+            fullHalf = (
+                <select onChange={this.setEndHours} value={this.props.type.endHours}>
+                    <option value="8">Full Day</option>
+                    <option value="4">Half Day</option>
+                </select>
+            );
         }
        
         return (

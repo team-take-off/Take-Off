@@ -54,7 +54,7 @@ CREATE TABLE employee
 	first_name VARCHAR(25) NOT NULL,
 	last_name VARCHAR(25) NOT NULL,
 	sick_hours INTEGER NOT NULL DEFAULT 0,
-	vacation_hours INTEGER NOT NULL DEFAULT 0,
+	vacation_hours INTEGER NOT NULL DEFAULT 0 CHECK(vacation_hours >= 0),
 	role_id INTEGER REFERENCES employee_role(id) DEFAULT 2,
 	started_date DATE NOT NULL,
 	is_active BOOLEAN DEFAULT true
