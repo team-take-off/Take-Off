@@ -105,42 +105,17 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 // Route PUT /api/request/:id
 // Update the value of approved for a batch of requested days off
 router.put('/:id', rejectNonAdmin, (req, res) => {
-    const batchID = req.params.id;
-    const newRequestStatus = req.body.requestStatus;
+    const id = req.params.id;
+    const requestStatus = req.body.requestStatus;
 
     (async () => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            const batch = await getBatchData(client, batchID);
-            await updateBatchStatus(client, batchID, newRequestStatus);
-            if (newRequestStatus === DENIED_STATUS && newRequestStatus !== batch.status) {
-                // refundBatchHours()
-                // sumBatchHours()
-                const selectRefundHoursText = `
-                SELECT 
-                    SUM(off_hours)
-                    FROM time_off_request
-                    WHERE batch_of_requests_id = $1;
-                `;
-                const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
-                const refundHours = selectRefundHours.rows[0].sum;
-                // refundHours()
-                if (batch.type === VACATION_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET vacation_hours = vacation_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, batch.employee])
-                } else if (batch.type === SICK_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET sick_hours = sick_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, batch.employee])
-                }
+            const batch = await getBatchData(client, id);
+            await updateBatchStatus(client, id, requestStatus);
+            if (requestStatus === DENIED_STATUS && requestStatus !== batch.status) {
+                await refundBatchHours(client, batch);
             }
             await client.query('COMMIT');
             res.sendStatus(200);
@@ -161,14 +136,14 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 // Route DELETE /api/request/:id
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
-    const batchID = req.params.id;
+    const id = req.params.id;
 
     (async () => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
             let employeeID = req.user.id;
-            const batch = await getBatchData(client, typeOfLeave, batchID);
+            const batch = await getBatchData(client, id);
             if (req.user.role_id === ADMINISTRATOR_ROLE) {
                 employeeID = batch.employee;
             } else if (employeeID !== batch.employee) {
@@ -178,47 +153,13 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
             if (batch.status === PENDING_STATUS) {
                 // TODO: This should include a check to see if the deleted request is in the future and 
                 // Prevent non-admin users from deleting in that case.
-                const selectRefundHoursText = `
-                SELECT 
-                    SUM(off_hours) 
-                    FROM time_off_request 
-                    WHERE batch_of_requests_id = $1;
-                `;
-                const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
-                const refundHours = selectRefundHours.rows[0].sum;
-                if (batch.type === VACATION_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET vacation_hours = vacation_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, employeeID])
-                } else if (batch.type === SICK_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET sick_hours = sick_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, employeeID])
-                }
+                await refundBatchHours(client, batch);
             }
 
-            const deleteRequestsText = `
-            DELETE 
-                FROM time_off_request
-                WHERE batch_of_requests_id = $1;
-            `;
-            await client.query(deleteRequestsText, [batchID]);
-            const deleteBatchText = `
-            DELETE 
-                FROM batch_of_requests
-                WHERE id = $1 AND employee_id = $2
-                RETURNING *;
-            `;
-            await client.query(deleteBatchText, [batchID, employeeID]);
+            await deleteBatch(client, batch);
             await client.query('COMMIT');
             res.sendStatus(200);
-        } catch (queryError) {
+        } catch (error) {
             await client.query('ROLLBACK');
             await res.sendStatus(500);
             throw error;
@@ -276,9 +217,11 @@ const insertRequest = async (client, request, userID, batchID, typeID) => {
     }
 };
 
+// Returns a batch of requests object based on batch id
 const getBatchData = async (client, id) => {
     const selectText = `
         SELECT 
+            id,
             employee_id, 
             request_status_id, 
             leave_type_id
@@ -287,12 +230,14 @@ const getBatchData = async (client, id) => {
     `;
     const { rows } = await client.query(selectText, [id]);
     return {
+        id: rows[0].id,
         employee: rows[0].employee_id,
         status: rows[0].request_status_id,
         type: rows[0].leave_type_id
     };
 };
 
+// Changes the status (PENDING, APPROVED, DENIED) of a batch of requests
 const updateBatchStatus = async (client, id, status) => {
     const updateText = `
         UPDATE batch_of_requests
@@ -301,5 +246,49 @@ const updateBatchStatus = async (client, id, status) => {
     `;
     await client.query(updateText, [status, id]);
 };
+
+// Refund the total number of off-hours found in a batch of requests
+const refundBatchHours = async (client, batch) => {
+    let hours;
+    if (batch.type === VACATION_TYPE) {
+        hours = 'vacation_hours';
+    } else if (batch.type === SICK_TYPE) {
+        hours = 'sick_hours';
+    } else {
+        throw Error(`Error in request.router.js function refundBatchHours. Invalid batch.type (${batch.type}).`);
+    }
+
+    const sumHoursText = `
+        SELECT 
+            SUM(off_hours)
+            FROM time_off_request
+            WHERE batch_of_requests_id = $1;
+    `;
+    const { rows } = await client.query(sumHoursText, [batch.id]);
+    const refundHours = rows[0].sum;
+
+    const updateEmployeeText = `
+        UPDATE employee
+            SET ${hours} = ${hours} + $1
+            WHERE id = $2
+    `;
+    await client.query(updateEmployeeText, [refundHours, batch.employee]);
+};
+
+// Deletes a batch of time-off requests
+const deleteBatch = async (client, batch) => {
+    const deleteRequestsText = `
+        DELETE 
+            FROM time_off_request
+            WHERE batch_of_requests_id = $1;
+    `;
+    await client.query(deleteRequestsText, [batch.id]);
+    const deleteBatchText = `
+        DELETE 
+            FROM batch_of_requests
+            WHERE id = $1;
+    `;
+    await client.query(deleteBatchText, [batch.id]);
+}
 
 module.exports = router;

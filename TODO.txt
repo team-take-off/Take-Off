@@ -1,5 +1,4 @@
 # Feature Improve Request Router
-Move SQL queries into functions to improve readability
 Use async/await to sort request statuses instead of performing sorting on the client-side
 Make default GET requests return (current) +/- one year from current date
 Request bundle includes years available
@@ -8,7 +7,6 @@ Update UI in employee home page to utilize the available years attribute
 Update UI in admin employee search page to utilize the available years attribute
 Change window for considering a request pending to be request was made <= 1 week before current date
 Enforce one week window when employees try to cancel a request
-Move check for weekends to the server-side
 Add a check for holidays to the server-side
 Add a settings tab visible to admin
 Admin dashboard for configuring company-wide holidays
