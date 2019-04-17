@@ -1,8 +1,8 @@
 # Feature Improve Request Router
 Use async/await to sort request statuses instead of performing sorting on the client-side
-Make default GET requests return (current) +/- one year from current date
+Make default GET requests return (current) +/- two years from current date
 Request bundle includes years available
-Optionally restrinct GET requests to only one year provided by client
+Optionally restrict GET requests to only one year provided by client
 Update UI in employee home page to utilize the available years attribute
 Update UI in admin employee search page to utilize the available years attribute
 Change window for considering a request pending to be request was made <= 1 week before current date

@@ -4,10 +4,16 @@ const pool = require('../modules/pool');
 const router = express.Router();
 const moment = require('moment');
 
+const GRACE_PERIOD = 5;
+
 const ADMINISTRATOR_ROLE = 1;
+const EMPLOYEE_ROLE = 2;
+
 const VACATION_TYPE = 1;
 const SICK_TYPE = 2;
+
 const PENDING_STATUS = 1;
+const APPROVED_STATUS = 2;
 const DENIED_STATUS = 3;
 
 const SUNDAY = '0';
@@ -16,35 +22,39 @@ const SATURDAY = '6';
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
-    const queryText = `
-    SELECT
-        time_off_request.id,
-        time_off_request.off_date AS date,
-        time_off_request.off_hours AS hours,
-        time_off_request.batch_of_requests_id,
-        batch_of_requests.date_requested AS date_requested,
-        employee.first_name,
-        employee.last_name,
-        leave_type.val AS type,
-        request_status.val AS status
-    FROM employee 
-    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-    ORDER BY date_requested;
-    `;
-    pool.query(queryText).then((result) => {
-        res.send(result.rows);
-    }).catch((queryError) => {
-        console.log('SQL error using route GET /api/request,', queryError);
-        res.sendStatus(500);
+    const year = req.body.year;
+
+    (async () => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            
+            const TEMP_requests = await TEMP_getRequests(client);
+
+            const years = await getYears(client);
+            const pending = await getRequests(client, PENDING_STATUS, year);
+            const approved = await getRequests(client, APPROVED_STATUS, year);
+            const denied = await getRequests(client, DENIED_STATUS, year);
+            const past = await getPastRequests(client);
+            await client.query('COMMIT');
+            res.send(TEMP_requests);
+        } catch (error) {
+            await client.query('ROLLBACK');
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using GET /api/request');
     });
 });
 
 // Route GET /api/request/current-user
 // Returns an array all requested days off for the currently authenticated user
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
+    // getEmployeeRequests(client, id, status, [year])
     const queryText = `
     SELECT
         time_off_request.id,
@@ -130,7 +140,6 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
         console.error(error.stack);
         console.log('SQL error using PUT /api/request/:id');
     });
-    
 });
 
 // Route DELETE /api/request/:id
@@ -172,13 +181,89 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
     });
 });
 
+const TEMP_getRequests = async (client) => {
+    const selectText = `
+    SELECT
+        time_off_request.id,
+        time_off_request.off_date AS date,
+        time_off_request.off_hours AS hours,
+        time_off_request.batch_of_requests_id,
+        batch_of_requests.date_requested AS date_requested,
+        employee.first_name,
+        employee.last_name,
+        leave_type.val AS type,
+        request_status.val AS status
+    FROM employee 
+    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
+    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
+    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
+    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
+    ORDER BY date_requested;
+    `;
+    const { rows } = await client.query(selectText);
+    return rows;
+};
+
+// Returns an array of unique years for time-off requests
+const getYears = async (client) => {
+    const selectText = `
+    SELECT DISTINCT EXTRACT(YEAR FROM off_date)
+    FROM time_off_request;
+    `;
+    const { rows } = await client.query(selectText);
+    return rows;
+}
+
+// Selects all time-off requests restricted by provided WHERE clauses
+// TODO: Should replace this function with a constant that holds the bulk of the SELECT statement
+const selectBaseRequests = async (client, whereClauses) => {
+    const selectText = `
+    SELECT
+        time_off_request.id,
+        time_off_request.off_date AS date,
+        time_off_request.off_hours AS hours,
+        time_off_request.batch_of_requests_id,
+        batch_of_requests.date_requested AS date_requested,
+        employee.first_name,
+        employee.last_name,
+        leave_type.val AS type,
+        request_status.val AS status
+    FROM employee 
+    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
+    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
+    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
+    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
+    ${whereClauses}
+    ORDER BY date_requested;
+    `;
+    const { rows } = await client.query(selectText);
+    return rows;
+} 
+
+// Returns an array of requests that have a given status and year
+const getRequests = async (client, status, year) => {
+    let whereClauses = `WHERE request_status.id = ${status} `;
+    if (year) {
+        whereClauses += ` AND EXTRACT(YEAR FROM time_off_request.off_date) = ${year}`;
+    } else {
+        whereClauses += ` AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
+    }
+    return await selectBaseRequests(client, whereClauses);
+};
+
+// Returns an array of all request that are now in the past based on the grace period
+const getPastRequests = async (client) => {
+    const whereClause = `WHERE time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
+    return await selectBaseRequests(client, whereClause);
+};
+
 // Insert a new batch of requests and return the assigned id (i.e. the primary key)
 const insertBatch = async (client, userID, typeID) => {
     const insertText = `
         INSERT INTO batch_of_requests
-            (employee_id, leave_type_id)
+        (employee_id, leave_type_id)
         VALUES
-            ($1, $2)
+        ($1, $2)
         RETURNING id;
     `;
     const { rows } = await client.query(insertText, [userID, typeID]);
@@ -203,15 +288,15 @@ const insertRequest = async (client, request, userID, batchID, typeID) => {
     if (day !== SUNDAY && day !== SATURDAY) {
         const insertRequest = `
             INSERT INTO time_off_request
-                (off_date, batch_of_requests_id, off_hours)
+            (off_date, batch_of_requests_id, off_hours)
             VALUES
-                ($1, $2, $3);
+            ($1, $2, $3);
         `;
         await client.query(insertRequest, [request.date, batchID, request.hours]);
         const updateHours = `
             UPDATE employee SET 
-                ${hours} = ${hours} - $1
-                WHERE id = $2;
+            ${hours} = ${hours} - $1
+            WHERE id = $2;
         `;
         await client.query(updateHours, [request.hours, userID]);
     }
@@ -241,8 +326,8 @@ const getBatchData = async (client, id) => {
 const updateBatchStatus = async (client, id, status) => {
     const updateText = `
         UPDATE batch_of_requests
-            SET request_status_id = $1
-            WHERE id = $2;
+        SET request_status_id = $1
+        WHERE id = $2;
     `;
     await client.query(updateText, [status, id]);
 };
@@ -259,18 +344,17 @@ const refundBatchHours = async (client, batch) => {
     }
 
     const sumHoursText = `
-        SELECT 
-            SUM(off_hours)
-            FROM time_off_request
-            WHERE batch_of_requests_id = $1;
+        SELECT SUM(off_hours)
+        FROM time_off_request
+        WHERE batch_of_requests_id = $1;
     `;
     const { rows } = await client.query(sumHoursText, [batch.id]);
     const refundHours = rows[0].sum;
 
     const updateEmployeeText = `
         UPDATE employee
-            SET ${hours} = ${hours} + $1
-            WHERE id = $2
+        SET ${hours} = ${hours} + $1
+        WHERE id = $2
     `;
     await client.query(updateEmployeeText, [refundHours, batch.employee]);
 };
@@ -278,15 +362,13 @@ const refundBatchHours = async (client, batch) => {
 // Deletes a batch of time-off requests
 const deleteBatch = async (client, batch) => {
     const deleteRequestsText = `
-        DELETE 
-            FROM time_off_request
-            WHERE batch_of_requests_id = $1;
+        DELETE FROM time_off_request
+        WHERE batch_of_requests_id = $1;
     `;
     await client.query(deleteRequestsText, [batch.id]);
     const deleteBatchText = `
-        DELETE 
-            FROM batch_of_requests
-            WHERE id = $1;
+        DELETE FROM batch_of_requests
+        WHERE id = $1;
     `;
     await client.query(deleteBatchText, [batch.id]);
 }
