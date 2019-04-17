@@ -12,10 +12,9 @@ You will need to follow the steps below to setup the database to get this up and
 
 ```bash
 # 1. Create PostgreSQL database named 'take_off'
-create db take_off (same as below but creating using SQL statements in terminal)
+createdb take_off
 
 # 2. Create database tables using SQL create statements in 'database.sql'.
-Run the statmesnt below in terminal:
 psql -E -f database.sql -d take_off
 
 # Optional: initalize database with sample data found in 'sample.sql'.

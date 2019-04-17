@@ -2,8 +2,6 @@ const express = require('express');
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
-const moment = require('moment-holiday');
-const moment1 = require('moment-business-days');
 
 const ADMINISTRATOR_ROLE = 1;
 const VACATION_TYPE = 1;
@@ -81,46 +79,9 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            const insertComparisonText = `
-            INSERT INTO batch_of_requests
-                (employee_id, leave_type_id)
-            VALUES
-                ($1, $2)
-            RETURNING id;
-            `;
-            const { rows } = await client.query(insertComparisonText, [userID, typeID]);
-            const batchID = rows[0].id;
-            if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date &&
-                moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true) {
-                const insertDateText = `
-                INSERT INTO time_off_request
-                    (off_date, batch_of_requests_id, off_hours)
-                VALUES
-                    ($1, $2, $3);
-                `;
-                await client.query(insertDateText, [requestedDates[0].date, batchID, requestedDates[0].hours]);
-                const updateEmployeeLeaveTable = `
-                UPDATE employee SET 
-                    ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} = ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} - ${requestedDates[0].hours}
-                WHERE id = $1`
-                await client.query(updateEmployeeLeaveTable, [userID]);
-            } else {
-                for (let request of requestedDates) {
-                    if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true) {
-                        const insertDateText = `
-                        INSERT INTO time_off_request
-                            (off_date, batch_of_requests_id, off_hours)
-                        VALUES
-                            ($1, $2, $3);
-                        `;
-                        await client.query(insertDateText, [request.date, batchID, request.hours]);
-                        const updateEmployeeLeaveTable = `
-                        UPDATE employee SET 
-                        ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} = ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} - ${request.hours}
-                        WHERE id = $1`
-                        await client.query(updateEmployeeLeaveTable, [userID]);
-                    }
-                }
+            const batchID = await insertBatch(client, userID, typeID);
+            for (let request of requestedDates) {
+                await insertRequest(client, request, userID, batchID, typeID);
             }
             await client.query('COMMIT');
             await res.sendStatus(201);
@@ -286,5 +247,48 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
         console.log('SQL error using DELETE /api/request/:id');
     });
 });
+
+// Insert a new batch of requests and return the assigned id (i.e. the primary key)
+const insertBatch = async (client, userID, typeID) => {
+    const insertText = `
+        INSERT INTO batch_of_requests
+            (employee_id, leave_type_id)
+        VALUES
+            ($1, $2)
+        RETURNING id;
+    `;
+    const { rows } = await client.query(insertText, [userID, typeID]);
+    const batchID = rows[0].id;
+    return batchID;
+};
+
+// Insert a new request for time-off. Then update the employee's total hours 
+// available.
+const insertRequest = async (client, request, userID, batchID, typeID) => {
+    let hours;
+    if (typeID === 1) {
+        hours = 'vacation_hours';
+    } else if (typeID === 2) {
+        hours = 'sick_hours';
+    } else {
+        throw Error(`Error in request.router.js function insertRequest. Invalid typeID (${typeID}) must be 1 or 2.`);
+    }
+
+    // if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true) {
+        const insertRequest = `
+            INSERT INTO time_off_request
+                (off_date, batch_of_requests_id, off_hours)
+            VALUES
+                ($1, $2, $3);
+        `;
+        await client.query(insertRequest, [request.date, batchID, request.hours]);
+        const updateHours = `
+            UPDATE employee SET 
+                ${hours} = ${hours} - $1
+                WHERE id = $2;
+        `;
+        await client.query(updateHours, [request.hours, userID]);
+    // }
+};
 
 module.exports = router;

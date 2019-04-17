@@ -35,10 +35,10 @@ router.post('/:id', (req, res) => {
                 break;
         }
         
-    }else {
+    } else {
         res.sendStatus(403);
     }
-}); // END OF POST
+});
 
 router.put('/:id', (req,res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
@@ -66,6 +66,6 @@ router.put('/:id', (req,res) => {
     } else {
         res.sendStatus(403);
     }
-}) // END OF PUT
+});
 
 module.exports = router;
