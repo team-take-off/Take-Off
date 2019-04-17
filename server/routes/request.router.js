@@ -2,12 +2,16 @@ const express = require('express');
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
+const moment = require('moment');
 
 const ADMINISTRATOR_ROLE = 1;
 const VACATION_TYPE = 1;
 const SICK_TYPE = 2;
 const PENDING_STATUS = 1;
 const DENIED_STATUS = 3;
+
+const SUNDAY = '0';
+const SATURDAY = '6';
 
 // Route GET /api/request
 // Returns an array all requested days off for all users
@@ -108,6 +112,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
+            // selectBatch()
             const selectCurrentStatusText = `
             SELECT request_status_id, employee_id, leave_type_id
                 FROM batch_of_requests 
@@ -117,6 +122,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             const requestStatus = selectCurrentStatus.rows[0].request_status_id;
             const employeeID = selectCurrentStatus.rows[0].employee_id;
             const leaveTypeID = selectCurrentStatus.rows[0].leave_type_id;
+            // updateBatchStatus()
             const updateText = `
             UPDATE batch_of_requests
                 SET request_status_id = $1
@@ -124,6 +130,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             `;
             await client.query(updateText, [newRequestStatus, batchID]);
             if (newRequestStatus !== requestStatus && newRequestStatus === DENIED_STATUS) {
+                // sumBatchHours()
                 const selectRefundHoursText = `
                 SELECT 
                     SUM(off_hours)
@@ -132,6 +139,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
                 `;
                 const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
                 const refundHours = selectRefundHours.rows[0].sum;
+                // refundHours()
                 if (leaveTypeID === VACATION_TYPE) {
                     const updateRefundText = `
                     UPDATE employee
@@ -266,15 +274,17 @@ const insertBatch = async (client, userID, typeID) => {
 // available.
 const insertRequest = async (client, request, userID, batchID, typeID) => {
     let hours;
-    if (typeID === 1) {
+    if (typeID === VACATION_TYPE) {
         hours = 'vacation_hours';
-    } else if (typeID === 2) {
+    } else if (typeID === SICK_TYPE) {
         hours = 'sick_hours';
     } else {
         throw Error(`Error in request.router.js function insertRequest. Invalid typeID (${typeID}) must be 1 or 2.`);
     }
 
-    // if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true) {
+    const date = moment(request.date, 'YYYY-MM-DD');
+    const day = date.format('d');
+    if (day !== SUNDAY && day !== SATURDAY) {
         const insertRequest = `
             INSERT INTO time_off_request
                 (off_date, batch_of_requests_id, off_hours)
@@ -288,7 +298,7 @@ const insertRequest = async (client, request, userID, batchID, typeID) => {
                 WHERE id = $2;
         `;
         await client.query(updateHours, [request.hours, userID]);
-    // }
+    }
 };
 
 module.exports = router;

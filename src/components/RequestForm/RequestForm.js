@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
-import { number } from 'prop-types';
-const moment = require('moment-business-days');
+import moment from 'moment';
 
 
 class RequestForm extends Component {
@@ -52,15 +51,16 @@ class RequestForm extends Component {
                 const endDate = moment(this.props.type.endDate, 'YYYY-MM-DD');
                 const numberOfDays = endDate.diff(startDate, 'days') + 1;
                 let requestArray = [];
+                let currentDate = moment(this.props.type.startDate, 'YYYY-MM-DD');
                 for (let i = 0; i < numberOfDays; i++) {
-                    const dateString = startDate.add(i, 'days').format('YYYY-MM-DD');
                     if (i === 0) {
-                        requestArray.push({ date: dateString, hours: this.props.type.startHours });
+                        requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: this.props.type.startHours });
                     } else if (i === numberOfDays - 1) {
-                        requestArray.push({ date: dateString, hours: this.props.type.endHours });
+                        requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: this.props.type.endHours });
                     } else {
-                        requestArray.push({ date: dateString, hours: 8 });
+                        requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: 8 });
                     }
+                    currentDate.add(1, 'days');
                 }
 
                 const action = {
