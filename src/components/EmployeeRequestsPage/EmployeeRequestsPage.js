@@ -64,7 +64,13 @@ class EmployeeRequestsPage extends Component {
                         <option key={i}>{year}</option>
                     )}
                 </select>
-                <RequestExpanderCollection requests={userRequests} forAdmin={false} />
+                <RequestExpanderCollection
+                    pending={this.props.reduxStore.requests.pending}
+                    approved={this.props.reduxStore.requests.approved}
+                    denied={this.props.reduxStore.requests.denied}
+                    past={this.props.reduxStore.requests.past}
+                    forAdmin={false}
+                />
             </div>
         );
     }

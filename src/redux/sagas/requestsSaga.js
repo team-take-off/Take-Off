@@ -4,7 +4,8 @@ import axios from 'axios';
 function* fetchRequests() {
     try {
         const serverResponse = yield axios.get('api/request');
-        yield put({ type: 'SET_REQUESTS', payload: serverResponse.data });
+        yield console.log(serverResponse.data);
+        yield put({ type: 'SET_REQUESTS', payload: serverResponse.data.requests });
     } catch (error) {
         console.log('Error in axios GET:', error);
     }

@@ -29,7 +29,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
         try {
             await client.query('BEGIN');
             
-            const TEMP_requests = await TEMP_getRequests(client);
+            const requests = await TEMP_getRequests(client);
 
             const years = await getYears(client);
             const pending = await getRequests(client, PENDING_STATUS, year);
@@ -37,7 +37,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
             const denied = await getRequests(client, DENIED_STATUS, year);
             const past = await getPastRequests(client);
             await client.query('COMMIT');
-            res.send(TEMP_requests);
+            res.send({requests, years, pending, approved, denied, past});
         } catch (error) {
             await client.query('ROLLBACK');
             await res.sendStatus(500);
@@ -207,17 +207,17 @@ const TEMP_getRequests = async (client) => {
 // Returns an array of unique years for time-off requests
 const getYears = async (client) => {
     const selectText = `
-    SELECT DISTINCT EXTRACT(YEAR FROM off_date)
+    SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
     FROM time_off_request;
     `;
     const { rows } = await client.query(selectText);
-    return rows;
+    const yearArray = await rows.map(row => row.year_part);
+    return yearArray;
 }
 
 // Selects all time-off requests restricted by provided WHERE clauses
-// TODO: Should replace this function with a constant that holds the bulk of the SELECT statement
-const selectBaseRequests = async (client, whereClauses) => {
-    const selectText = `
+const composeJoinRequests = async (whereClause) => {
+    const joinText = `
     SELECT
         time_off_request.id,
         time_off_request.off_date AS date,
@@ -233,28 +233,39 @@ const selectBaseRequests = async (client, whereClauses) => {
     JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
     JOIN request_status ON request_status.id = batch_of_requests.request_status_id
     JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-    ${whereClauses}
+    ${whereClause}
     ORDER BY date_requested;
     `;
-    const { rows } = await client.query(selectText);
-    return rows;
+    return joinText;
 } 
 
 // Returns an array of requests that have a given status and year
 const getRequests = async (client, status, year) => {
-    let whereClauses = `WHERE request_status.id = ${status} `;
     if (year) {
-        whereClauses += ` AND EXTRACT(YEAR FROM time_off_request.off_date) = ${year}`;
+        const whereClause = `
+        WHERE request_status.id = $1
+        AND EXTRACT(YEAR FROM time_off_request.off_date) = $2
+        `;
+        const selectText = await composeJoinRequests(whereClause);
+        const { rows } = await client.query(selectText, [status, year]);
+        return rows;
     } else {
-        whereClauses += ` AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
+        const whereClause = `
+        WHERE request_status.id = $1
+        AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        `;
+        const selectText = await composeJoinRequests(whereClause);
+        const { rows } = await client.query(selectText, [status]);
+        return rows;
     }
-    return await selectBaseRequests(client, whereClauses);
 };
 
 // Returns an array of all request that are now in the past based on the grace period
 const getPastRequests = async (client) => {
     const whereClause = `WHERE time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
-    return await selectBaseRequests(client, whereClause);
+    const selectText = await composeJoinRequests(whereClause);
+    const { rows } = await client.query(selectText);
+    return rows;
 };
 
 // Insert a new batch of requests and return the assigned id (i.e. the primary key)
