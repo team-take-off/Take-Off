@@ -4,6 +4,8 @@ const pool = require('../modules/pool');
 const router = express.Router();
 const moment = require('moment');
 
+const RequestClient = require('../classes/RequestClient');
+
 const GRACE_PERIOD = 5;
 
 const ADMINISTRATOR_ROLE = 1;
@@ -22,24 +24,25 @@ const SATURDAY = '6';
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
-    const year = req.body.year;
-
+    const config = {
+        year: req.body.year
+    };
+    
+    const client = new RequestClient(pool, config);
     (async () => {
-        const client = await pool.connect();
+        await client.connect();
         try {
-            await client.query('BEGIN');
-
+            await client.begin();
             const requests = await TEMP_getRequests(client);
-
-            const years = await getYears(client);
-            const pending = await getRequests(client, PENDING_STATUS, year);
-            const approved = await getRequests(client, APPROVED_STATUS, year);
-            const denied = await getRequests(client, DENIED_STATUS, year);
-            const past = await getPastRequests(client);
-            await client.query('COMMIT');
+            const years = await client.getYears();
+            const pending = await client.getRequests(PENDING_STATUS);
+            const approved = await client.getRequests(APPROVED_STATUS);
+            const denied = await client.getRequests(DENIED_STATUS);
+            const past = await client.getPastRequests();
+            await client.commit();
             res.send({ requests, years, pending, approved, denied, past });
         } catch (error) {
-            await client.query('ROLLBACK');
+            await client.rollback();
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -56,6 +59,10 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
     const id = req.user.id;
     const year = req.body.year;
+    const config = {
+        employee: req.user.id,
+        year: req.body.year
+    }
 
     (async () => {
         const client = await pool.connect();
