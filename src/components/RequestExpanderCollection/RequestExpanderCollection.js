@@ -57,15 +57,19 @@ class RequestExpanderCollection extends Component {
 
     // Returns an array with unique batch_of_request_id
     filterUniqueBatchIDs = (requests) => {
-        let uniqueObject = {};
-        for (let request of requests) {
-            uniqueObject[request.batch_of_requests_id] = 1;
+        if (requests) {
+            let uniqueObject = {};
+            for (let request of requests) {
+                uniqueObject[request.batch_of_requests_id] = 1;
+            }
+            let uniqueArray = [];
+            for (let id in uniqueObject) {
+                uniqueArray.push(parseInt(id));
+            }
+            return uniqueArray;
+        } else {
+            return [];
         }
-        let uniqueArray = [];
-        for (let id in uniqueObject) {
-            uniqueArray.push(parseInt(id));
-        }
-        return uniqueArray;
     }
 
     // Return a Moment.js object corresponding to the latest date in an array of

@@ -28,7 +28,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            
+
             const requests = await TEMP_getRequests(client);
 
             const years = await getYears(client);
@@ -37,7 +37,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
             const denied = await getRequests(client, DENIED_STATUS, year);
             const past = await getPastRequests(client);
             await client.query('COMMIT');
-            res.send({requests, years, pending, approved, denied, past});
+            res.send({ requests, years, pending, approved, denied, past });
         } catch (error) {
             await client.query('ROLLBACK');
             await res.sendStatus(500);
@@ -55,30 +55,60 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 // Returns an array all requested days off for the currently authenticated user
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
     // getEmployeeRequests(client, id, status, [year])
-    const queryText = `
-    SELECT
-        time_off_request.id,
-        time_off_request.off_date AS date,
-        time_off_request.off_hours AS hours,
-        time_off_request.batch_of_requests_id,
-        batch_of_requests.date_requested AS date_requested,
-        employee.first_name,
-        employee.last_name,
-        leave_type.val AS type,
-        request_status.val AS status
-    FROM employee 
-    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-    WHERE employee.id = $1
-    ORDER BY date_requested;
-    `;
-    pool.query(queryText, [req.user.id]).then((result) => {
-        res.send(result.rows);
-    }).catch((queryError) => {
-        console.log('SQL error using route GET /api/request/current-user,', queryError);
-        res.sendStatus(500);
+    // const queryText = `
+    // SELECT
+    //     time_off_request.id,
+    //     time_off_request.off_date AS date,
+    //     time_off_request.off_hours AS hours,
+    //     time_off_request.batch_of_requests_id,
+    //     batch_of_requests.date_requested AS date_requested,
+    //     employee.first_name,
+    //     employee.last_name,
+    //     leave_type.val AS type,
+    //     request_status.val AS status
+    // FROM employee 
+    // JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
+    // JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
+    // JOIN request_status ON request_status.id = batch_of_requests.request_status_id
+    // JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
+    // WHERE employee.id = $1
+    // ORDER BY date_requested;
+    // `;
+    // pool.query(queryText, [req.user.id]).then((result) => {
+    //     res.send(result.rows);
+    // }).catch((queryError) => {
+    //     console.log('SQL error using route GET /api/request/current-user,', queryError);
+    //     res.sendStatus(500);
+    // });
+
+    const id = req.user.id;
+    const year = req.body.year;
+
+    (async () => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            const requests = await TEMP_getRequestsEmployee(client, id);
+
+            // const years = await getYears(client, id);
+            // const pending = await getEmployeeRequests(client, id, PENDING_STATUS, year);
+            // const approved = await getEmployeeRequests(client, id, APPROVED_STATUS, year);
+            // const denied = await getEmployeeRequests(client, id, DENIED_STATUS, year);
+            // const past = await getPastRequests(client);
+            await client.query('COMMIT');
+            // res.send({ requests, years, pending, approved, denied, past });
+            res.send({ requests });
+        } catch (error) {
+            await client.query('ROLLBACK');
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using GET /api/request/current-user');
     });
 });
 
@@ -204,8 +234,32 @@ const TEMP_getRequests = async (client) => {
     return rows;
 };
 
+const TEMP_getRequestsEmployee = async (client, id) => {
+    const selectText = `
+    SELECT
+        time_off_request.id,
+        time_off_request.off_date AS date,
+        time_off_request.off_hours AS hours,
+        time_off_request.batch_of_requests_id,
+        batch_of_requests.date_requested AS date_requested,
+        employee.first_name,
+        employee.last_name,
+        leave_type.val AS type,
+        request_status.val AS status
+    FROM employee 
+    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
+    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
+    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
+    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
+    WHERE employee.id = $1
+    ORDER BY date_requested;
+    `;
+    const { rows } = await client.query(selectText, [id]);
+    return rows;
+};
+
 // Returns an array of unique years for time-off requests
-const getYears = async (client) => {
+const getYears = async (client, id) => {
     const selectText = `
     SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
     FROM time_off_request;
@@ -237,7 +291,7 @@ const composeJoinRequests = async (whereClause) => {
     ORDER BY date_requested;
     `;
     return joinText;
-} 
+}
 
 // Returns an array of requests that have a given status and year
 const getRequests = async (client, status, year) => {
