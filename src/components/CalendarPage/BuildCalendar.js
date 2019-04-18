@@ -71,7 +71,7 @@ class BuildAdminCalendar extends Component {
     }
     
         
-      // Returns an array with unique batch_of_request_id
+    // Returns an array with unique batch_of_request_id
     filterUniqueBatchIDs = (requests) => {
         let uniqueObject = {};
         for (let request of requests) {
@@ -81,7 +81,6 @@ class BuildAdminCalendar extends Component {
         for (let id in uniqueObject) {
             uniqueArray.push(parseInt(id));
         }
-        console.log(uniqueArray);
         
         return uniqueArray;
     }

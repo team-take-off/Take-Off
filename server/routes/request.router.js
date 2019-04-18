@@ -54,33 +54,6 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 // Route GET /api/request/current-user
 // Returns an array all requested days off for the currently authenticated user
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
-    // getEmployeeRequests(client, id, status, [year])
-    // const queryText = `
-    // SELECT
-    //     time_off_request.id,
-    //     time_off_request.off_date AS date,
-    //     time_off_request.off_hours AS hours,
-    //     time_off_request.batch_of_requests_id,
-    //     batch_of_requests.date_requested AS date_requested,
-    //     employee.first_name,
-    //     employee.last_name,
-    //     leave_type.val AS type,
-    //     request_status.val AS status
-    // FROM employee 
-    // JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-    // JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-    // JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-    // JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-    // WHERE employee.id = $1
-    // ORDER BY date_requested;
-    // `;
-    // pool.query(queryText, [req.user.id]).then((result) => {
-    //     res.send(result.rows);
-    // }).catch((queryError) => {
-    //     console.log('SQL error using route GET /api/request/current-user,', queryError);
-    //     res.sendStatus(500);
-    // });
-
     const id = req.user.id;
     const year = req.body.year;
 
@@ -91,14 +64,13 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 
             const requests = await TEMP_getRequestsEmployee(client, id);
 
-            // const years = await getYears(client, id);
-            // const pending = await getEmployeeRequests(client, id, PENDING_STATUS, year);
-            // const approved = await getEmployeeRequests(client, id, APPROVED_STATUS, year);
-            // const denied = await getEmployeeRequests(client, id, DENIED_STATUS, year);
-            // const past = await getPastRequests(client);
+            const years = await getYears(client, id);
+            const pending = await getEmployeeRequests(client, id, PENDING_STATUS, year);
+            const approved = await getEmployeeRequests(client, id, APPROVED_STATUS, year);
+            const denied = await getEmployeeRequests(client, id, DENIED_STATUS, year);
+            const past = await getPastRequests(client, id);
             await client.query('COMMIT');
-            // res.send({ requests, years, pending, approved, denied, past });
-            res.send({ requests });
+            res.send({ requests, years, pending, approved, denied, past });
         } catch (error) {
             await client.query('ROLLBACK');
             await res.sendStatus(500);
@@ -260,13 +232,25 @@ const TEMP_getRequestsEmployee = async (client, id) => {
 
 // Returns an array of unique years for time-off requests
 const getYears = async (client, id) => {
-    const selectText = `
-    SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
-    FROM time_off_request;
-    `;
-    const { rows } = await client.query(selectText);
-    const yearArray = await rows.map(row => row.year_part);
-    return yearArray;
+    if (id) {
+        const selectText = `
+        SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
+        FROM time_off_request
+        JOIN batch_of_requests ON time_off_request.batch_of_requests_id = batch_of_requests.id
+        WHERE batch_of_requests.employee_id = $1;
+        `;
+        const { rows } = await client.query(selectText, [id]);
+        const yearArray = await rows.map(row => row.year_part);
+        return yearArray;
+    } else {
+        const selectText = `
+        SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
+        FROM time_off_request;
+        `;
+        const { rows } = await client.query(selectText);
+        const yearArray = await rows.map(row => row.year_part);
+        return yearArray;
+    }
 }
 
 // Selects all time-off requests restricted by provided WHERE clauses
@@ -313,6 +297,28 @@ const getRequests = async (client, status, year) => {
         return rows;
     }
 };
+
+const getEmployeeRequests = async (client, id, status, year) => {
+    if (year) {
+        const whereClause = `
+        WHERE request_status.id = $1
+        AND employee.id = $2
+        AND EXTRACT(YEAR FROM time_off_request.off_date) = $3
+        `;
+        const selectText = await composeJoinRequests(whereClause);
+        const { rows } = await client.query(selectText, [status, id, year]);
+        return rows;
+    } else {
+        const whereClause = `
+        WHERE request_status.id = $1
+        AND employee.id = $2
+        AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        `;
+        const selectText = await composeJoinRequests(whereClause);
+        const { rows } = await client.query(selectText, [status, id]);
+        return rows;
+    }
+}
 
 // Returns an array of all request that are now in the past based on the grace period
 const getPastRequests = async (client) => {
