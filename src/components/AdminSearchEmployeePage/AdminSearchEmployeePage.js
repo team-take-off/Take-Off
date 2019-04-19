@@ -3,50 +3,44 @@ import { connect } from 'react-redux';
 import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
 
 class AdminSearchEmployeePage extends Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props);
         this.state = {
-            firstname: '',
-            year:'',
+            employee: '',
+            year: ''
         }
     }
+
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
         this.props.dispatch({ type: 'FETCH_REQUESTS' });
     }
 
-    setPerson = (event) => {
+    setEmployee = (event) => {
         this.setState({
-            firstname: event.target.value
-        })
+            ...this.state,
+            employee: event.target.value
+        });
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: this.state });
     }
+
     setYear = (event) => {
         this.setState({
+            ...this.state,
             year: event.target.value
-        })
+        });
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: this.state });
     }
 
     // Show this component on the DOM
     render() {
-        // let userRequests = [];
-        // if (this.state.person !== '' && this.state.year !== '') {
-        
-        //     for (let request of this.props.reduxStore.requests) {
-        //         if (request.first_name === this.state.firstname && request.date.substr(0, 4) === this.state.year) {
-        //             userRequests.push(request)
-        //         }
-        //     }
-        // }
-
         return (
             <div className="page-container">
                 <select onChange={this.setPerson} defaultValue="">
                     <option value="" disabled>Select an Employee</option>
-
                     {this.props.reduxStore.employees.map((employee) => {
-                        return <option key={employee.id} value={employee.first_name}>{employee.first_name} {employee.last_name}</option>
+                        return <option key={employee.id} value={employee.id}>{employee.first_name} {employee.last_name}</option>
                     })}
-
                 </select>
                 <select onChange={this.setYear} defaultValue="">
                     <option value="" disabled>Select a Year</option>
@@ -54,7 +48,13 @@ class AdminSearchEmployeePage extends Component {
                         return <option key={year}>{year}</option>
                     })}
                 </select>
-            {/* <RequestExpanderCollection requests={userRequests} forAdmin={true} /> */}
+                <RequestExpanderCollection
+                    pending={this.props.reduxStore.requests.pending}
+                    approved={this.props.reduxStore.requests.approved}
+                    denied={this.props.reduxStore.requests.denied}
+                    past={this.props.reduxStore.requests.past}
+                    forAdmin={true}
+                />
             </div>
         );
     }

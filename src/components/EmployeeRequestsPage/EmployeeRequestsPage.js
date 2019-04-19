@@ -20,8 +20,8 @@ class EmployeeRequestsPage extends Component {
         console.log(this.props.reduxStore.userRequests.pending);
         return (
             <div className="page-container">
-                <select onChange={this.handleYearChange} defaultValue="all">
-                    <option value="all">Recent Years</option>
+                <select onChange={this.handleYearChange} defaultValue="">
+                    <option value="">Recent Years</option>
                     {this.props.reduxStore.userRequests.years.map((year, i) =>
                         <option key={i}>{year}</option>
                     )}

@@ -1,5 +1,4 @@
 # Feature Improve Request Router
-Update UI in admin employee search page to utilize the available years attribute
 Update calendar page to use the new reducer
 Update admin search to use the new reducer
 Update employee list requests page to use the new reducer

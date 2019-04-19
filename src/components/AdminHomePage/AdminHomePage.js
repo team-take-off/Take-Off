@@ -17,7 +17,6 @@ class AdminHomePage extends Component {
                     approved={this.props.reduxStore.requests.approved}
                     denied={this.props.reduxStore.requests.denied}
                     past={this.props.reduxStore.requests.past}
-                    requests={this.props.reduxStore.requests.requests}
                     forAdmin={true}
                 />
             </div>
