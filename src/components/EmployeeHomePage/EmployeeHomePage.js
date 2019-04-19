@@ -15,13 +15,13 @@ class EmployeeHomePage extends Component {
         }
     }
 
-vacationRequest = (event) =>{
-    this.props.history.push('/request_vacation')
-}
+    vacationRequest = (event) =>{
+        this.props.history.push('/request_vacation')
+    }
 
-sickRequest = (event) => {
-    this.props.history.push('/request_sick') 
-}
+    sickRequest = (event) => {
+        this.props.history.push('/request_sick') 
+    }
     // Show this component on the DOM
     render() {
         return (

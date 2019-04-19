@@ -28,42 +28,35 @@ class AdminSearchEmployeePage extends Component {
 
     // Show this component on the DOM
     render() {
-        let uniqueDates = [];
-        for (let request of this.props.reduxStore.requests) {
-           uniqueDates.push(request.date.substr(0, 4))
-        }
-        let requestDates = [...new Set(uniqueDates)];
-        let userRequests = [];
-        if(this.state.person !== '' && this.state.year !== ''){
+        // let userRequests = [];
+        // if (this.state.person !== '' && this.state.year !== '') {
         
-        for (let request of this.props.reduxStore.requests) {
-            if (request.first_name === this.state.firstname && request.date.substr(0, 4) === this.state.year) {
-                userRequests.push(request)
-            }
-        }
-    }
+        //     for (let request of this.props.reduxStore.requests) {
+        //         if (request.first_name === this.state.firstname && request.date.substr(0, 4) === this.state.year) {
+        //             userRequests.push(request)
+        //         }
+        //     }
+        // }
 
         return (
-                <div className="page-container">
-                    <select onChange={this.setPerson} defaultValue="">
-                        <option value="" disabled>Select an Employee</option>
+            <div className="page-container">
+                <select onChange={this.setPerson} defaultValue="">
+                    <option value="" disabled>Select an Employee</option>
 
-                        {this.props.reduxStore.employees.map((employee) => {
-                            return <option key={employee.id} value={employee.first_name}>{employee.first_name} {employee.last_name}</option>
-                        })}
+                    {this.props.reduxStore.employees.map((employee) => {
+                        return <option key={employee.id} value={employee.first_name}>{employee.first_name} {employee.last_name}</option>
+                    })}
 
-                    </select>
-                    <select onChange={this.setYear} defaultValue="">
-                        <option value="" disabled>Select a Year</option>
-                        {requestDates.map((request) => {
-                            return <option key={request}>{request}</option>
-                        })}
-                    </select>
-                <RequestExpanderCollection requests={userRequests} forAdmin={true} />
-                </div>
-            );
-
-
+                </select>
+                <select onChange={this.setYear} defaultValue="">
+                    <option value="" disabled>Select a Year</option>
+                    {this.props.reduxStore.newRequests.years.map((year) => {
+                        return <option key={year}>{year}</option>
+                    })}
+                </select>
+            {/* <RequestExpanderCollection requests={userRequests} forAdmin={true} /> */}
+            </div>
+        );
     }
 }
 const mapStateToProps = reduxStore => ({

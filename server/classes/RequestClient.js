@@ -1,14 +1,7 @@
 const GRACE_PERIOD = 5;
 
-const ADMINISTRATOR_ROLE = 1;
-const EMPLOYEE_ROLE = 2;
-
 const VACATION_TYPE = 1;
 const SICK_TYPE = 2;
-
-const PENDING_STATUS = 1;
-const APPROVED_STATUS = 2;
-const DENIED_STATUS = 3;
 
 const SUNDAY = '0';
 const SATURDAY = '6';
@@ -44,6 +37,24 @@ class RequestClient {
         this.client.release();
     }
 
+    // Sort an array of requests into an array of arrays (grouped by batch ID)
+    async sortIntoGroups(requestArray) {
+        const uniqueGroupIDs = [];
+        const groupArray = [];
+        for (let request of requestArray) {
+            const id = request.batch_of_requests_id;
+            const index = await uniqueGroupIDs.indexOf(id);
+            if (index < 0) {
+                await uniqueGroupIDs.push(id);
+                await groupArray.push([]);
+                await groupArray[groupArray.length - 1].push(request);
+            } else {
+                await groupArray[index].push(request);
+            }
+        }
+        return groupArray;
+    }
+
     // Returns an array of unique years for time-off requests
     async getYears() {
         const id = this.config.employee;
@@ -69,7 +80,7 @@ class RequestClient {
     }
 
     // Selects all time-off requests restricted by provided WHERE clauses
-    async composeJoinRequests(whereClause) {
+    async composeJoinRequest(whereClause) {
         const joinText = `
         SELECT
             time_off_request.id,
@@ -100,17 +111,19 @@ class RequestClient {
             WHERE request_status.id = $1
             AND EXTRACT(YEAR FROM time_off_request.off_date) = $2
             `;
-            const selectText = await this.composeJoinRequests(whereClause);
+            const selectText = await this.composeJoinRequest(whereClause);
             const { rows } = await this.client.query(selectText, [status, year]);
-            return rows;
+            const requests = await this.sortIntoGroups(rows);
+            return requests;
         } else {
             const whereClause = `
             WHERE request_status.id = $1
             AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
             `;
-            const selectText = await this.composeJoinRequests(whereClause);
+            const selectText = await this.composeJoinRequest(whereClause);
             const { rows } = await this.client.query(selectText, [status]);
-            return rows;
+            const requests = await this.sortIntoGroups(rows);
+            return requests;
         }
     }
 
@@ -124,18 +137,20 @@ class RequestClient {
             AND employee.id = $2
             AND EXTRACT(YEAR FROM time_off_request.off_date) = $3
             `;
-            const selectText = await this.composeJoinRequests(whereClause);
+            const selectText = await this.composeJoinRequest(whereClause);
             const { rows } = await this.client.query(selectText, [status, id, year]);
-            return rows;
+            const requests = await this.sortIntoGroups(rows);
+            return requests;
         } else {
             const whereClause = `
             WHERE request_status.id = $1
             AND employee.id = $2
             AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
             `;
-            const selectText = await this.composeJoinRequests(whereClause);
+            const selectText = await this.composeJoinRequest(whereClause);
             const { rows } = await this.client.query(selectText, [status, id]);
-            return rows;
+            const requests = await this.sortIntoGroups(rows);
+            return requests;
         }
     }
 
@@ -143,9 +158,10 @@ class RequestClient {
     async getPastRequests() {
         // TODO: Can restrict this based on employee_id and combine with getRequests() and getEmployeeRequests()
         const whereClause = `WHERE time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
-        const selectText = await this.composeJoinRequests(whereClause);
+        const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText);
-        return rows;
+        const requests = await this.sortIntoGroups(rows);
+        return requests;
     }
 
     // Insert a new batch of requests and return the assigned id (i.e. the primary key)

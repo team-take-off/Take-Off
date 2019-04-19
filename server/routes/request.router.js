@@ -64,22 +64,23 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
         year: req.body.year
     };
 
+    const client = new RequestClient(pool, config);
     (async () => {
-        const client = await pool.connect();
+        await client.connect();
         try {
-            await client.query('BEGIN');
+            await client.begin();
 
             const requests = await TEMP_getRequestsEmployee(client, id);
 
-            const years = await getYears(client, id);
-            const pending = await getEmployeeRequests(client, id, PENDING_STATUS, year);
-            const approved = await getEmployeeRequests(client, id, APPROVED_STATUS, year);
-            const denied = await getEmployeeRequests(client, id, DENIED_STATUS, year);
-            const past = await getPastRequests(client, id);
-            await client.query('COMMIT');
+            const years = await client.getYears();
+            const pending = await client.getEmployeeRequests(PENDING_STATUS);
+            const approved = await client.getEmployeeRequests(APPROVED_STATUS);
+            const denied = await client.getEmployeeRequests(DENIED_STATUS);
+            const past = await client.getPastRequests();
+            await client.commit();
             res.send({ requests, years, pending, approved, denied, past });
         } catch (error) {
-            await client.query('ROLLBACK');
+            await client.rollback();
             await res.sendStatus(500);
             throw error;
         } finally {

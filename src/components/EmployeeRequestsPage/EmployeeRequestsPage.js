@@ -3,74 +3,53 @@ import { connect } from 'react-redux';
 import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
 
 class EmployeeRequestsPage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            years: [],
-            year:'',
-        };
-    }
-
     componentDidMount() {
-        let action = { type: 'FETCH_USER_REQUESTS' }
-        this.props.dispatch(action);
+        this.props.dispatch({ type: 'FETCH_USER_REQUESTS' });
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.reduxStore.userRequests !== this.props.reduxStore.userRequests) {
-            let uniqueDates = [];
-            for (let request of this.props.reduxStore.userRequests) {
-                uniqueDates.push(request.date.substr(0, 4))
-            }
-            this.setState({
-                ...this.state,
-                years: [...new Set(uniqueDates)]
-            });
-        }
-    }
-
-    setYear = (event) => {
-        this.setState({
-            year: event.target.value
-        })
-    }     
+    // setYear = (event) => {
+    //     this.setState({
+    //         year: event.target.value
+    //     })
+    // }     
 
     // Show this component on the DOM
     render() {
         // console.log(this.props.reduxStore.userRequests);
-        let userRequests = [];
-        if (this.state.year === '') {
-            this.props.reduxStore.userRequests.map(request => {
-                return userRequests.push(request);
-            })
-        }
-        else if (this.state.year !== '' && this.state.year !== 'all') {
+        // let userRequests = [];
+        // if (this.state.year === '') {
+        //     this.props.reduxStore.userRequests.map(request => {
+        //         return userRequests.push(request);
+        //     })
+        // }
+        // else if (this.state.year !== '' && this.state.year !== 'all') {
 
-            for (let request of this.props.reduxStore.userRequests) {
-                if (request.date.substr(0, 4) === this.state.year) {
-                    userRequests.push(request);
-                }
-            }
-        } else if (this.state.year === 'all') {
-            for (let request of this.props.reduxStore.userRequests) {
-                userRequests.push(request);
-            }
-        }
+        //     for (let request of this.props.reduxStore.userRequests) {
+        //         if (request.date.substr(0, 4) === this.state.year) {
+        //             userRequests.push(request);
+        //         }
+        //     }
+        // } else if (this.state.year === 'all') {
+        //     for (let request of this.props.reduxStore.userRequests) {
+        //         userRequests.push(request);
+        //     }
+        // }
         
+        console.log(this.props.reduxStore.newUserRequests.pending);
         return (
             <div className="page-container">
-                <select onChange={this.setYear} defaultValue="all">
+                {/* <select onChange={this.setYear} defaultValue="all">
                     <option value="all">All Years</option>
                     {this.state.years.map((year, i) =>
                         <option key={i}>{year}</option>
                     )}
-                </select>
+                </select> */}
                 <RequestExpanderCollection
-                    // pending={this.props.reduxStore.requests.pending}
-                    // approved={this.props.reduxStore.requests.approved}
-                    // denied={this.props.reduxStore.requests.denied}
-                    // past={this.props.reduxStore.requests.past}
-                    requests={userRequests}
+                    pending={this.props.reduxStore.newUserRequests.pending}
+                    approved={this.props.reduxStore.newUserRequests.approved}
+                    denied={this.props.reduxStore.newUserRequests.denied}
+                    // past={this.props.reduxStore.newUserRequests.past}
+                    requests={this.props.reduxStore.newUserRequests.requests}
                     forAdmin={false}
                 />
             </div>
