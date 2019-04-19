@@ -1,8 +1,8 @@
 # Feature Improve Request Router
-Update calendar page to use the new reducer
-Update admin search to use the new reducer
-Update employee list requests page to use the new reducer
+Update admin search to use the new reducer and route
+Update employee list requests page to use the new reducer and route
 Fix bugs in request.router and RequestClient
+Consolidate functions in RequestClient
 Make default GET requests return (current) +/- two years from current date
 Enforce the 5 day grace period when employees try to cancel a request
 

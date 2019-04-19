@@ -9,14 +9,16 @@ class AdminCalendarPage extends Component {
       
     // Show this component on the DOM
     render() {
-    return (
-      <div>
-          <BuildCalendar requests={[]} />
-        </div>
+        return (
+            <div>
+                <BuildCalendar requests={this.props.requests} />
+            </div>
         );
     }
 }
+
 const mapReduxStoreToProps = reduxStore => ({
     requests: reduxStore.requests
 });
+
 export default connect(mapReduxStoreToProps)(AdminCalendarPage);
