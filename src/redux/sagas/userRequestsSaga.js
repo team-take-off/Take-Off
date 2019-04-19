@@ -6,7 +6,7 @@ function* fetchUserRequests(action) {
         const serverResponse = yield axios.get(`api/request/current-user`);
         const nextAction = {
             type: 'SET_USER_REQUESTS',
-            payload: serverResponse.data.requests
+            payload: serverResponse.data
         }
         yield put(nextAction);
     } catch (error) {

@@ -27,7 +27,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
     const config = {
         year: req.body.year
     };
-    
+
     const client = new RequestClient(pool, config);
     (async () => {
         await client.connect();
@@ -62,7 +62,7 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
     const config = {
         employee: req.user.id,
         year: req.body.year
-    }
+    };
 
     (async () => {
         const client = await pool.connect();
