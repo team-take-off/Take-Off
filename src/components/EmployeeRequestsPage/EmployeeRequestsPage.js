@@ -35,7 +35,7 @@ class EmployeeRequestsPage extends Component {
         //     }
         // }
         
-        console.log(this.props.reduxStore.newUserRequests.pending);
+        console.log(this.props.reduxStore.userRequests.pending);
         return (
             <div className="page-container">
                 {/* <select onChange={this.setYear} defaultValue="all">
@@ -45,11 +45,11 @@ class EmployeeRequestsPage extends Component {
                     )}
                 </select> */}
                 <RequestExpanderCollection
-                    pending={this.props.reduxStore.newUserRequests.pending}
-                    approved={this.props.reduxStore.newUserRequests.approved}
-                    denied={this.props.reduxStore.newUserRequests.denied}
-                    // past={this.props.reduxStore.newUserRequests.past}
-                    requests={this.props.reduxStore.newUserRequests.requests}
+                    pending={this.props.reduxStore.userRequests.pending}
+                    approved={this.props.reduxStore.userRequests.approved}
+                    denied={this.props.reduxStore.userRequests.denied}
+                    // past={this.props.reduxStore.userRequests.past}
+                    requests={this.props.reduxStore.userRequests.requests}
                     forAdmin={false}
                 />
             </div>

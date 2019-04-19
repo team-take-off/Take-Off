@@ -13,11 +13,11 @@ class AdminHomePage extends Component {
         return (
             <div className="page-container">
                 <RequestExpanderCollection 
-                    pending={this.props.reduxStore.newRequests.pending}
-                    approved={this.props.reduxStore.newRequests.approved}
-                    denied={this.props.reduxStore.newRequests.denied}
-                    past={this.props.reduxStore.newRequests.past}
-                    requests={this.props.reduxStore.newRequests.requests}
+                    pending={this.props.reduxStore.requests.pending}
+                    approved={this.props.reduxStore.requests.approved}
+                    denied={this.props.reduxStore.requests.denied}
+                    past={this.props.reduxStore.requests.past}
+                    requests={this.props.reduxStore.requests.requests}
                     forAdmin={true}
                 />
             </div>

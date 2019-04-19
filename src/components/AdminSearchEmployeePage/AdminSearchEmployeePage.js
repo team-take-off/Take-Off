@@ -50,7 +50,7 @@ class AdminSearchEmployeePage extends Component {
                 </select>
                 <select onChange={this.setYear} defaultValue="">
                     <option value="" disabled>Select a Year</option>
-                    {this.props.reduxStore.newRequests.years.map((year) => {
+                    {this.props.reduxStore.requests.years.map((year) => {
                         return <option key={year}>{year}</option>
                     })}
                 </select>

@@ -6,7 +6,7 @@ const DEFAULT_STATE = {
     past: []
 };
 
-const newUserRequests = (state = DEFAULT_STATE, action) => {
+const userRequests = (state = DEFAULT_STATE, action) => {
     switch (action.type) {
         case 'SET_USER_REQUESTS':
             return action.payload;
@@ -17,4 +17,4 @@ const newUserRequests = (state = DEFAULT_STATE, action) => {
     }
 };
 
-export default newUserRequests;
+export default userRequests;

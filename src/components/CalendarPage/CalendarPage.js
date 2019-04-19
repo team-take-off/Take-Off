@@ -11,7 +11,7 @@ class AdminCalendarPage extends Component {
     render() {
     return (
       <div>
-          <BuildCalendar requests={this.props.requests} />
+          <BuildCalendar requests={[]} />
         </div>
         );
     }
