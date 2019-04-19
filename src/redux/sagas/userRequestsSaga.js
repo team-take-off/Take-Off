@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function* fetchUserRequests(action) {
     try {
-        const serverResponse = yield axios.get(`api/request/current-user`);
+        const serverResponse = yield axios.get(`api/request/current-user`, action.payload);
         yield put({ type: 'SET_USER_REQUESTS', payload: serverResponse.data });
     } catch (error) {
         console.log('Error in saga fetchUserRequests,', error);

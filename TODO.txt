@@ -1,12 +1,11 @@
 # Feature Improve Request Router
-Use async/await to sort request statuses instead of performing sorting on the client-side
-Make default GET requests return (current) +/- two years from current date
-Request bundle includes years available
-Optionally restrict GET requests to only one year provided by client
-Update UI in employee home page to utilize the available years attribute
 Update UI in admin employee search page to utilize the available years attribute
-Change window for considering a request pending to be request was made <= 1 week before current date
-Enforce 5 day grace period when employees try to cancel a request
+Update calendar page to use the new reducer
+Update admin search to use the new reducer
+Update employee list requests page to use the new reducer
+Fix bugs in request.router and RequestClient
+Make default GET requests return (current) +/- two years from current date
+Enforce the 5 day grace period when employees try to cancel a request
 
 # Feature Check For Holidays
 Add a check for holidays to the server-side
