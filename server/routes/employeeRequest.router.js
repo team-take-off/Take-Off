@@ -113,6 +113,7 @@ router.post('/', (req, res) => {
 router.delete('/:id', async (req, res) => {
     if (req.isAuthenticated () && req.user.is_active) {
         const batchID = req.params.id;
+        // also need to check if pto has already happened
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
