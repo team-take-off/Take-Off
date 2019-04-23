@@ -160,15 +160,6 @@ router.put('/edit', (req, res) => {
                 WHERE "id" = $2;`, [reimbursment, employeeToChange]);
                 // replace with new batch of requests
                 const requestedDates = req.body.newDates;
-                const insertComparisonText = `
-                INSERT INTO "batch_of_requests"
-                    ("employee_id", "leave_type_id")
-                VALUES
-                    ($1, $2)
-                RETURNING id;
-                `;
-                const { rows } = await client.query(insertComparisonText, [employeeToChange, leaveType]);
-                const batchID = rows[0].id;
                 if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date &&
                     moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true) {
                     const insertDateText = `
@@ -177,7 +168,7 @@ router.put('/edit', (req, res) => {
                     VALUES
 	                    ($1, $2, $3);
                     `;
-                    await client.query(insertDateText, [requestedDates[0].date, batchID, requestedDates[0].hours]);
+                    await client.query(insertDateText, [requestedDates[0].date, batchId, requestedDates[0].hours]);
                     const updateEmployeeLeaveTable = `UPDATE "employee" SET 
                     ${leaveType === 1 ? "vacation_hours" : "sick_hours"} = ${leaveType === 1 ? "vacation_hours" : "sick_hours"} - ${requestedDates[0].hours}
                     WHERE "id" = $1`
@@ -191,7 +182,7 @@ router.put('/edit', (req, res) => {
                             VALUES
                                 ($1, $2, $3);
                             `;
-                            await client.query(insertDateText, [request.date, batchID, request.hours]);
+                            await client.query(insertDateText, [request.date, batchId, request.hours]);
                             const updateEmployeeLeaveTable = `UPDATE "employee" SET 
                             ${leaveType === 1 ? "vacation_hours" : "sick_hours"} = ${leaveType === 1 ? "vacation_hours" : "sick_hours"} - ${request.hours}
                             WHERE "id" = $1`;
