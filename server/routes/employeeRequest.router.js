@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
         const userID = req.user.id;
         const typeID = req.body.typeID;
         const requestedDates = req.body.requestedDates;
-        
+
         (async () => {
             const client = await pool.connect();
             try {
@@ -61,8 +61,8 @@ router.post('/', (req, res) => {
                 `;
                 const { rows } = await client.query(insertComparisonText, [userID, typeID]);
                 const batchID = rows[0].id;
-                if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date&&
-                    moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true){
+                if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date &&
+                    moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true) {
                     const insertDateText = `
                     INSERT INTO "time_off_request"
 	                    ("off_date", "batch_of_requests_id", "off_hours" )
@@ -74,23 +74,23 @@ router.post('/', (req, res) => {
                     ${typeID === 1 ? "vacation_hours" : "sick_hours"} = ${typeID === 1 ? "vacation_hours" : "sick_hours"} - ${requestedDates[0].hours}
                     WHERE "id" = $1`
                     await client.query(updateEmployeeLeaveTable, [userID]);
-                }else{
-                for (let request of requestedDates) {
-                    if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true){
-                    const insertDateText = `
+                } else {
+                    for (let request of requestedDates) {
+                        if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true) {
+                            const insertDateText = `
                     INSERT INTO "time_off_request"
 	                    ("off_date", "batch_of_requests_id", "off_hours" )
                     VALUES
 	                    ($1, $2, $3);
                     `;
-                    await client.query(insertDateText, [request.date, batchID, request.hours]);
-                    const updateEmployeeLeaveTable = `UPDATE "employee" SET 
+                            await client.query(insertDateText, [request.date, batchID, request.hours]);
+                            const updateEmployeeLeaveTable = `UPDATE "employee" SET 
                     ${typeID === 1 ? "vacation_hours" : "sick_hours"} = ${typeID === 1 ? "vacation_hours" : "sick_hours"} - ${request.hours}
                     WHERE "id" = $1`
-                    await client.query(updateEmployeeLeaveTable, [userID]);
+                            await client.query(updateEmployeeLeaveTable, [userID]);
+                        }
                     }
                 }
-            }
                 await client.query('COMMIT');
                 await res.sendStatus(201);
             } catch (error) {
@@ -111,16 +111,16 @@ router.post('/', (req, res) => {
 // Route DELETE /api/employee/request/:id
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', async (req, res) => {
-    if (req.isAuthenticated () && req.user.is_active) {
+    if (req.isAuthenticated() && req.user.is_active) {
         const batchID = req.params.id;
         // also need to check if pto has already happened
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
             let employeeID;
-            if(req.user.role === 2){
+            if (req.user.role === 2) {
                 employeeID = req.user.id;
-            }else{
+            } else {
                 const typeOfLeave = `
             SELECT "employee_id" FROM "batch_of_requests" WHERE id = $1;`;
                 let person = await client.query(typeOfLeave, [batchID]);
@@ -131,13 +131,13 @@ router.delete('/:id', async (req, res) => {
             let results = await client.query(hoursToGiveBack, [batchID]);
             const typeOfLeave = `
             SELECT "leave_type_id" FROM "batch_of_requests" WHERE id = $1;`;
-            let type= await client.query(typeOfLeave, [batchID]);
-            if(type.rows[0].leave_type_id == 1){
+            let type = await client.query(typeOfLeave, [batchID]);
+            if (type.rows[0].leave_type_id == 1) {
                 let giveBackHoursText = `
                 UPDATE "employee" SET "vacation_hours" = "vacation_hours" + $1
                 WHERE "id" = $2`
-                await client.query(giveBackHoursText,[results.rows[0].sum, employeeID])
-            }else{
+                await client.query(giveBackHoursText, [results.rows[0].sum, employeeID])
+            } else {
                 giveBackHoursText = `
                 UPDATE "employee" SET "sick_hours" = "sick_hours" + $1
                 WHERE "id" = $2`

@@ -190,7 +190,8 @@ router.put('/edit', (req, res) => {
                         }
                     }
                 }
-                res.sendStatus(200);
+                await client.query('COMMIT');
+                await res.sendStatus(200);
             } catch (error) {
                 await client.query('ROLLBACK');
                 await res.sendStatus(500);
