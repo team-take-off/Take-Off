@@ -3,8 +3,13 @@ import { connect } from 'react-redux';
 
 import './RequestCard.css';
 import DateRange from '../../modules/DateRange';
+import EditDialog from './EditDialog';
 
 class RequestCard extends Component {
+
+    state = {
+        editDialog: false,
+    }
 
     // Display the employee's name if possible
     renderName = () => {
@@ -86,6 +91,9 @@ class RequestCard extends Component {
                         <button onClick={this.deny}>
                             Deny
                         </button>
+                        <button onClick={this.edit}>
+                            Edit
+                        </button>
                     </div>
                 );
             }
@@ -128,6 +136,21 @@ class RequestCard extends Component {
         }
     }
 
+    // Handles when the admin presses the 'Edit' button
+    edit = () => {
+        if(this.props.requestArray.length) {
+            this.setState({
+                editDialog: true,
+            });
+        }
+    }
+
+    closeEdit = () => {
+        this.setState({
+            editDialog: false,
+        });
+    }
+
     // Handles when the admin presses the 'Cancel' button.
     cancel = () => {
         if (this.props.requestArray.length !== 0) {
@@ -162,6 +185,11 @@ class RequestCard extends Component {
                 {this.renderConflicts()}
                 {this.renderAdminButtons()}
                 {this.renderEmployeeButtons()}
+                <EditDialog
+                    open={this.state.editDialog}
+                    closeEdit={this.closeEdit}
+                    startingArray={this.props.requestArray}
+                />
             </div>
         );
     }

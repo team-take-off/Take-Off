@@ -28,3 +28,7 @@ h5, h6 {
 .sick {
     color: rgb(201, 120, 62);
 }
+
+.inner-dialog {
+    padding: 30px;
+}
