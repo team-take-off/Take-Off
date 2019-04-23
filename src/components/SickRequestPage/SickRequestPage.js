@@ -6,17 +6,12 @@ import SickDaysHeading from '../SickDaysHeading/SickDaysHeading';
 
 class SickRequestPage extends Component {
 
-    componentDidMount() {
-        this.props.dispatch({type: 'FETCH_USER_INFO'});
-    }
-
-
     render() {
         return (
             <div className="page-container">
-                {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
+                {this.props.reduxStore.user && (
                     <div>
-                        <SickDaysHeading days={(parseFloat(this.props.reduxStore.userInfo[0].sick_hours) / 8)} />
+                        <SickDaysHeading days={(parseFloat(this.props.reduxStore.user.sick_hours) / 8)} />
                         <RequestForm history={this.props.history} type={this.props.reduxStore.sickRequestDates} typeid={2}/>
                     </div>
                 )}

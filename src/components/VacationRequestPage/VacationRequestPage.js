@@ -6,17 +6,12 @@ import VacationDaysHeading from '../VacationDaysHeading/VacationDaysHeading';
 
 class VacationRequestPage extends Component {
 
-    componentDidMount() {
-        this.props.dispatch({type: 'FETCH_USER_INFO'});
-    }
-
-
     render() {
         return (
             <div className="page-container">
-                {this.props.reduxStore.userInfo && this.props.reduxStore.userInfo.length > 0 && (
+                {this.props.reduxStore.user && (
                     <div>
-                        <VacationDaysHeading days={(parseFloat(this.props.reduxStore.userInfo[0].vacation_hours) / 8)} />
+                        <VacationDaysHeading days={(parseFloat(this.props.reduxStore.user.vacation_hours) / 8)} />
                         <RequestForm history={this.props.history} type={this.props.reduxStore.vacationRequestDates} typeid={1} />
                     </div>
                 )}

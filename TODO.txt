@@ -1,0 +1,34 @@
+# Feature Improve Request Router
+Throw a 500 status when a request would make total vacation days become negative
+Move SQL queries into functions to improve readability
+Use async/await to sort request statuses instead of performing sorting on the client-side
+Make default GET requests return (current) +/- one year from current date
+Request bundle includes years available
+Update UI in employee home page to utilize the available years attribute
+Update UI in admin employee search page to utilize the available years attribute
+Change window for considering a request pending to be request was made <= 1 week before current date
+Enforce one week window when employees try to cancel a request
+Move check for weekends to the server-side
+Add a check for holidays to the server-side
+Add a settings tab visible to admin
+Admin dashboard for configuring company-wide holidays
+
+# Feature Detect Request Collisions
+Add a request collisions table to database that links two request batches that have any colliding dates
+When posting a request batch check the existing requests for collisions and insert into request collisions table as needed
+Return request collisions along with requests bundle
+Display request collisions on request card components
+When employee cancels a request delete any corresponding entries in collisions table
+When admin denies a request delete any corresponding entries in collisions table
+
+# Feature Node Cron Vacation
+Add vacation rules module on the server-side 
+Add vacation rules router on the server-side that allows querrying the vacation rules module from the client
+Add test accrual rules page under admin settings page on the client-side
+Add vacation cron module on the server-side that runs once per year and applies the rules in vacation rules module to give employees their accrued vacation days
+
+# Feature Node Cron Sick Time
+Add sick time rules module on the server-side 
+Add sick time rules router on the server-side that allows querrying the sick time rules module from the client
+Modify test accrual rules page to also query sick time rules
+Add sick time cron module on the server-side that runs once per day and applies the rules in sick time rules module to give employees their accrued sick days

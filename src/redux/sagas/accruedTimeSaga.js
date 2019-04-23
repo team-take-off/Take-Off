@@ -3,8 +3,8 @@ import axios from 'axios';
 
 function* addLeave(action) {
     const additionalLeave = action.payload.leaveType;
-    const POST = axios.post(`/api/admin/addtime/${action.payload.id}`, action.payload);
-    const PUT = axios.put(`/api/admin/addtime/${action.payload.id}`, action.payload);
+    const POST = axios.post(`/api/accrued-time/${action.payload.id}`, action.payload);
+    const PUT = axios.put(`/api/accrued-time/${action.payload.id}`, action.payload);
     
     try {
         switch (true) {
@@ -36,8 +36,8 @@ function* addLeave(action) {
 
 function* subLeave(action) {
     try {
-        yield axios.post(`/api/admin/addtime/${action.payload.id}`, action.payload);
-        yield axios.put(`/api/admin/addtime/${action.payload.id}`, action.payload);
+        yield axios.post(`/api/accrued-time/${action.payload.id}`, action.payload);
+        yield axios.put(`/api/accrued-time/${action.payload.id}`, action.payload);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('error in subLeave saga,', error);
