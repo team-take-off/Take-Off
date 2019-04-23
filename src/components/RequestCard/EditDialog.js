@@ -36,13 +36,23 @@ class EditDialog extends Component {
   }
 
   handleCommit = () => {
-    let bundle = this.props.startingArray[0]
+    let bundle = this.props.startingArray[0];
+    let numberOfDays = moment(this.state.endDate).diff(this.state.startDate, 'days');
+    let datesToSend = [{date: this.state.startDate, hours: this.state.startDateType}];
+    let dayToAdd = this.state.startDate;
+    console.log(numberOfDays);
+    for (let i = 0; i < numberOfDays - 1; i++) {
+      dayToAdd = moment(dayToAdd).add(1, 'days').format('YYYY-MM-DD');
+      datesToSend.push({date: dayToAdd, hours: '8'});
+    }
+    if (this.state.startDate !== this.state.endDate) {
+      datesToSend.push({date: this.state.endDate, hours: this.state.endDateType})
+    };
     this.props.dispatch({
-      type: 'BOGUS_DISPATCH',
+      type: 'EDIT_REQUESTS',
       payload: {
-        ...this.state,
         bundleId: bundle.batch_of_requests_id,
-        type: bundle.type,
+        dates: datesToSend,
       }
     })
     this.handleClose();

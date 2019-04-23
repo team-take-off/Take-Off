@@ -13,7 +13,7 @@ function* fetchRequests() {
 function* approveRequest(action) {
     try {
         const batchID = action.payload;
-        yield axios.put(`api/admin/request/${batchID}`, { requestStatus: 2 });
+        yield axios.put(`api/admin/request/approved/${batchID}`, { requestStatus: 2 });
         yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
         console.log('Error in POST:', error);
@@ -23,7 +23,7 @@ function* approveRequest(action) {
 function* denyRequest(action) {
     try {
       const batchID = action.payload;
-      yield axios.put(`api/admin/request/${batchID}`, { requestStatus: 3 });
+      yield axios.put(`api/admin/request/approved/${batchID}`, { requestStatus: 3 });
       yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
         console.log('Error in DELETE:', error);
@@ -40,11 +40,25 @@ function* withdrawRequest(action) {
   }
 }
 
+function* editRequest(action) {
+    try {
+        console.log(action.payload);
+        yield axios.put('/api/admin/request/edit', {
+            id: action.payload.bundleId,
+            newDates: action.payload.dates,
+        });
+        yield put({ type: 'FETCH_REQUESTS' });
+    } catch (error) {
+        console.log('Error in EDIT:', error);
+    }
+}
+
 function* requestsSaga() {
     yield takeLatest('FETCH_REQUESTS', fetchRequests);
     yield takeLatest('APPROVE_REQUEST', approveRequest);
     yield takeLatest('DENY_REQUEST', denyRequest);
     yield takeLatest('WITHDRAW_REQUEST', withdrawRequest);
+    yield takeLatest('EDIT_REQUESTS', editRequest);
 }
 
 export default requestsSaga;

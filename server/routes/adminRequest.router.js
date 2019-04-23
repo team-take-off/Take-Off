@@ -112,7 +112,7 @@ router.post('/', (req, res) => {
 
 // Route PUT /api/admin/request/:id
 // Update the value of approved for a batch of requested days off
-router.put('/:id', (req, res) => {
+router.put('/approved/:id', (req, res) => {
     if (req.isAuthenticated() && req.user.role_id === 1) {
         const batchID = req.params.id;
         const requestStatus = req.body.requestStatus;
@@ -149,8 +149,8 @@ router.put('/edit', (req, res) => {
                 WHERE "batch_of_requests_id" = $1
                 GROUP BY "leave_type_id", "val", "employee_id";`, [batchId]);
                 // remove the current request
-                await client.query(`DELETE from "time_off_request 
-                WHERE "batch_of_requests_id" = $1`, [batchId]);
+                await client.query(`DELETE from "time_off_request" 
+                WHERE "batch_of_requests_id" = $1;`, [batchId]);
                 const leaveType = oldTime.rows[0].val;
                 const reimbursment = oldTime.rows[0].sum;
                 const employeeToChange = oldTime.rows[0].employee_id;
@@ -171,7 +171,7 @@ router.put('/edit', (req, res) => {
                     await client.query(insertDateText, [requestedDates[0].date, batchId, requestedDates[0].hours]);
                     const updateEmployeeLeaveTable = `UPDATE "employee" SET 
                     ${leaveType === 1 ? "vacation_hours" : "sick_hours"} = ${leaveType === 1 ? "vacation_hours" : "sick_hours"} - ${requestedDates[0].hours}
-                    WHERE "id" = $1`
+                    WHERE "id" = $1;`
                     await client.query(updateEmployeeLeaveTable, [employeeToChange]);
                 } else {
                     for (let request of requestedDates) {
@@ -185,11 +185,12 @@ router.put('/edit', (req, res) => {
                             await client.query(insertDateText, [request.date, batchId, request.hours]);
                             const updateEmployeeLeaveTable = `UPDATE "employee" SET 
                             ${leaveType === 1 ? "vacation_hours" : "sick_hours"} = ${leaveType === 1 ? "vacation_hours" : "sick_hours"} - ${request.hours}
-                            WHERE "id" = $1`;
+                            WHERE "id" = $1;`;
                             await client.query(updateEmployeeLeaveTable, [employeeToChange]);
                         }
                     }
                 }
+                res.sendStatus(200);
             } catch (error) {
                 await client.query('ROLLBACK');
                 await res.sendStatus(500);
@@ -197,7 +198,7 @@ router.put('/edit', (req, res) => {
             } finally {
                 client.release();
             }
-        }).catch(error => {
+        })().catch(error => {
             console.error(error.stack);
         })
     } else {
