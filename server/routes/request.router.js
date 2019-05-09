@@ -16,6 +16,7 @@ const DENIED_STATUS = 3;
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
     const config = {
+        employee: req.body.employee,
         year: req.body.year
     };
 
