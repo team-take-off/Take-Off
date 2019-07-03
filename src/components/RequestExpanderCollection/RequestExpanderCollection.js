@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import RequestExpander from '../RequestExpander/RequestExpander';
-import moment from 'moment';
 
 class RequestExpanderCollection extends Component {
 
