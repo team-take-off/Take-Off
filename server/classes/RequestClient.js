@@ -131,33 +131,6 @@ class RequestClient {
         }
     }
 
-    async getEmployeeRequests(status) {
-        // TODO: Can combine this with getRequests();
-        const id = this.config.employee;
-        const year = this.config.year;
-        if (year) {
-            const whereClause = `
-            WHERE request_status.id = $1
-            AND employee.id = $2
-            AND EXTRACT(YEAR FROM time_off_request.off_date) = $3
-            `;
-            const selectText = await this.composeJoinRequest(whereClause);
-            const { rows } = await this.client.query(selectText, [status, id, year]);
-            const requests = await this.sortIntoGroups(rows);
-            return requests;
-        } else {
-            const whereClause = `
-            WHERE request_status.id = $1
-            AND employee.id = $2
-            AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
-            `;
-            const selectText = await this.composeJoinRequest(whereClause);
-            const { rows } = await this.client.query(selectText, [status, id]);
-            const requests = await this.sortIntoGroups(rows);
-            return requests;
-        }
-    }
-
     // Returns an array of all request that are now in the past based on the grace period
     async getPastRequests() {
         // TODO: Can restrict this based on employee_id and combine with getRequests() and getEmployeeRequests()

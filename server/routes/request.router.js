@@ -57,8 +57,8 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 // Returns an array all requested days off for the currently authenticated user
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
     const config = {
-        employee: req.user.id,
-        year: req.query.year
+        employee: parseIntOrNull(req.user.id),
+        year: parseIntOrNull(req.query.year)
     };
 
     const client = new RequestClient(pool, config);
@@ -67,9 +67,9 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const years = await client.getYears();
-            const pending = await client.getEmployeeRequests(PENDING_STATUS);
-            const approved = await client.getEmployeeRequests(APPROVED_STATUS);
-            const denied = await client.getEmployeeRequests(DENIED_STATUS);
+            const pending = await client.getRequests(PENDING_STATUS);
+            const approved = await client.getRequests(APPROVED_STATUS);
+            const denied = await client.getRequests(DENIED_STATUS);
             const past = await client.getPastRequests();
             await client.commit();
             res.send({ years, pending, approved, denied, past });
@@ -89,12 +89,10 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    // const userID = req.user.id;
-    // const typeID = req.body.typeID;
     const requestedDates = req.body.requestedDates;
     const config = {
-        employee: req.user.id,
-        type: req.body.typeID
+        employee: parseIntOrNull(req.user.id),
+        type: parseIntOrNull(req.body.typeID)
     };
 
     const client = new RequestClient(pool, config);
