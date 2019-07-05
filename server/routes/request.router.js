@@ -12,12 +12,20 @@ const PENDING_STATUS = 1;
 const APPROVED_STATUS = 2;
 const DENIED_STATUS = 3;
 
+const parseIntOrNull = (num) => {
+    const parsed = parseInt(num);
+    if (parsed) {
+        return parsed;
+    }
+    return null;
+}
+
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
     const config = {
-        employee: req.body.employee,
-        year: req.body.year
+        employee: parseIntOrNull(req.query.employee),
+        year: parseIntOrNull(req.query.year)
     };
 
     const client = new RequestClient(pool, config);
@@ -50,7 +58,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
     const config = {
         employee: req.user.id,
-        year: req.body.year
+        year: req.query.year
     };
 
     const client = new RequestClient(pool, config);

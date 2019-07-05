@@ -17,26 +17,29 @@ class AdminSearchEmployeePage extends Component {
     }
 
     setEmployee = (event) => {
-        this.setState({
+        console.log(event.target.value);
+        const nextState = {
             ...this.state,
             employee: event.target.value
-        });
-        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: this.state });
+        };
+        this.setState(nextState);
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: nextState });
     }
 
     setYear = (event) => {
-        this.setState({
+        const nextState = {
             ...this.state,
             year: event.target.value
-        });
-        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: this.state });
+        }
+        this.setState(nextState);
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: nextState });
     }
 
     // Show this component on the DOM
     render() {
         return (
             <div className="page-container">
-                <select onChange={this.setPerson} defaultValue="">
+                <select onChange={this.setEmployee} defaultValue="">
                     <option value="" disabled>Select an Employee</option>
                     {this.props.reduxStore.employees.map((employee) => {
                         return <option key={employee.id} value={employee.id}>{employee.first_name} {employee.last_name}</option>
