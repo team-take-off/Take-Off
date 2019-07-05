@@ -39,6 +39,7 @@ class RequestClient {
 
     // Sort an array of requests into an array of arrays (grouped by batch ID)
     async sortIntoGroups(requestArray) {
+        // TODO: Ideally this sorting would be handled by the database select operation
         const uniqueGroupIDs = [];
         const groupArray = [];
         for (let request of requestArray) {
@@ -59,27 +60,16 @@ class RequestClient {
     async getYears() {
         const id = this.config.employee;
         const year = this.config.year;
-        console.log(`id = ${id}, year = ${year}`);
-        if (id) {
-            const selectText = `
-            SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
-            FROM time_off_request
-            JOIN batch_of_requests ON time_off_request.batch_of_requests_id = batch_of_requests.id
-            WHERE batch_of_requests.employee_id = $1
+        const selectText = `
+        SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
+        FROM time_off_request
+        JOIN batch_of_requests ON time_off_request.batch_of_requests_id = batch_of_requests.id
+            WHERE $1::numeric IS NULL OR batch_of_requests.employee_id = $1
             AND $2::numeric IS NULL OR EXTRACT(YEAR FROM off_date) = $2;
-            `;
-            const { rows } = await this.client.query(selectText, [id, year]);
-            const yearArray = await rows.map(row => row.year_part);
-            return yearArray;
-        } else {
-            const selectText = `
-            SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
-            FROM time_off_request;
-            `;
-            const { rows } = await this.client.query(selectText);
-            const yearArray = await rows.map(row => row.year_part);
-            return yearArray;
-        }
+        `;
+        const { rows } = await this.client.query(selectText, [id, year]);
+        const yearArray = await rows.map(row => row.year_part);
+        return yearArray;
     }
 
     // Selects all time-off requests restricted by provided WHERE clauses
@@ -108,35 +98,31 @@ class RequestClient {
 
     // Returns an array of requests that have a given status and year
     async getRequests(status) {
+        const id = this.config.employee;
         const year = this.config.year;
-        if (year) {
-            const whereClause = `
-            WHERE request_status.id = $1
-            AND EXTRACT(YEAR FROM time_off_request.off_date) = $2
-            AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
-            `;
-            const selectText = await this.composeJoinRequest(whereClause);
-            const { rows } = await this.client.query(selectText, [status, year]);
-            const requests = await this.sortIntoGroups(rows);
-            return requests;
-        } else {
-            const whereClause = `
-            WHERE request_status.id = $1
-            AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
-            `;
-            const selectText = await this.composeJoinRequest(whereClause);
-            const { rows } = await this.client.query(selectText, [status]);
-            const requests = await this.sortIntoGroups(rows);
-            return requests;
-        }
+        const whereClause = `
+        WHERE request_status.id = $1
+        AND $2::numeric IS NULL OR batch_of_requests.employee_id = $2
+        AND $3::numeric IS NULL OR EXTRACT(YEAR FROM time_off_request.off_date) = $3
+        AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        `;
+        const selectText = await this.composeJoinRequest(whereClause);
+        const { rows } = await this.client.query(selectText, [status, id, year]);
+        const requests = await this.sortIntoGroups(rows);
+        return requests;
     }
 
     // Returns an array of all request that are now in the past based on the grace period
     async getPastRequests() {
-        // TODO: Can restrict this based on employee_id and combine with getRequests() and getEmployeeRequests()
-        const whereClause = `WHERE time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
+        const id = this.config.employee;
+        const year = this.config.year;
+        const whereClause = `
+        WHERE $1::numeric IS NULL OR batch_of_requests.employee_id = $1
+        AND $2::numeric IS NULL OR EXTRACT(YEAR FROM time_off_request.off_date) = $2
+        AND time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        `;
         const selectText = await this.composeJoinRequest(whereClause);
-        const { rows } = await this.client.query(selectText);
+        const { rows } = await this.client.query(selectText, [id, year]);
         const requests = await this.sortIntoGroups(rows);
         return requests;
     }
