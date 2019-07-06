@@ -1,13 +1,12 @@
 # Feature Database (range, exclude, log)
+Remove testCron.router
 Rename .sql files to database_schema.sql and database_mockup.sql
 Change database schema to use date ranges, exclude over-lapping requests for the same employee, and log changes
 Fix request.router to work with new schema
-Rework request form to hit new request.router
-Remove accruedTime.router and move into employee.router
-Fix cronAddLeave.router to work with new schema
 Fix employee.router to work with new schema
-Fix testCron.router to work with new schema
 Fix user.router to work with new schema
+Rework request form to hit new request.router
+Move functionality of accruedTime.router into employee.router
 
 # Feature Improve Request Router 2
 Handle request sagas parameter objects.
