@@ -1,5 +1,4 @@
 # Feature Database (range, exclude, log)
-Remove template.router
 Merge user.router into employee.router
 Merge adminRequest.router and employeeRequest.router into request.router
 Rename .sql files to database_schema.sql and database_mockup.sql
