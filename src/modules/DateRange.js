@@ -21,16 +21,10 @@ class DateRange {
             return '';
         }
 
-        // Build a human readable output string and condense all contiguous 
-        // dates into date ranges such as 'April 1, 2019 to April 3, 2019'.
+        // Build a human readable output string 
         let outputString = moments[0].format(outputFormat);
-        for (let i = 1; i < moments.length; i++) {
-            if (i === moments.length - 1) {
-                outputString += ` to ${moments[i].format(outputFormat)}`;
-            } else if (moments[i + 1].diff(moments[i], 'days') > 1) {
-                outputString += ` to ${moments[i].format(outputFormat)} and ${moments[i + 1].format(outputFormat)}`;
-                i += 1;
-            }
+        if (moments.length > 1) {
+            outputString += ` thru ${moments[moments.length - 1].format(outputFormat)}`;
         }
         return outputString;
     }

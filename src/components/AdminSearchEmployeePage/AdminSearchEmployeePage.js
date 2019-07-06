@@ -3,67 +3,63 @@ import { connect } from 'react-redux';
 import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
 
 class AdminSearchEmployeePage extends Component {
-    constructor() {
-        super()
+    constructor(props) {
+        super(props);
         this.state = {
-            firstname: '',
-            year:'',
+            employee: '',
+            year: ''
         }
     }
+
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
         this.props.dispatch({ type: 'FETCH_REQUESTS' });
     }
 
-    setPerson = (event) => {
-        this.setState({
-            firstname: event.target.value
-        })
+    setEmployee = (event) => {
+        console.log(event.target.value);
+        const nextState = {
+            ...this.state,
+            employee: event.target.value
+        };
+        this.setState(nextState);
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: nextState });
     }
+
     setYear = (event) => {
-        this.setState({
+        const nextState = {
+            ...this.state,
             year: event.target.value
-        })
+        }
+        this.setState(nextState);
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: nextState });
     }
 
     // Show this component on the DOM
     render() {
-        let uniqueDates = [];
-        for (let request of this.props.reduxStore.requests) {
-           uniqueDates.push(request.date.substr(0, 4))
-        }
-        let requestDates = [...new Set(uniqueDates)];
-        let userRequests = [];
-        if(this.state.person !== '' && this.state.year !== ''){
-        
-        for (let request of this.props.reduxStore.requests) {
-            if (request.first_name === this.state.firstname && request.date.substr(0, 4) === this.state.year) {
-                userRequests.push(request)
-            }
-        }
-    }
-
         return (
-                <div className="page-container">
-                    <select onChange={this.setPerson} defaultValue="">
-                        <option value="" disabled>Select an Employee</option>
-
-                        {this.props.reduxStore.employees.map((employee) => {
-                            return <option key={employee.id} value={employee.first_name}>{employee.first_name} {employee.last_name}</option>
-                        })}
-
-                    </select>
-                    <select onChange={this.setYear} defaultValue="">
-                        <option value="" disabled>Select a Year</option>
-                        {requestDates.map((request) => {
-                            return <option key={request}>{request}</option>
-                        })}
-                    </select>
-                <RequestExpanderCollection requests={userRequests} forAdmin={true} />
-                </div>
-            );
-
-
+            <div className="page-container">
+                <select onChange={this.setEmployee} defaultValue="">
+                    <option value="" disabled>Select an Employee</option>
+                    {this.props.reduxStore.employees.map((employee) => {
+                        return <option key={employee.id} value={employee.id}>{employee.first_name} {employee.last_name}</option>
+                    })}
+                </select>
+                <select onChange={this.setYear} defaultValue="">
+                    <option value="" disabled>Select a Year</option>
+                    {this.props.reduxStore.requests.years.map((year) => {
+                        return <option key={year}>{year}</option>
+                    })}
+                </select>
+                <RequestExpanderCollection
+                    pending={this.props.reduxStore.requests.pending}
+                    approved={this.props.reduxStore.requests.approved}
+                    denied={this.props.reduxStore.requests.denied}
+                    past={this.props.reduxStore.requests.past}
+                    forAdmin={true}
+                />
+            </div>
+        );
     }
 }
 const mapStateToProps = reduxStore => ({

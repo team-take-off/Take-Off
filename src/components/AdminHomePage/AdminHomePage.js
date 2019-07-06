@@ -12,7 +12,13 @@ class AdminHomePage extends Component {
     render() {
         return (
             <div className="page-container">
-                <RequestExpanderCollection requests={this.props.reduxStore.requests} forAdmin={true} />
+                <RequestExpanderCollection 
+                    pending={this.props.reduxStore.requests.pending}
+                    approved={this.props.reduxStore.requests.approved}
+                    denied={this.props.reduxStore.requests.denied}
+                    past={this.props.reduxStore.requests.past}
+                    forAdmin={true}
+                />
             </div>
         );
     }

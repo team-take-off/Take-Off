@@ -3,12 +3,8 @@ import axios from 'axios';
 
 function* fetchUserRequests(action) {
     try {
-        const serverResponse = yield axios.get(`api/request/current-user`);
-        const nextAction = {
-            type: 'SET_USER_REQUESTS',
-            payload: serverResponse.data
-        }
-        yield put(nextAction);
+        const serverResponse = yield axios.get('api/request/current-user', action.payload);
+        yield put({ type: 'SET_USER_REQUESTS', payload: serverResponse.data });
     } catch (error) {
         console.log('Error in saga fetchUserRequests,', error);
         alert('Unable to get users\'s time-off requests');
@@ -18,7 +14,7 @@ function* fetchUserRequests(action) {
 function* addUserRequest(action) {
     try {
         yield axios.post('api/request/', action.payload);
-        yield put({type: 'FETCH_USER_INFO' }); 
+        yield put({ type: 'FETCH_USER_INFO' }); 
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {

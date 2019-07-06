@@ -3,7 +3,7 @@ import adminMode from './adminMode';
 import errors from './errorsReducer';
 import loginMode from './loginModeReducer';
 import user from './userReducer';
-import requests from './requestsReducers';
+import requests from './requestsReducer';
 import userRequests from './userRequestsReducer';
 import employees from './employeesReducer';
 import vacationRequestDates from './vacationRequestDatesReducer';

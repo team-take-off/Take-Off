@@ -1,17 +1,18 @@
 # Feature Improve Request Router
-Throw a 500 status when a request would make total vacation days become negative
-Move SQL queries into functions to improve readability
-Use async/await to sort request statuses instead of performing sorting on the client-side
-Make default GET requests return (current) +/- one year from current date
-Request bundle includes years available
-Update UI in employee home page to utilize the available years attribute
-Update UI in admin employee search page to utilize the available years attribute
-Change window for considering a request pending to be request was made <= 1 week before current date
-Enforce one week window when employees try to cancel a request
-Move check for weekends to the server-side
+Handle request sagas parameter objects.
+Fix bugs in request.router and RequestClient.
+Consolidate functions in request.router and RequestClient
+Update admin search to use the new reducer and route (for filtering by year and employee)
+Update employee list requests page to use the new reducer and route (for filtering by year)
+Make default GET requests return (current) +/- two years from current date
+Enforce the 5 day grace period when employees try to cancel a request
+
+# Feature Check For Holidays
 Add a check for holidays to the server-side
 Add a settings tab visible to admin
 Admin dashboard for configuring company-wide holidays
+
+# Feature Saga Error Handling
 
 # Feature Detect Request Collisions
 Add a request collisions table to database that links two request batches that have any colliding dates

@@ -2,130 +2,112 @@ const express = require('express');
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
-const moment = require('moment-holiday');
-const moment1 = require('moment-business-days');
+
+const RequestClient = require('../classes/RequestClient');
 
 const ADMINISTRATOR_ROLE = 1;
-const VACATION_TYPE = 1;
-const SICK_TYPE = 2;
+const EMPLOYEE_ROLE = 2;
+
 const PENDING_STATUS = 1;
+const APPROVED_STATUS = 2;
 const DENIED_STATUS = 3;
+
+const parseIntOrNull = (num) => {
+    const parsed = parseInt(num);
+    if (parsed) {
+        return parsed;
+    }
+    return null;
+}
 
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
-    const queryText = `
-    SELECT
-        time_off_request.id,
-        time_off_request.off_date AS date,
-        time_off_request.off_hours AS hours,
-        time_off_request.batch_of_requests_id,
-        batch_of_requests.date_requested AS date_requested,
-        employee.first_name,
-        employee.last_name,
-        leave_type.val AS type,
-        request_status.val AS status
-    FROM employee 
-    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-    ORDER BY date_requested;
-    `;
-    pool.query(queryText).then((result) => {
-        res.send(result.rows);
-    }).catch((queryError) => {
-        console.log('SQL error using route GET /api/request,', queryError);
-        res.sendStatus(500);
+    const config = {
+        employee: parseIntOrNull(req.query.employee),
+        year: parseIntOrNull(req.query.year)
+    };
+
+    const client = new RequestClient(pool, config);
+    (async () => {
+        await client.connect();
+        try {
+            await client.begin();
+            const years = await client.getYears();
+            const pending = await client.getRequests(PENDING_STATUS);
+            const approved = await client.getRequests(APPROVED_STATUS);
+            const denied = await client.getRequests(DENIED_STATUS);
+            const past = await client.getPastRequests();
+            await client.commit();
+            res.send({ years, pending, approved, denied, past });
+        } catch (error) {
+            await client.rollback();
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using GET /api/request');
     });
 });
 
 // Route GET /api/request/current-user
 // Returns an array all requested days off for the currently authenticated user
 router.get('/current-user', rejectUnauthenticated, (req, res) => {
-    const queryText = `
-    SELECT
-        time_off_request.id,
-        time_off_request.off_date AS date,
-        time_off_request.off_hours AS hours,
-        time_off_request.batch_of_requests_id,
-        batch_of_requests.date_requested AS date_requested,
-        employee.first_name,
-        employee.last_name,
-        leave_type.val AS type,
-        request_status.val AS status
-    FROM employee 
-    JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-    JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-    JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-    JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-    WHERE employee.id = $1
-    ORDER BY date_requested;
-    `;
-    pool.query(queryText, [req.user.id]).then((result) => {
-        res.send(result.rows);
-    }).catch((queryError) => {
-        console.log('SQL error using route GET /api/request/current-user,', queryError);
-        res.sendStatus(500);
+    const config = {
+        employee: parseIntOrNull(req.user.id),
+        year: parseIntOrNull(req.query.year)
+    };
+
+    const client = new RequestClient(pool, config);
+    (async () => {
+        await client.connect();
+        try {
+            await client.begin();
+            const years = await client.getYears();
+            const pending = await client.getRequests(PENDING_STATUS);
+            const approved = await client.getRequests(APPROVED_STATUS);
+            const denied = await client.getRequests(DENIED_STATUS);
+            const past = await client.getPastRequests();
+            await client.commit();
+            res.send({ years, pending, approved, denied, past });
+        } catch (error) {
+            await client.rollback();
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using GET /api/request/current-user');
     });
 });
 
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    const userID = req.user.id;
-    const typeID = req.body.typeID;
     const requestedDates = req.body.requestedDates;
+    const config = {
+        employee: parseIntOrNull(req.user.id),
+        type: parseIntOrNull(req.body.typeID)
+    };
 
+    const client = new RequestClient(pool, config);
     (async () => {
-        const client = await pool.connect();
+        await client.connect();
         try {
-            await client.query('BEGIN');
-            const insertComparisonText = `
-            INSERT INTO batch_of_requests
-                (employee_id, leave_type_id)
-            VALUES
-                ($1, $2)
-            RETURNING id;
-            `;
-            const { rows } = await client.query(insertComparisonText, [userID, typeID]);
-            const batchID = rows[0].id;
-            if (requestedDates[0].date == requestedDates[requestedDates.length - 1].date &&
-                moment(requestedDates[0].date).isHoliday() == false && moment1(requestedDates[0].date).isBusinessDay() == true) {
-                const insertDateText = `
-                INSERT INTO time_off_request
-                    (off_date, batch_of_requests_id, off_hours)
-                VALUES
-                    ($1, $2, $3);
-                `;
-                await client.query(insertDateText, [requestedDates[0].date, batchID, requestedDates[0].hours]);
-                const updateEmployeeLeaveTable = `
-                UPDATE employee SET 
-                    ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} = ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} - ${requestedDates[0].hours}
-                WHERE id = $1`
-                await client.query(updateEmployeeLeaveTable, [userID]);
-            } else {
-                for (let request of requestedDates) {
-                    if (moment(request.date).isHoliday() == false && moment1(request.date).isBusinessDay() == true) {
-                        const insertDateText = `
-                        INSERT INTO time_off_request
-                            (off_date, batch_of_requests_id, off_hours)
-                        VALUES
-                            ($1, $2, $3);
-                        `;
-                        await client.query(insertDateText, [request.date, batchID, request.hours]);
-                        const updateEmployeeLeaveTable = `
-                        UPDATE employee SET 
-                        ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} = ${typeID === 1 ? 'vacation_hours' : 'sick_hours'} - ${request.hours}
-                        WHERE id = $1`
-                        await client.query(updateEmployeeLeaveTable, [userID]);
-                    }
-                }
+            await client.begin();
+            const batchID = await client.insertBatch();
+            for (let request of requestedDates) {
+                await client.insertRequest(request, batchID);
             }
-            await client.query('COMMIT');
+            await client.commit();
             await res.sendStatus(201);
         } catch (error) {
-            await client.query('ROLLBACK');
+            await client.rollback();
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -141,56 +123,25 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 // Update the value of approved for a batch of requested days off
 router.put('/:id', rejectNonAdmin, (req, res) => {
     const batchID = req.params.id;
-    const newRequestStatus = req.body.requestStatus;
+    const requestStatus = req.body.requestStatus;
+    const config = {
+        // batch: req.params.id
+    };
 
+    const client = new RequestClient(pool, config);
     (async () => {
-        const client = await pool.connect();
+        await client.connect();
         try {
-            await client.query('BEGIN');
-            const selectCurrentStatusText = `
-            SELECT request_status_id, employee_id, leave_type_id
-                FROM batch_of_requests 
-                WHERE id = $1;
-            `;
-            const selectCurrentStatus = await client.query(selectCurrentStatusText, [batchID]);
-            const requestStatus = selectCurrentStatus.rows[0].request_status_id;
-            const employeeID = selectCurrentStatus.rows[0].employee_id;
-            const leaveTypeID = selectCurrentStatus.rows[0].leave_type_id;
-            const updateText = `
-            UPDATE batch_of_requests
-                SET request_status_id = $1
-                WHERE id = $2;
-            `;
-            await client.query(updateText, [newRequestStatus, batchID]);
-            if (newRequestStatus !== requestStatus && newRequestStatus === DENIED_STATUS) {
-                const selectRefundHoursText = `
-                SELECT 
-                    SUM(off_hours)
-                    FROM time_off_request
-                    WHERE batch_of_requests_id = $1;
-                `;
-                const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
-                const refundHours = selectRefundHours.rows[0].sum;
-                if (leaveTypeID === VACATION_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET vacation_hours = vacation_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, employeeID])
-                } else if (leaveTypeID === SICK_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET sick_hours = sick_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, employeeID])
-                }
+            await client.begin();
+            const batch = await client.getBatchData(batchID);
+            await client.updateBatchStatus(batchID, requestStatus);
+            if (requestStatus === DENIED_STATUS && requestStatus !== batch.status) {
+                await client.refundBatchHours(batch);
             }
-            await client.query('COMMIT');
+            await client.commit();
             res.sendStatus(200);
         } catch (error) {
-            await client.query('ROLLBACK');
+            await client.rollback();
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -200,7 +151,6 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
         console.error(error.stack);
         console.log('SQL error using PUT /api/request/:id');
     });
-    
 });
 
 // Route DELETE /api/request/:id
@@ -208,74 +158,30 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const batchID = req.params.id;
 
+    const client = new RequestClient(pool, config);
     (async () => {
-        const client = await pool.connect();
+        await client.connect();
         try {
-            await client.query('BEGIN');
+            await client.begin();
             let employeeID = req.user.id;
-            const typeOfLeave = `
-            SELECT 
-                employee_id, 
-                request_status_id, 
-                leave_type_id
-            FROM batch_of_requests 
-            WHERE id = $1;
-            `;
-            const batch = await client.query(typeOfLeave, [batchID]);
-            const selectID = batch.rows[0].employee_id;
-            const requestStatusID = batch.rows[0].request_status_id;
-            const leaveTypeID = batch.rows[0].leave_type_id;
+            const batch = await client.getBatchData(batchID);
             if (req.user.role_id === ADMINISTRATOR_ROLE) {
-                employeeID = selectID;
-            } else if (employeeID !== selectID) {
+                employeeID = batch.employee;
+            } else if (employeeID !== batch.employee) {
                 throw new Error('Attempted unautharized query on route DELETE /api/request/:id.');
             }
 
-            if (requestStatusID === PENDING_STATUS) {
+            if (batch.status === PENDING_STATUS) {
                 // TODO: This should include a check to see if the deleted request is in the future and 
                 // Prevent non-admin users from deleting in that case.
-                const selectRefundHoursText = `
-                SELECT 
-                    SUM(off_hours) 
-                    FROM time_off_request 
-                    WHERE batch_of_requests_id = $1;
-                `;
-                const selectRefundHours = await client.query(selectRefundHoursText, [batchID]);
-                const refundHours = selectRefundHours.rows[0].sum;
-                if (leaveTypeID === VACATION_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET vacation_hours = vacation_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, employeeID])
-                } else if (leaveTypeID === SICK_TYPE) {
-                    const updateRefundText = `
-                    UPDATE employee
-                        SET sick_hours = sick_hours + $1
-                        WHERE id = $2
-                    `;
-                    await client.query(updateRefundText, [refundHours, employeeID])
-                }
+                await client.refundBatchHours(batch);
             }
 
-            const deleteRequestsText = `
-            DELETE 
-                FROM time_off_request
-                WHERE batch_of_requests_id = $1;
-            `;
-            await client.query(deleteRequestsText, [batchID]);
-            const deleteBatchText = `
-            DELETE 
-                FROM batch_of_requests
-                WHERE id = $1 AND employee_id = $2
-                RETURNING *;
-            `;
-            await client.query(deleteBatchText, [batchID, employeeID]);
-            await client.query('COMMIT');
+            await client.deleteBatch(batch);
+            await client.commit();
             res.sendStatus(200);
-        } catch (queryError) {
-            await client.query('ROLLBACK');
+        } catch (error) {
+            await client.rollback();
             await res.sendStatus(500);
             throw error;
         } finally {
