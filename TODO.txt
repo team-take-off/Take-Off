@@ -1,4 +1,18 @@
-# Feature Improve Request Router
+# Feature Database (range, exclude, log)
+Remove template.router
+Merge user.router into employee.router
+Merge adminRequest.router and employeeRequest.router into request.router
+Rename .sql files to database_schema.sql and database_mockup.sql
+Change database schema to use date ranges, exclude over-lapping requests for the same employee, and log changes
+Fix request.router to work with new schema
+Rework request form to hit new request.router
+Remove accruedTime.router and move into employee.router
+Fix cronAddLeave.router to work with new schema
+Fix employee.router to work with new schema
+Fix testCron.router to work with new schema
+Fix user.router to work with new schema
+
+# Feature Improve Request Router 2
 Handle request sagas parameter objects.
 Fix bugs in request.router and RequestClient.
 Consolidate functions in request.router and RequestClient
