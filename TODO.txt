@@ -1,5 +1,4 @@
 # Feature Database (range, exclude, log)
-Rename .sql files to database_schema.sql and database_mockup.sql
 Change database schema to use date ranges, exclude over-lapping requests for the same employee, and log changes
 Fix request.router to work with new schema
 Fix employee.router to work with new schema
