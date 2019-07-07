@@ -10,10 +10,8 @@ const passport = require('./strategies/google.strategy');
 
 // Route includes
 const accruedTimeRouter = require('./routes/accruedTime.router');
-const cronAddLeave = require('./routes/cronAddLeave.router');
 const employeeRouter = require('./routes/employee.router');
 const requestRouter = require('./routes/request.router');
-const testCron = require('./routes/testCron.router');
 const userRouter = require('./routes/user.router');
 
 
@@ -33,10 +31,8 @@ app.use(passport.session());
 
 /* Routes */
 app.use('/api/accrued-time', accruedTimeRouter);
-app.use('/api/scheduled-task', cronAddLeave);
 app.use('/api/employee', employeeRouter);
 app.use('/api/request', requestRouter);
-app.use('/api/test-cron', testCron);
 app.use('/api/user', userRouter);
 
 // Serve static files

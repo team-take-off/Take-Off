@@ -92,7 +92,7 @@ CREATE TABLE request_unit (
 
 CREATE TABLE transaction_log (
 	id SERIAL PRIMARY KEY
-	, author_id INTEGER NOT NULL REFERENCES employee(id)
+	, author_id INTEGER REFERENCES employee(id)
 	, employee_id INTEGER NOT NULL REFERENCES employee(id)
 	, leave_hours INTEGER NOT NULL
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)

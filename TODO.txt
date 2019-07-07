@@ -1,6 +1,7 @@
 # Feature Database (range, exclude, log)
-Fix request.router to work with new schema
+Rename URL routes to match pages
 Rework request form to hit new request.router
+Fix request.router to work with new schema
 Change RequestForm to utilize the new route 
 
 # Feature Improve Request Router 2
