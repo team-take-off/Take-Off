@@ -1,10 +1,12 @@
 # Feature Database (range, exclude, log)
 Change database schema to use date ranges, exclude over-lapping requests for the same employee, and log changes
-Fix request.router to work with new schema
-Fix employee.router to work with new schema
 Fix user.router to work with new schema
+Fix employee.router to work with new schema
+Fix accruedTime.router to work with new schema
+Move functionality of accruedTime.router into employee.router and remove
+Fix request.router to work with new schema
 Rework request form to hit new request.router
-Move functionality of accruedTime.router into employee.router
+Change RequestForm to utilize the new route 
 
 # Feature Improve Request Router 2
 Handle request sagas parameter objects.
