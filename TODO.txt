@@ -1,8 +1,4 @@
 # Feature Database (range, exclude, log)
-Fix user.router to work with new schema
-Fix employee.router to work with new schema
-Fix accruedTime.router to work with new schema
-Move functionality of accruedTime.router into employee.router and remove
 Fix request.router to work with new schema
 Rework request form to hit new request.router
 Change RequestForm to utilize the new route 

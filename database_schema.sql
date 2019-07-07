@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS transaction_type;
 -- Differentiate roles between administators and employees
 CREATE TABLE employee_role (
 	id SERIAL PRIMARY KEY
-	, title VARCHAR(20) NOT NULL
+	, title VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO employee_role
 	(title)
@@ -20,7 +20,7 @@ VALUES
 -- Type of leave
 CREATE TABLE leave_type (
 	id SERIAL PRIMARY KEY
-	, val VARCHAR(20) NOT NULL
+	, val VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO leave_type
 	(val)
@@ -31,7 +31,7 @@ VALUES
 -- Status of a request for time off
 CREATE TABLE request_status (
 	id SERIAL PRIMARY KEY
-	, val VARCHAR(20) NOT NULL
+	, val VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO request_status
 	(val)
@@ -43,7 +43,7 @@ VALUES
 -- Types of a transactions in the log table
 CREATE TABLE transaction_type (
 	id SERIAL PRIMARY KEY
-	, val VARCHAR(20) NOT NULL
+	, val VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO transaction_type
 	(val)
@@ -54,7 +54,7 @@ VALUES
 	('employee cancel'),
 	('admin approve'),
 	('admin deny'),
-	('admin for employee');
+	('admin special');
 
 -- Employee data
 CREATE TABLE employee (
@@ -81,12 +81,21 @@ CREATE TABLE time_off_request (
 	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
 );
 
+CREATE TABLE request_unit (
+	id SERIAL PRIMARY KEY
+	, time_off_request_id INTEGER NOT NULL REFERENCES time_off_request(id)
+	, start_datetime TIMESTAMPTZ NOT NULL
+	, end_datetime TIMESTAMPTZ NOT NULL
+	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
+	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
+);
+
 CREATE TABLE transaction_log (
 	id SERIAL PRIMARY KEY
+	, author_id INTEGER NOT NULL REFERENCES employee(id)
 	, employee_id INTEGER NOT NULL REFERENCES employee(id)
-	, hours_changed INTEGER NOT NULL
+	, leave_hours INTEGER NOT NULL
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
 	, transaction_type_id INTEGER NOT NULL REFERENCES transaction_type(id)
-	, final BOOLEAN NOT NULL
 	, transaction_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
-)
+);
