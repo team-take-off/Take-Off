@@ -1,5 +1,4 @@
 # Feature Database (range, exclude, log)
-Change database schema to use date ranges, exclude over-lapping requests for the same employee, and log changes
 Fix user.router to work with new schema
 Fix employee.router to work with new schema
 Fix accruedTime.router to work with new schema
