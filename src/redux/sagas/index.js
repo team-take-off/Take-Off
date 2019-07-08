@@ -1,6 +1,5 @@
 import { all } from 'redux-saga/effects';
 import loginSaga from './loginSaga';
-import registrationSaga from './registrationSaga';
 import userSaga from './userSaga';
 import requestsSaga from './requestsSaga';
 import userRequestsSaga from './userRequestsSaga';
@@ -17,7 +16,6 @@ import accruedTimeSaga from './accruedTimeSaga';
 export default function* rootSaga() {
   yield all([
     loginSaga(),
-    registrationSaga(),
     userSaga(),
     requestsSaga(),
     userRequestsSaga(),

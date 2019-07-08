@@ -74,7 +74,7 @@ class DynamicDrawer extends Component {
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/list_employees')}>Manage Employees</Button>
                 </ListItem>
                 <ListItem button>
-                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/search_employee')}>Search Employees</Button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/search_requests')}>Search Requests</Button>
                 </ListItem>
                 <Divider />
                 <ListItem button>

@@ -1,8 +1,20 @@
 # Feature Database (range, exclude, log)
 Rename URL routes to match pages
-Rework request form to hit new request.router
 Fix request.router to work with new schema
+    SELECT request units with request list, collate units and respond
+    Create a dry run route or query param that sends back units that would be added
+    Check all weekends and holidays in one place on the server 
+    INSERT requests breaking down ranges into request units and also INSERT those
 Change RequestForm to utilize the new route 
+    Send back and display dry-run units
+    Allow user to select mornings, afternoons, full days off
+Rename sagas and reducers to remove saga and reducer from names
+Combine adminMode reducer with user reducer
+Remove loginMode reducer
+Rename sickRequestDate to enteredSickRequest. Rename vacationRequestDate to enteredVacationRequest
+Rename accruedTime saga to additionalTime saga
+Move some functions from userRequests saga to requests saga.
+Combine withdrawUserRequest() with withdrawRequest() in requests saga
 
 # Feature Improve Request Router 2
 Handle request sagas parameter objects.

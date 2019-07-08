@@ -81,6 +81,7 @@ CREATE TABLE time_off_request (
 	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
 );
 
+-- A single discrete unit with a time off request (usually a day or half day)
 CREATE TABLE request_unit (
 	id SERIAL PRIMARY KEY
 	, time_off_request_id INTEGER NOT NULL REFERENCES time_off_request(id)
@@ -90,6 +91,7 @@ CREATE TABLE request_unit (
 	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
 );
 
+-- A log of transactions made to the other tables
 CREATE TABLE transaction_log (
 	id SERIAL PRIMARY KEY
 	, author_id INTEGER REFERENCES employee(id)

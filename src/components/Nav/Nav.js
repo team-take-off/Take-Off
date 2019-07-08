@@ -35,7 +35,7 @@ class Nav extends Component {
                         <Link className="nav-link" to="/admin/home">Home</Link>
                         <Link className="nav-link" to="/calendar">Calendar</Link>
                         <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
-                        <Link className="nav-link" to="/admin/search_employee">Search Requests</Link>
+                        <Link className="nav-link" to="/admin/search_requests">Search Requests</Link>
                         <ModeButton className="nav-link" />
                         <LogOutButton className="nav-link" />
                     </div>
