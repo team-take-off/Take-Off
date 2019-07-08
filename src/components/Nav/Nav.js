@@ -34,7 +34,7 @@ class Nav extends Component {
                     <div className={classnames(classes.desktop, "nav-right")}>
                         <Link className="nav-link" to="/admin/home">Home</Link>
                         <Link className="nav-link" to="/calendar">Calendar</Link>
-                        <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
+                        <Link className="nav-link" to="/admin/manage_employees">Manage Employees</Link>
                         <Link className="nav-link" to="/admin/search_requests">Search Requests</Link>
                         <ModeButton className="nav-link" />
                         <LogOutButton className="nav-link" />

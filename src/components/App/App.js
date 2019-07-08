@@ -14,11 +14,11 @@ import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
 
 import AdminAddEmployeePage from '../AdminAddEmployeePage/AdminAddEmployeePage';
 import AdminEditEmployeePage from '../AdminEditEmployeePage/AdminEditEmployeePage';
-import AdminEmployeeListPage from '../AdminEmployeeListPage/AdminEmployeeListPage';
 import AdminHomePage from '../AdminHomePage/AdminHomePage';
 import CalendarPage from '../CalendarPage/CalendarPage';
 import EmployeeHomePage from '../EmployeeHomePage/EmployeeHomePage';
 import EmployeeRequestsPage from '../EmployeeRequestsPage/EmployeeRequestsPage';
+import ManageEmployeesPage from '../ManageEmployeesPage/ManageEmployeesPage';
 import SickRequestPage from '../SickRequestPage/SickRequestPage';
 import VacationRequestPage from '../VacationRequestPage/VacationRequestPage';
 import SearchRequestsPage from '../SearchRequestsPage/SearchRequestsPage';
@@ -73,8 +73,8 @@ class App extends Component {
             <ProtectedRoute exact path="/admin/search_requests"
               component={SearchRequestsPage}
             />
-            <ProtectedRoute exact path="/admin/list_employees"
-              component={AdminEmployeeListPage}
+            <ProtectedRoute exact path="/admin/manage_employees"
+              component={ManageEmployeesPage}
             />
             <ProtectedRoute exact path="/admin/add_employee"
               component={AdminAddEmployeePage}

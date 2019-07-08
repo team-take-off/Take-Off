@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import './AdminEmployeeListPage.css';
+import './ManageEmployeesPage.css';
 import EmployeeListRow from './EmployeeListRow/EmployeeListRow';
 
 const styleDiv = {
     maxWidth: '1000px'
 };
 
-class AdminEmployeeListPage extends Component {
+class ManageEmployeesPage extends Component {
 
     // When this component mounts get all employees from the database
     componentDidMount() {
@@ -61,4 +61,4 @@ const mapReduxStoreToProps = reduxStore => ({
     employees: reduxStore.employees
 });
 
-export default connect(mapReduxStoreToProps)(AdminEmployeeListPage);
+export default connect(mapReduxStoreToProps)(ManageEmployeesPage);
