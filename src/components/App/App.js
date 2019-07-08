@@ -52,7 +52,7 @@ class App extends Component {
             <ProtectedRoute exact path="/home"
               component={EmployeeHomePage}
             />
-            <ProtectedRoute exact path="/employee_requests"
+            <ProtectedRoute exact path="/my_requests"
               component={EmployeeRequestsPage}
             />
             <ProtectedRoute exact path="/test_cron"

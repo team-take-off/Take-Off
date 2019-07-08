@@ -96,7 +96,7 @@ class DynamicDrawer extends Component {
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/home')}>{this.props.user.id > 0 ? 'Home' : 'Login / Register'}</Button>
                 </ListItem>
                 <ListItem button>
-                    <Button style={buttonStyle} onClick={() => this.props.history.push('/employee_requests')}>My Requests</Button>
+                    <Button style={buttonStyle} onClick={() => this.props.history.push('/my_requests')}>My Requests</Button>
                 </ListItem>
                 <ListItem button>
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/calendar')}>Calendar</Button>

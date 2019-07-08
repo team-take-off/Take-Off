@@ -1,5 +1,4 @@
 # Feature Database (range, exclude, log)
-Rename URL routes to match pages
 Fix request.router to work with new schema
     SELECT request units with request list, collate units and respond
     Create a dry run route or query param that sends back units that would be added
