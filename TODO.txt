@@ -8,7 +8,6 @@ Change RequestForm to utilize the new route
     Send back and display dry-run units
     Allow user to select mornings, afternoons, full days off
 Combine adminMode reducer with user reducer
-Rename accruedTime saga to additionalTime saga
 Move some functions from userRequests saga to requests saga.
 Combine withdrawUserRequest() with withdrawRequest() in requests saga
 
