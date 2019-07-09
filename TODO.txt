@@ -7,10 +7,7 @@ Fix request.router to work with new schema
 Change RequestForm to utilize the new route 
     Send back and display dry-run units
     Allow user to select mornings, afternoons, full days off
-Rename sagas and reducers to remove saga and reducer from names
 Combine adminMode reducer with user reducer
-Remove loginMode reducer
-Rename sickRequestDate to enteredSickRequest. Rename vacationRequestDate to enteredVacationRequest
 Rename accruedTime saga to additionalTime saga
 Move some functions from userRequests saga to requests saga.
 Combine withdrawUserRequest() with withdrawRequest() in requests saga
