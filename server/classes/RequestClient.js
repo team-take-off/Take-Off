@@ -59,40 +59,40 @@ class RequestClient {
     // Returns an array of unique years for time-off requests
     async getYears() {
         const id = this.config.employee;
-        const year = this.config.year;
         const selectText = `
-        SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
+        SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS year_part
         FROM time_off_request
-        JOIN batch_of_requests ON time_off_request.batch_of_requests_id = batch_of_requests.id
-            WHERE $1::numeric IS NULL OR batch_of_requests.employee_id = $1
-            AND $2::numeric IS NULL OR EXTRACT(YEAR FROM off_date) = $2;
+        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+            WHERE $1::numeric IS NULL OR time_off_request.employee_id = $1;
         `;
-        const { rows } = await this.client.query(selectText, [id, year]);
+        const { rows } = await this.client.query(selectText, [id]);
         const yearArray = await rows.map(row => row.year_part);
         return yearArray;
     }
 
     // Selects all time-off requests restricted by provided WHERE clauses
     async composeJoinRequest(whereClause) {
-        const joinText = `
-        SELECT
-            time_off_request.id,
-            time_off_request.off_date AS date,
-            time_off_request.off_hours AS hours,
-            time_off_request.batch_of_requests_id,
-            batch_of_requests.date_requested AS date_requested,
-            employee.first_name,
-            employee.last_name,
-            leave_type.val AS type,
-            request_status.val AS status
-        FROM employee 
-        JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-        JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-        JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-        JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
-        ${whereClause}
-        ORDER BY date_requested;
-        `;
+        // const joinText = `
+        // SELECT
+        //     request_unit.id,
+        //     request_unit.off_date AS date,
+        //     request_unit.off_hours AS hours,
+        //     request_unit.time_off_request_id,
+        //     time_off_request.date_requested AS date_requested,
+        //     employee.id AS employee_id,
+        //     employee.first_name,
+        //     employee.last_name,
+        //     leave_type.val AS type,
+        //     request_status.val AS status
+        // FROM employee 
+        // JOIN time_off_request ON employee.id = time_off_request.employee_id
+        // JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
+        // JOIN request_status ON request_status.id = batch_of_requests.request_status_id
+        // JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+        // ${whereClause}
+        // ORDER BY date_requested;
+        // `;
+        const joinText = `SELECT * FROM time_off_request;`;
         return joinText;
     }
 

@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS transaction_log;
+DROP TABLE IF EXISTS request_unit;
 DROP TABLE IF EXISTS time_off_request;
 DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS employee_role;

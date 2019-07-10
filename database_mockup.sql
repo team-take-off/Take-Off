@@ -12,4 +12,15 @@ VALUES
 INSERT INTO time_off_request
     (employee_id, leave_type_id, start_datetime, end_datetime)
 VALUES
-    (1, 1, '2019-07-06', '2019-07-10');
+    (1, 1, '2019-07-06', '2019-07-10'),
+    (2, 2, '2019-07-06', '2019-07-10');
+
+INSERT INTO request_unit
+    (time_off_request_id, start_datetime, end_datetime)
+VALUES
+    (1, '2019-07-08 09:00 AM', '2019-07-08 05:00 PM'),
+    (1, '2019-07-09 09:00 AM', '2019-07-09 05:00 PM'),
+    (1, '2019-07-10 09:00 AM', '2019-07-10 05:00 PM'),
+    (2, '2019-07-08 09:00 AM', '2019-07-08 05:00 PM'),
+    (2, '2019-07-09 09:00 AM', '2019-07-09 05:00 PM'),
+    (2, '2019-07-10 09:00 AM', '2019-07-10 05:00 PM');
