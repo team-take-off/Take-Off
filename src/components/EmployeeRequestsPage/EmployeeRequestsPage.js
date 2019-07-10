@@ -17,7 +17,6 @@ class EmployeeRequestsPage extends Component {
 
     // Show this component on the DOM
     render() {        
-        console.log(this.props.reduxStore.userRequests.pending);
         return (
             <div className="page-container">
                 <select onChange={this.handleYearChange} defaultValue="">

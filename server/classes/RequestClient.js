@@ -73,7 +73,8 @@ class RequestClient {
     async composeJoinRequest(whereClause) {
         const joinText = `
         SELECT
-            request_unit.id,
+            time_off_request.id AS id,
+            request_unit.id AS request_unit_id,
             DATE(request_unit.start_datetime) AS date,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,

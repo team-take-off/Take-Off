@@ -1,9 +1,8 @@
 # Feature Database (range, exclude, log)
 Fix request.router to work with new schema
-    Convert requests into class objects on the client-side
-    Update the way the little squares are drawn to make indicate half days off
+    Update the way the little squares are drawn to indicate half-days vs full-days off
     Fix route POST /api/request to work with new database schema
-    Fix route PUT /api/request to work with new database schema
+    Fix route PUT /api/request to work with new database schema. Alter schema to allow overlapping/conflicting times with requests that were denied
     Fix route DELETE /api/request to work with new database schema
     Create a dry run route or query param that sends back units that would be added
     Check all weekends and holidays in one place on the server 

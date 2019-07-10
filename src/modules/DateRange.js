@@ -1,12 +1,10 @@
-import moment from 'moment';
-
 class DateRange {
-    constructor(requestArray) {
+    constructor(array) {
         // Read in an array of objects with the attribute 'date:' and convert
         // to an array of class 'moment' from Moment.js.
         this.momentArray = [];
-        for (let element of requestArray) {
-            this.momentArray.push(moment(element.date));
+        for (let unit of array) {
+            this.momentArray.push(unit.date);
         }
 
         // Sort the array of moments

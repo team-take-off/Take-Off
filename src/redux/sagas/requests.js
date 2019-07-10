@@ -1,10 +1,19 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
+import Request from '../../classes/Request';
+
 function* fetchRequests(action) {
     try {
         const serverResponse = yield axios.get('api/request', { params: action.payload });
-        yield put({ type: 'SET_REQUESTS', payload: serverResponse.data });
+        const requests = yield {
+            pending: Request.loadArray(serverResponse.data.pending),
+            approved: Request.loadArray(serverResponse.data.approved),
+            denied: Request.loadArray(serverResponse.data.denied),
+            past: Request.loadArray(serverResponse.data.past),
+            years: serverResponse.data.years
+        };
+        yield put({ type: 'SET_REQUESTS', payload: requests });
     } catch (error) {
         console.log('Error in axios GET:', error);
     }

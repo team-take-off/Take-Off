@@ -1,10 +1,19 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
+import Request from '../../classes/Request';
+
 function* fetchUserRequests(action) {
     try {
         const serverResponse = yield axios.get('api/request/current-user', action.payload);
-        yield put({ type: 'SET_USER_REQUESTS', payload: serverResponse.data });
+        const userRequests = yield {
+            pending: Request.loadArray(serverResponse.data.pending),
+            approved: Request.loadArray(serverResponse.data.approved),
+            denied: Request.loadArray(serverResponse.data.denied),
+            past: Request.loadArray(serverResponse.data.past),
+            years: serverResponse.data.years
+        };
+        yield put({ type: 'SET_USER_REQUESTS', payload: userRequests });
     } catch (error) {
         console.log('Error in saga fetchUserRequests,', error);
         alert('Unable to get users\'s time-off requests');

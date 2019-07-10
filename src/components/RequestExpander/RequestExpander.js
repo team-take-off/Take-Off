@@ -49,10 +49,10 @@ class RequestExpander extends Component {
             } else {
                 return (
                     <div>
-                        {this.props.requests.map((requestArray, i) =>
+                        {this.props.requests.map(request =>
                             <RequestCard
-                                key={i}
-                                requestArray={requestArray}
+                                key={request.id}
+                                request={request}
                                 forAdmin={this.props.forAdmin}
                                 past={this.props.past}
                             />
