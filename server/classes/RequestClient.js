@@ -39,18 +39,17 @@ class RequestClient {
 
     // Sort an array of requests into an array of arrays (grouped by batch ID)
     async sortIntoGroups(requestArray) {
-        // TODO: Ideally this sorting would be handled by the database select operation
         const uniqueGroupIDs = [];
         const groupArray = [];
-        for (let request of requestArray) {
-            const id = request.batch_of_requests_id;
+        for (let requestUnit of requestArray) {
+            const id = requestUnit.time_off_request_id;
             const index = await uniqueGroupIDs.indexOf(id);
             if (index < 0) {
                 await uniqueGroupIDs.push(id);
                 await groupArray.push([]);
-                await groupArray[groupArray.length - 1].push(request);
+                await groupArray[groupArray.length - 1].push(requestUnit);
             } else {
-                await groupArray[index].push(request);
+                await groupArray[index].push(requestUnit);
             }
         }
         return groupArray;
@@ -72,27 +71,28 @@ class RequestClient {
 
     // Selects all time-off requests restricted by provided WHERE clauses
     async composeJoinRequest(whereClause) {
-        // const joinText = `
-        // SELECT
-        //     request_unit.id,
-        //     request_unit.off_date AS date,
-        //     request_unit.off_hours AS hours,
-        //     request_unit.time_off_request_id,
-        //     time_off_request.date_requested AS date_requested,
-        //     employee.id AS employee_id,
-        //     employee.first_name,
-        //     employee.last_name,
-        //     leave_type.val AS type,
-        //     request_status.val AS status
-        // FROM employee 
-        // JOIN time_off_request ON employee.id = time_off_request.employee_id
-        // JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-        // JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-        // JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
-        // ${whereClause}
-        // ORDER BY date_requested;
-        // `;
-        const joinText = `SELECT * FROM time_off_request;`;
+        const joinText = `
+        SELECT
+            request_unit.id,
+            DATE(request_unit.start_datetime) AS date,
+            EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
+            EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
+            EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
+            request_unit.time_off_request_id,
+            time_off_request.placed_datetime AS date_requested,
+            employee.id AS employee_id,
+            employee.first_name,
+            employee.last_name,
+            leave_type.val AS type,
+            request_status.val AS status
+        FROM employee 
+        JOIN time_off_request ON employee.id = time_off_request.employee_id
+        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
+        JOIN request_status ON request_status.id = time_off_request.request_status_id
+        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+        ${whereClause}
+        ORDER BY date_requested;
+        `;
         return joinText;
     }
 
@@ -102,9 +102,9 @@ class RequestClient {
         const year = this.config.year;
         const whereClause = `
         WHERE request_status.id = $1
-        AND $2::numeric IS NULL OR batch_of_requests.employee_id = $2
-        AND $3::numeric IS NULL OR EXTRACT(YEAR FROM time_off_request.off_date) = $3
-        AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        AND $2::numeric IS NULL OR time_off_request.employee_id = $2
+        AND $3::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $3
+        AND request_unit.start_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
@@ -117,9 +117,9 @@ class RequestClient {
         const id = this.config.employee;
         const year = this.config.year;
         const whereClause = `
-        WHERE $1::numeric IS NULL OR batch_of_requests.employee_id = $1
-        AND $2::numeric IS NULL OR EXTRACT(YEAR FROM time_off_request.off_date) = $2
-        AND time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        WHERE $1::numeric IS NULL OR time_off_request.employee_id = $1
+        AND $2::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $2
+        AND request_unit.start_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [id, year]);

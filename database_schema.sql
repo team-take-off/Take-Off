@@ -75,6 +75,7 @@ CREATE TABLE time_off_request (
 	id SERIAL PRIMARY KEY
 	, employee_id INTEGER NOT NULL REFERENCES employee(id)
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
+	, request_status_id INTEGER NOT NULL REFERENCES request_status(id)
 	, start_datetime TIMESTAMPTZ NOT NULL
 	, end_datetime TIMESTAMPTZ NOT NULL
 	, placed_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()

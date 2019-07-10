@@ -34,16 +34,11 @@ router.get('/', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const years = await client.getYears();
-            // const pending = await client.getRequests(PENDING_STATUS);
-            // const approved = await client.getRequests(APPROVED_STATUS);
-            // const denied = await client.getRequests(DENIED_STATUS);
-            // const past = await client.getPastRequests();
+            const pending = await client.getRequests(PENDING_STATUS);
+            const approved = await client.getRequests(APPROVED_STATUS);
+            const denied = await client.getRequests(DENIED_STATUS);
+            const past = await client.getPastRequests();
             await client.commit();
-            // const years = [];
-            const pending = [];
-            const approved = [];
-            const denied = [];
-            const past = [];
             res.send({ years, pending, approved, denied, past });
         } catch (error) {
             await client.rollback();
