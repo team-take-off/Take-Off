@@ -85,7 +85,7 @@ class RequestForm extends Component {
     render() {
     
         let dateVal;
-        if (this.props.type.startDate>this.props.type.endDate) {
+        if (this.props.type.startDate > this.props.type.endDate) {
             dateVal = moment(this.props.type.startDate).format('YYYY-MM-DD');
         } else {
             dateVal=this.props.type.endDate;

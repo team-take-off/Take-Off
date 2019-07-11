@@ -12,7 +12,7 @@ class VacationRequestPage extends Component {
                 {this.props.reduxStore.user && (
                     <div>
                         <VacationDaysHeading days={(parseFloat(this.props.reduxStore.user.vacation_hours) / 8)} />
-                        <RequestForm history={this.props.history} type={this.props.reduxStore.vacationRequestDates} typeid={1} />
+                        <RequestForm history={this.props.history} type={this.props.reduxStore.enteredVacationRequest} typeid={1} />
                     </div>
                 )}
             </div>

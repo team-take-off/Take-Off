@@ -18,43 +18,42 @@ class BuildAdminCalendar extends Component {
             const approved = this.props.requests.approved;
             const pending = this.props.requests.pending;
             
-            for (let batch of approved) {
-                this.insertBatch(batch);
+            for (let request of approved) {
+                this.insertRequest(request);
             }
-            for (let batch of pending) {
-                this.insertBatch(batch);
+            for (let request of pending) {
+                this.insertRequest(request);
             }
         }
     }
 
-    insertBatch = (batch) => {
-        if (batch.length === 0) {
+    insertRequest = (request) => {
+        if (request.units.length === 0) {
             return;
         }
 
-        this.sortBatchByDate(batch);
-        const start = batch[0];
-        const end = batch[batch.length - 1];
+        const startUnit = request.units[0];
+        const lastUnit = request.units[request.units.length - 1];
 
-        const newCalendarEvent = {
-            title: `${start.first_name}: ${start.type}`,
-            start: moment(start.date),
-            end: moment(end.date).add(1, 'day')
+        const calendarEvent = {
+            title: `${request.firstName}: ${request.type}`,
+            start: moment(startUnit.date),
+            end: moment(lastUnit.date).add(1, 'day')
         };
 
         this.setState(prevState => ({
             ...this.state,
-            calendar_events: [...prevState.calendar_events, newCalendarEvent]
+            calendar_events: [...prevState.calendar_events, calendarEvent]
         }));
     }
 
-    sortBatchByDate = (batch) => {
-        batch.sort((a, b) => {
-            a = moment(a.date);
-            b = moment(b.date);
-            return a.diff(b);
-        });
-    }
+    // sortBatchByDate = (batch) => {
+    //     batch.sort((a, b) => {
+    //         a = moment(a.date);
+    //         b = moment(b.date);
+    //         return a.diff(b);
+    //     });
+    // }
 
     eventStyle = (event, start, end, isSelected) => {        
         var backgroundColor = event.title.includes('Vacation') ? '#88BB92' : '#F7934C';

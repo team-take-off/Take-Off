@@ -1,28 +1,31 @@
 class DateRange {
-    constructor(array) {
-        // Read in an array of objects with the attribute 'date:' and convert
-        // to an array of class 'moment' from Moment.js.
-        this.momentArray = [];
-        for (let unit of array) {
-            this.momentArray.push(unit.date);
-        }
-
-        // Sort the array of moments
-        this.momentArray.sort((left, right) => {
-            return left.diff(right);
+    constructor(units) {
+        this.units = units;
+        this.units.sort((left, right) => {
+            return left.date.diff(right.date);
         });
     }
 
+    getUnit(index) {
+        const unit = this.units[index];
+        let dayTypeString = '';
+        if (unit.dayType.description === 'morning') {
+            dayTypeString = ' (morning)';
+        } else if (unit.dayType.description === 'afternoon') {
+            dayTypeString = ' (afternoon)';
+        }
+        return unit.date.format(this.outputFormat) + dayTypeString;
+    }
+
     format = (outputFormat) => {
-        const moments = this.momentArray;
-        if (moments.length === 0) {
+        this.outputFormat = outputFormat;
+        if (this.units.length === 0) {
             return '';
         }
 
-        // Build a human readable output string 
-        let outputString = moments[0].format(outputFormat);
-        if (moments.length > 1) {
-            outputString += ` thru ${moments[moments.length - 1].format(outputFormat)}`;
+        let outputString = this.getUnit(0);
+        if (this.units.length > 1) {
+            outputString += ` — ${this.getUnit(this.units.length - 1)}`;
         }
         return outputString;
     }

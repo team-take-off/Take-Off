@@ -171,7 +171,6 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const request = await client.getRequestData(id);
-            await console.log(request);
             if (userRole === ADMINISTRATOR_ROLE) {
                 await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
             } else if (userID === request.employee && request.in_future) {

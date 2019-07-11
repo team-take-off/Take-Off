@@ -12,7 +12,7 @@ class SickRequestPage extends Component {
                 {this.props.reduxStore.user && (
                     <div>
                         <SickDaysHeading days={(parseFloat(this.props.reduxStore.user.sick_hours) / 8)} />
-                        <RequestForm history={this.props.history} type={this.props.reduxStore.sickRequestDates} typeid={2}/>
+                        <RequestForm history={this.props.history} type={this.props.reduxStore.enteredSickRequest} typeid={2}/>
                     </div>
                 )}
             </div>
