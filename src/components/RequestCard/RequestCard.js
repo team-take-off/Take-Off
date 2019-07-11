@@ -123,26 +123,22 @@ class RequestCard extends Component {
 
     // Handles when the admin presses the 'Approve' button
     approve = () => {
-        if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
-            const action = {
-                type: 'APPROVE_REQUEST',
-                payload: id
-            };
-            this.props.dispatch(action);
-        }
+        const id = this.props.request.id;
+        const action = {
+            type: 'APPROVE_REQUEST',
+            payload: id
+        };
+        this.props.dispatch(action);
     }
 
     // Handles when the admin presses the 'Deny' button
     deny = () => {
-        if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
-            const action = {
-                type: 'DENY_REQUEST',
-                payload: id
-            };
-            this.props.dispatch(action);
-        }
+        const id = this.props.request.id;
+        const action = {
+            type: 'DENY_REQUEST',
+            payload: id
+        };
+        this.props.dispatch(action);
     }
 
     // Handles when the admin presses the 'Edit' button

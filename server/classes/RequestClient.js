@@ -174,62 +174,65 @@ class RequestClient {
         }
     }
 
-    // Returns a batch of requests object based on batch id
-    async getBatchData() {
-        const id = this.config.batch;
+    // Returns summary data on a request based on id
+    async getRequestData(id) {
         const selectText = `
         SELECT 
-            id,
+            time_off_request.id,
             employee_id, 
-            request_status_id, 
-            leave_type_id
-        FROM batch_of_requests 
-        WHERE id = $1;
+            request_status_id,
+            leave_type_id,
+            SUM(EXTRACT(HOURS FROM request_unit.end_datetime - request_unit.start_datetime)) AS hours
+        FROM time_off_request
+        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+        WHERE time_off_request.id = $1
+        GROUP BY time_off_request.id
+        LIMIT 1;
         `;
         const { rows } = await this.client.query(selectText, [id]);
         return {
-            id: rows[0].id,
             employee: rows[0].employee_id,
             status: rows[0].request_status_id,
-            type: rows[0].leave_type_id
+            type: rows[0].leave_type_id,
+            hours: rows[0].hours
         };
     };
 
-    // Changes the status (PENDING, APPROVED, DENIED) of a batch of requests
-    async updateBatchStatus(id, status) {
+    // Changes the status (PENDING, APPROVED, DENIED) of a time-off request
+    async updateStatus(id, status) {
         const updateText = `
-        UPDATE batch_of_requests
+        UPDATE time_off_request
         SET request_status_id = $1
+        , active = (SELECT active FROM request_status WHERE id = $1)
         WHERE id = $2;
         `;
         await this.client.query(updateText, [status, id]);
     }
 
     // Refund the total number of off-hours found in a batch of requests
-    async refundBatchHours(batch) {
-        let hours;
-        if (batch.type === VACATION_TYPE) {
-            hours = 'vacation_hours';
+    async refundHours(request, userID, transactionType) {
+        let hours_column;
+        if (request.type === VACATION_TYPE) {
+            hours_column = 'vacation_hours';
         } else if (batch.type === SICK_TYPE) {
-            hours = 'sick_hours';
+            hours_column = 'sick_hours';
         } else {
-            throw Error(`Error in request.router.js function refundBatchHours. Invalid batch.type (${batch.type}).`);
+            throw Error(`Error in request.router.js function refundBatchHours. Invalid request.type (${request.type}).`);
         }
 
-        const sumHoursText = `
-        SELECT SUM(off_hours)
-        FROM time_off_request
-        WHERE batch_of_requests_id = $1;
-        `;
-        const { rows } = await this.client.query(sumHoursText, [batch.id]);
-        const refundHours = rows[0].sum;
-
-        const updateEmployeeText = `
+        const updateEmployee = `
         UPDATE employee
-        SET ${hours} = ${hours} + $1
+        SET ${hours_column} = ${hours_column} + $1
         WHERE id = $2
         `;
-        await this.client.query(updateEmployeeText, [refundHours, batch.employee]);
+        await this.client.query(updateEmployee, [request.hours, request.employee]);
+        const logUpdate = `
+        INSERT INTO transaction_log
+            (author_id, employee_id, leave_hours, leave_type_id, transaction_type_id)
+        VALUES
+            ($1, $2, $3, $4, $5);
+        `;
+        await this.client.query(logUpdate, [userID, request.employee, request.hours, request.type, transactionType]);
     }
 
     // Deletes a batch of time-off requests

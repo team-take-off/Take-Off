@@ -21,8 +21,8 @@ function* fetchRequests(action) {
 
 function* approveRequest(action) {
     try {
-        const batchID = action.payload;
-        yield axios.put(`api/admin/request/approved/${batchID}`, { requestStatus: 2 });
+        const id = action.payload;
+        yield axios.put(`api/request/${id}`, { requestStatus: 2 });
         yield put({ type: 'FETCH_REQUESTS' });
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });
@@ -33,8 +33,8 @@ function* approveRequest(action) {
 
 function* denyRequest(action) {
     try {
-        const batchID = action.payload;
-        yield axios.put(`api/admin/request/approved/${batchID}`, { requestStatus: 3 });
+        const id = action.payload;
+        yield axios.put(`api/request/${id}`, { requestStatus: 3 });
         yield put({ type: 'FETCH_REQUESTS' });
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });

@@ -33,13 +33,14 @@ VALUES
 CREATE TABLE request_status (
 	id SERIAL PRIMARY KEY
 	, val VARCHAR(20) NOT NULL UNIQUE
+	, active INT NOT NULL
 );
 INSERT INTO request_status
-	(val)
+	(val, active)
 VALUES
-	('pending'),
-	('approved'),
-	('denied');
+	('pending', 1),
+	('approved', 1),
+	('denied', 0);
 
 -- Types of a transactions in the log table
 CREATE TABLE transaction_type (
@@ -76,11 +77,13 @@ CREATE TABLE time_off_request (
 	, employee_id INTEGER NOT NULL REFERENCES employee(id)
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
 	, request_status_id INTEGER NOT NULL REFERENCES request_status(id)
+	, active INT NOT NULL DEFAULT 1
 	, start_datetime TIMESTAMPTZ NOT NULL
 	, end_datetime TIMESTAMPTZ NOT NULL
 	, placed_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
 	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
-	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
+	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&, int4range(0, active, '()') WITH &&)
+	, CONSTRAINT denied_status_implies_not_active CHECK((request_status_id != 3 AND active = 1) OR (request_status_id = 3 AND active = 0))
 );
 
 -- A single discrete unit with a time off request (usually a day or half day)

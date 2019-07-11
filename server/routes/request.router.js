@@ -12,6 +12,14 @@ const PENDING_STATUS = 1;
 const APPROVED_STATUS = 2;
 const DENIED_STATUS = 3;
 
+const AUTOMATIC_ACCRUAL_TRANSACTION = 1;
+const AUTOMATIC_ADJUSTMENT_TRANSACTION = 2;
+const EMPLOYEE_REQUEST_TRANSACTION = 3;
+const EMPLOYEE_CANCEL_TRANSACTION = 4;
+const ADMIN_APPROVE_TRANSACTION = 5;
+const ADMIN_DENY_TRANSACTION = 6;
+const ADMIN_SPECIAL_TRANSACTION = 7;
+
 const parseIntOrNull = (num) => {
     const parsed = parseInt(num);
     if (parsed) {
@@ -122,21 +130,18 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 // Route PUT /api/request/:id
 // Update the value of approved for a batch of requested days off
 router.put('/:id', rejectNonAdmin, (req, res) => {
-    const batchID = req.params.id;
+    const id = req.params.id;
     const requestStatus = req.body.requestStatus;
-    const config = {
-        // batch: req.params.id
-    };
 
-    const client = new RequestClient(pool, config);
+    const client = new RequestClient(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const batch = await client.getBatchData(batchID);
-            await client.updateBatchStatus(batchID, requestStatus);
-            if (requestStatus === DENIED_STATUS && requestStatus !== batch.status) {
-                await client.refundBatchHours(batch);
+            const request = await client.getRequestData(id);
+            await client.updateStatus(id, requestStatus);
+            if (requestStatus === DENIED_STATUS && requestStatus !== request.status) {
+                await client.refundHours(request, req.user.id, ADMIN_DENY_TRANSACTION);
             }
             await client.commit();
             res.sendStatus(200);
