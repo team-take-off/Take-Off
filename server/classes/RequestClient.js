@@ -182,7 +182,8 @@ class RequestClient {
             employee_id, 
             request_status_id,
             leave_type_id,
-            SUM(EXTRACT(HOURS FROM request_unit.end_datetime - request_unit.start_datetime)) AS hours
+            SUM(EXTRACT(HOURS FROM request_unit.end_datetime - request_unit.start_datetime)) AS hours,
+            time_off_request.end_datetime <= (CURRENT_DATE + integer '${GRACE_PERIOD}') AS in_future
         FROM time_off_request
         JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
         WHERE time_off_request.id = $1
@@ -191,6 +192,7 @@ class RequestClient {
         `;
         const { rows } = await this.client.query(selectText, [id]);
         return {
+            id: rows[0].id,
             employee: rows[0].employee_id,
             status: rows[0].request_status_id,
             type: rows[0].leave_type_id,
@@ -235,18 +237,16 @@ class RequestClient {
         await this.client.query(logUpdate, [userID, request.employee, request.hours, request.type, transactionType]);
     }
 
-    // Deletes a batch of time-off requests
-    async deleteBatch(batch) {
-        const deleteRequestsText = `
+    // Deletes a time-off request
+    async deleteRequest(request, userID, transactionType) {
+        const deleteRequest = `
         DELETE FROM time_off_request
-        WHERE batch_of_requests_id = $1;
-        `;
-        await this.client.query(deleteRequestsText, [batch.id]);
-        const deleteBatchText = `
-        DELETE FROM batch_of_requests
         WHERE id = $1;
         `;
-        await this.client.query(deleteBatchText, [batch.id]);
+        await this.client.query(deleteRequest, [request.id]);
+        if (request.status === 1 || request.status === 2) {
+            await this.refundHours(request, userID, transactionType);
+        }
     }
 }
 

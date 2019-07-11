@@ -34,8 +34,8 @@ function* addUserRequest(action) {
 
 function* withdrawUserRequest(action) {
     try {
-        const batchID = action.payload;
-        yield axios.delete(`api/request/${batchID}`);
+        const requestID = action.payload;
+        yield axios.delete(`api/request/${requestID}`);
         yield put({ type: 'FETCH_USER_INFO' });
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_REQUESTS' });

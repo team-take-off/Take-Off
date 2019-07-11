@@ -161,28 +161,24 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 // Route DELETE /api/request/:id
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
-    const batchID = req.params.id;
+    const id = req.params.id;
+    const userID = req.user.id;
+    const userRole = req.user.role_id;
 
-    const client = new RequestClient(pool, config);
+    const client = new RequestClient(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            let employeeID = req.user.id;
-            const batch = await client.getBatchData(batchID);
-            if (req.user.role_id === ADMINISTRATOR_ROLE) {
-                employeeID = batch.employee;
-            } else if (employeeID !== batch.employee) {
-                throw new Error('Attempted unautharized query on route DELETE /api/request/:id.');
-            }
-
-            if (batch.status === PENDING_STATUS) {
-                // TODO: This should include a check to see if the deleted request is in the future and 
-                // Prevent non-admin users from deleting in that case.
-                await client.refundBatchHours(batch);
-            }
-
-            await client.deleteBatch(batch);
+            const request = await client.getRequestData(id);
+            await console.log(request);
+            if (userRole === ADMINISTRATOR_ROLE) {
+                await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
+            } else if (userID === request.employee && request.in_future) {
+                await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
+            } else {
+                throw new Error('Unautharized use of route DELETE /api/request/:id.');
+            } 
             await client.commit();
             res.sendStatus(200);
         } catch (error) {

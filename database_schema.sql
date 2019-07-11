@@ -89,7 +89,7 @@ CREATE TABLE time_off_request (
 -- A single discrete unit with a time off request (usually a day or half day)
 CREATE TABLE request_unit (
 	id SERIAL PRIMARY KEY
-	, time_off_request_id INTEGER NOT NULL REFERENCES time_off_request(id)
+	, time_off_request_id INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE
 	, start_datetime TIMESTAMPTZ NOT NULL
 	, end_datetime TIMESTAMPTZ NOT NULL
 	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
