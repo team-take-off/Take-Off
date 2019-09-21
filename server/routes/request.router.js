@@ -28,6 +28,13 @@ const parseIntOrNull = (num) => {
     return null;
 }
 
+const parseBoolOrNull = (bool) => {
+    if (bool === undefined) {
+        return null;
+    }
+    return bool;
+}
+
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
@@ -100,7 +107,8 @@ router.post('/', rejectUnauthenticated, (req, res) => {
     const requestedDates = req.body.requestedDates;
     const config = {
         employee: parseIntOrNull(req.user.id),
-        type: parseIntOrNull(req.body.typeID)
+        type: parseIntOrNull(req.body.typeID),
+        dryRun: parseBoolOrNull(req.body.dryRun)
     };
 
     const client = new RequestClient(pool, config);
