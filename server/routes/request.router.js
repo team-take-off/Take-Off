@@ -35,6 +35,14 @@ const parseBoolOrNull = (bool) => {
     return bool;
 }
 
+const getRequestsArray = (startDate, endDate) => {
+    return [];
+}
+
+const getRequestUnits = (requestsArray) => {
+    return [];
+}
+
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
@@ -104,11 +112,18 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    const requestedDates = req.body.requestedDates;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
     const config = {
         employee: parseIntOrNull(req.user.id),
         type: parseIntOrNull(req.body.typeID),
         dryRun: parseBoolOrNull(req.body.dryRun)
+    };
+
+    const requestsArray = getRequestsArray(startDate, endDate);
+    const returnSummary = {
+        totalHours: 0,
+        requestUnits: getRequestUnits(requestsArray)
     };
 
     const client = new RequestClient(pool, config);
@@ -116,12 +131,13 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         await client.connect();
         try {
             await client.begin();
+            returnSummary.totalHours = await client.selectTotalHours();
             const batchID = await client.insertBatch();
-            for (let request of requestedDates) {
+            for (let request of requestsArray) {
                 await client.insertRequest(request, batchID);
             }
             await client.commit();
-            await res.sendStatus(201);
+            await res.send(returnSummary);
         } catch (error) {
             await client.rollback();
             await res.sendStatus(500);
