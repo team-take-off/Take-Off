@@ -1,4 +1,6 @@
 const express = require('express');
+const moment = require('moment');
+
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
@@ -36,11 +38,67 @@ const parseBoolOrNull = (bool) => {
 }
 
 const getRequestsArray = (startDate, endDate) => {
-    return [];
+    let requests = [];
+    let currentDate = moment(startDate);
+    while (currentDate.isBefore(endDate)) {
+        if (currentDate.hour() === 9) {
+            const lookAheadFull = moment(currentDate).add(8, 'hours');
+            const lookAheadHalf = moment(currentDate).add(4, 'hours');
+            if (lookAheadFull.isSameOrBefore(endDate)) {
+                const newRequest = {
+                    start: moment(currentDate),
+                    end: moment(lookAheadFull),
+                    hours: 8
+                };
+                requests.push(newRequest);
+            } else if (lookAheadHalf.isSameOrBefore(endDate)) {
+                const newRequest = {
+                    start: moment(currentDate),
+                    end: moment(lookAheadHalf),
+                    hours: 4
+                };
+                requests.push(newRequest);
+            }
+            currentDate.add(1, 'days');
+        } else if (currentDate.hour() === 13) {
+            const lookAhead = moment(currentDate).add(4, 'hours');
+            if (lookAhead.isSameOrBefore(endDate)) {
+                const newRequest = {
+                    start: moment(currentDate),
+                    end: moment(lookAhead),
+                    hours: 4
+                };
+                requests.push(newRequest);
+            }
+            currentDate.add(20, 'hours');
+        }
+    }
+    return requests;
 }
 
 const getRequestUnits = (requestsArray) => {
-    return [];
+    requestUnits = [];
+    for (let request of requestsArray) {
+        if (request.start.year() === request.end.year() && request.start.dayOfYear() === request.end.dayOfYear()) {
+            if (request.start.hour() === 9 && request.end.hour() === 17) {
+                requestUnits.push({
+                    description: 'fullday',
+                    hours: 8
+                });
+            } else if (request.start.hour() === 9 && request.end.hour() === 13) {
+                requestUnits.push({
+                    description: 'morning',
+                    hours: 4
+                });
+            } else if (request.start.hour() === 13 && request.end.hour() === 17) {
+                requestUnits.push({
+                    description: 'afternoon',
+                    hours: 4
+                });
+            }
+        }
+    }
+    return requestUnits;
 }
 
 // Route GET /api/request
@@ -131,15 +189,16 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         await client.connect();
         try {
             await client.begin();
-            returnSummary.totalHours = await client.selectTotalHours();
-            const batchID = await client.insertBatch();
-            for (let request of requestsArray) {
-                await client.insertRequest(request, batchID);
+            returnSummary.totalHours = await client.getTotalHours();
+            const requestID = await client.insertRequest(startDate, endDate);
+            for (let day of requestsArray) {
+                await client.insertRequestDay(day, requestID);
             }
             await client.commit();
             await res.send(returnSummary);
         } catch (error) {
             await client.rollback();
+            await console.log(error);
             await res.sendStatus(500);
             throw error;
         } finally {

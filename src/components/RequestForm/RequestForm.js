@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 import moment from 'moment';
 
 
@@ -40,45 +40,47 @@ class RequestForm extends Component {
 
     submit = (event) => {
         event.preventDefault();
-        swal({
-            title: 'Submit Request?',
-            text: 'Your request will be submitted',
-            icon: 'info',
-            buttons: true,
-        }).then((willRequest) => {
-            if (willRequest) {
-                const startDate = moment(this.props.type.startDate, 'YYYY-MM-DD');
-                const endDate = moment(this.props.type.endDate, 'YYYY-MM-DD');
-                const numberOfDays = endDate.diff(startDate, 'days') + 1;
-                let requestArray = [];
-                let currentDate = moment(this.props.type.startDate, 'YYYY-MM-DD');
-                for (let i = 0; i < numberOfDays; i++) {
-                    if (i === 0) {
-                        requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: this.props.type.startHours });
-                    } else if (i === numberOfDays - 1) {
-                        requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: this.props.type.endHours });
-                    } else {
-                        requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: 8 });
-                    }
-                    currentDate.add(1, 'days');
-                }
+        // swal({
+        //     title: 'Submit Request?',
+        //     text: 'Your request will be submitted',
+        //     icon: 'info',
+        //     buttons: true,
+        // }).then((willRequest) => {
+        //     if (willRequest) {
+        //         const startDate = moment(this.props.type.startDate, 'YYYY-MM-DD');
+        //         const endDate = moment(this.props.type.endDate, 'YYYY-MM-DD');
+        //         const numberOfDays = endDate.diff(startDate, 'days') + 1;
+        //         let requestArray = [];
+        //         let currentDate = moment(this.props.type.startDate, 'YYYY-MM-DD');
+        //         for (let i = 0; i < numberOfDays; i++) {
+        //             if (i === 0) {
+        //                 requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: this.props.type.startHours });
+        //             } else if (i === numberOfDays - 1) {
+        //                 requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: this.props.type.endHours });
+        //             } else {
+        //                 requestArray.push({ date: currentDate.format('YYYY-MM-DD'), hours: 8 });
+        //             }
+        //             currentDate.add(1, 'days');
+        //         }
 
                 const action = {
                     type: 'ADD_USER_REQUEST',
                     payload: {
                         typeID: this.props.typeid,
-                        requestedDates: requestArray
+                        startDate: moment('2019-09-22').set('hour', 9),
+                        endDate: moment('2019-09-24').set('hour', 17),
+                        dryRun: false
                     }
                 };
                 this.props.dispatch(action);
-                this.props.history.push('/employee_requests');
-                swal('Request Submitted', {
-                    icon: 'success',
-                });
-            } else {
-                swal("Request Cancelled");
-            }
-        });
+                this.props.history.push('/my_requests');
+        //         swal('Request Submitted', {
+        //             icon: 'success',
+        //         });
+        //     } else {
+        //         swal("Request Cancelled");
+        //     }
+        // });
     }
 
     // Show this component on the DOM

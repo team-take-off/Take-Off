@@ -128,50 +128,83 @@ class RequestClient {
         return requests;
     }
 
-    // Insert a new batch of requests and return the assigned id (i.e. the primary key)
-    async insertBatch(typeID) {
+    // Select total available hours of given type (e.g. vacation or sick) for current employee
+    async getTotalHours() {
         const userID = this.config.employee;
+        const leaveTypeID = this.config.type;
+        let hoursType = '';
+        if (leaveTypeID === 1) {
+            hoursType = 'vacation_hours';
+        } else if (leaveTypeID === 2) {
+            hoursType = 'sick_hours';
+        } else {
+            throw Error(`Error in RequestClient.js function selectTotalHours(). Invalid leaveTypeID (${leaveTypeID}) must be 1 or 2.`);
+        }
+
+        const selectText = `
+        SELECT ${hoursType} AS hours
+        FROM employee
+        WHERE id = $1;
+        `;
+        const { rows } = await this.client.query(selectText, [userID]);
+        const hours = rows[0].hours;
+        return hours;
+    }
+
+    // Insert a new request and return the assigned id (i.e. the primary key)
+    async insertRequest(startTime, endTime) {
+        if (this.config.dryRun) {
+            return;
+        }
+
+        const employeeID = this.config.employee;
+        const leaveTypeID = this.config.type;
+
         const insertText = `
-        INSERT INTO batch_of_requests
-        (employee_id, leave_type_id)
+        INSERT INTO time_off_request
+        (employee_id, leave_type_id, request_status_id, start_datetime, end_datetime)
         VALUES
-        ($1, $2)
+        ($1, $2, 1, $3, $4)
         RETURNING id;
         `;
-        const { rows } = await this.client.query(insertText, [userID, typeID]);
-        const batchID = rows[0].id;
-        return batchID;
+
+        const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, startTime, endTime]);
+        const requestID = rows[0].id;
+        return requestID;
     };
 
-    // Insert a new request for time-off. Then update the employee's total hours 
-    // available.
-    async insertRequest(request, userID, batchID, typeID) {
-        let hours;
-        if (typeID === VACATION_TYPE) {
-            hours = 'vacation_hours';
-        } else if (typeID === SICK_TYPE) {
-            hours = 'sick_hours';
-        } else {
-            throw Error(`Error in request.router.js function insertRequest. Invalid typeID (${typeID}) must be 1 or 2.`);
+    // Insert a new requested day for time-off. Then update the employee's total
+    // hours available.
+    async insertRequestDay(day, requestID) {
+        if (this.config.dryRun) {
+            return;
         }
 
-        const date = moment(request.date, 'YYYY-MM-DD');
-        const day = date.format('d');
-        if (day !== SUNDAY && day !== SATURDAY) {
-            const insertRequest = `
-            INSERT INTO time_off_request
-            (off_date, batch_of_requests_id, off_hours)
-            VALUES
-            ($1, $2, $3);
-            `;
-            await this.client.query(insertRequest, [request.date, batchID, request.hours]);
-            const updateHours = `
-            UPDATE employee SET 
-            ${hours} = ${hours} - $1
-            WHERE id = $2;
-            `;
-            await this.client.query(updateHours, [request.hours, userID]);
+        const employeeID = this.config.employee;
+        const leaveTypeID = this.config.type;
+
+        let hoursType;
+        if (leaveTypeID === VACATION_TYPE) {
+            hoursType = 'vacation_hours';
+        } else if (leaveTypeID === SICK_TYPE) {
+            hoursType = 'sick_hours';
+        } else {
+            throw Error(`Error in RequestClient.js function insertRequestDay. Invalid typeID (${typeID}) must be 1 or 2.`);
         }
+
+        const insertUnitText = `
+        INSERT INTO request_unit
+        (time_off_request_id, start_datetime, end_datetime)
+        VALUES
+        ($1, $2, $3);
+        `;
+        await this.client.query(insertUnitText, [requestID, day.start, day.end]);
+        const updateHours = `
+        UPDATE employee SET 
+        ${hoursType} = ${hoursType} - $1
+        WHERE id = $2;
+        `;
+        await this.client.query(updateHours, [day.hours, employeeID]);
     }
 
     // Returns summary data on a request based on id

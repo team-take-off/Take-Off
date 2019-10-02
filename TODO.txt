@@ -1,7 +1,6 @@
 # Feature Database (range, exclude, log)
 Fix request.router to work with new schema
     # Fix route POST /api/request to work with new database schema
-    INSERT requests breaking down ranges into request units and also INSERT those
     Check all weekends and holidays in one place on the server 
     Dry run sends back units that would be added and remaining hours off
 Change RequestForm to utilize the new route 
