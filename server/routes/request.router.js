@@ -41,6 +41,11 @@ const getRequestsArray = (startDate, endDate) => {
     let requests = [];
     let currentDate = moment(startDate);
     while (currentDate.isBefore(endDate)) {
+        if (currentDate.day() === 0 || currentDate.day() === 6 || isCompanyHoliday(currentDate)) {
+            currentDate.add(1, 'days');
+            continue;
+        }
+
         if (currentDate.hour() === 9) {
             const lookAheadFull = moment(currentDate).add(8, 'hours');
             const lookAheadHalf = moment(currentDate).add(4, 'hours');
@@ -74,6 +79,10 @@ const getRequestsArray = (startDate, endDate) => {
         }
     }
     return requests;
+}
+
+const isCompanyHoliday = (currentDate) => {
+    return false;
 }
 
 const getRequestUnits = (requestsArray) => {

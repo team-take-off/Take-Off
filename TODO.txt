@@ -1,11 +1,9 @@
 # Feature Database (range, exclude, log)
-Fix request.router to work with new schema
-    # Fix route POST /api/request to work with new database schema
-    Check all weekends and holidays in one place on the server 
-    Dry run sends back units that would be added and remaining hours off
+Fix date sorting for past/future requests
+Fix database schema for table 'request_unit' such that it checks overlapping dates for same employee_id and remove similar check from 'time_off_request'
 Change RequestForm to utilize the new route 
-    Send back and display dry-run units
     Allow user to select mornings, afternoons, full days off
+    Dry run sends back units that would be added and remaining hours off
 Move some functions from userRequests saga to requests saga.
 Combine withdrawUserRequest() with withdrawRequest() in requests saga
 

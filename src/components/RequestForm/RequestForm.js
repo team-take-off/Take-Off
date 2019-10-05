@@ -67,8 +67,8 @@ class RequestForm extends Component {
                     type: 'ADD_USER_REQUEST',
                     payload: {
                         typeID: this.props.typeid,
-                        startDate: moment('2019-09-22').set('hour', 9),
-                        endDate: moment('2019-09-24').set('hour', 17),
+                        startDate: moment('2019-10-25').set('hour', 9),
+                        endDate: moment('2019-10-29').set('hour', 17),
                         dryRun: false
                     }
                 };
