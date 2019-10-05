@@ -3,9 +3,6 @@ const GRACE_PERIOD = 5;
 const VACATION_TYPE = 1;
 const SICK_TYPE = 2;
 
-const SUNDAY = '0';
-const SATURDAY = '6';
-
 class RequestClient {
     constructor(pool, config) {
         this.pool = pool;
@@ -105,7 +102,7 @@ class RequestClient {
         WHERE request_status.id = $1
         AND ($2::numeric IS NULL OR time_off_request.employee_id = $2)
         AND ($3::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $3)
-        AND time_off_request.end_datetime <= (CURRENT_DATE + integer '${GRACE_PERIOD}')
+        AND time_off_request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
@@ -120,7 +117,7 @@ class RequestClient {
         const whereClause = `
         WHERE ($1::numeric IS NULL OR time_off_request.employee_id = $1)
         AND ($2::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $2)
-        AND time_off_request.end_datetime > (CURRENT_DATE + integer '${GRACE_PERIOD}')
+        AND time_off_request.end_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [id, year]);
