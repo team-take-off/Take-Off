@@ -1,5 +1,4 @@
 # Feature Database (range, exclude, log)
-Fix database schema for table 'request_unit' such that it checks overlapping dates for same employee_id and remove similar check from 'time_off_request'
 Change RequestForm to utilize the new route 
     Allow user to select mornings, afternoons, full days off
     Dry run sends back units that would be added and remaining hours off

@@ -189,6 +189,21 @@ class RequestClient {
             throw Error(`Error in RequestClient.js function insertRequestDay. Invalid typeID (${typeID}) must be 1 or 2.`);
         }
 
+        const selectConflicting = `
+        SELECT request_unit.id
+        FROM request_unit
+        JOIN time_off_request ON request_unit.time_off_request_id = time_off_request.id
+        WHERE time_off_request.employee_id = $1
+        AND active = 1 
+        AND (request_unit.start_datetime <= $2 AND request_unit.end_datetime >= $2)
+            OR (request_unit.start_datetime <= $3 AND request_unit.end_datetime >= $3)
+        LIMIT 1;
+        `;
+        const { rows } = await this.client.query(selectConflicting, [employeeID, day.start, day.end]);
+        if (rows.length > 0) {
+            throw Error(`Error in RequestClient.js function insertRequestDay. Conflicting entries found.`);
+        }
+
         const insertUnitText = `
         INSERT INTO request_unit
         (time_off_request_id, start_datetime, end_datetime)
