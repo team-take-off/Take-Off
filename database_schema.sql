@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS transaction_log;
+DROP TABLE IF EXISTS collision;
 DROP TABLE IF EXISTS request_unit;
 DROP TABLE IF EXISTS time_off_request;
 DROP TABLE IF EXISTS employee;
@@ -94,6 +95,13 @@ CREATE TABLE request_unit (
 	, end_datetime TIMESTAMPTZ NOT NULL
 	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
 	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
+);
+
+-- Overlap between different employees' request_units
+CREATE TABLE collision (
+	request_unit_1 INTEGER NOT NULL REFERENCES request_unit(id) ON DELETE CASCADE
+	, request_unit_2 INTEGER NOT NULL REFERENCES request_unit(id) ON DELETE CASCADE 
+	, PRIMARY KEY (request_unit_1, request_unit_2)
 );
 
 -- A log of transactions made to the other tables
