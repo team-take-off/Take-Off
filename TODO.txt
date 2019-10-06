@@ -1,7 +1,6 @@
 # Feature Database (range, exclude, log)
 Change RequestForm to utilize the new route 
-    Allow user to select mornings, afternoons, full days off
-    Dry run sends back units that would be added and remaining hours off
+    Dry run sends back units that would be added and calculates remaining hours off
 Move some functions from userRequests saga to requests saga.
 Combine withdrawUserRequest() with withdrawRequest() in requests saga
 

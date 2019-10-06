@@ -146,6 +146,10 @@ select {
   font-size: 1rem;
 }
 
+select:disabled {
+  background-color: rgb(184, 186, 187);
+}
+
 /* Special login button on component LoginPage */
 .login-button {
   background-color: rgb(0, 127, 255);
