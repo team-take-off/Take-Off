@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import PropTypes from 'prop-types';
 
 import './RequestCard.css';
 import DateRange from '../../modules/DateRange';
-import EditDialog from './EditDialog';
+// import EditDialog from './EditDialog';
+import Request from '../../classes/Request';
 
 class RequestCard extends Component {
 
@@ -15,46 +17,49 @@ class RequestCard extends Component {
 
     // Display the employee's name if possible
     renderName = () => {
-        const requestArray = this.props.requestArray;
-        if (requestArray.length === 0) {
-            return '[Unknown Name]';
+        const request = this.props.request;
+        if (request.firstName && request.lastName) {
+            return `${request.firstName} ${request.lastName}`;
         } else {
-            return `${requestArray[0].first_name} ${requestArray[0].last_name}`;
+            return '[Unknown Name]';
         }
     }
 
     // Show a nicely formatted date range if possible
     renderDateRange = () => {
-        const requestArray = this.props.requestArray;
-        if (requestArray.length === 0) {
+        const request = this.props.request;
+        if (request.units.length === 0) {
             return '[Unknown Date Range]';
         }
 
-        const dateRange = new DateRange(this.props.requestArray);
+        const dateRange = new DateRange(request.units);
         return dateRange.format('LL');
     }
 
     // Show the type of request 'Vacation' or 'Sick and Safe Leave' if possible
     renderType = () => {
-        const requestArray = this.props.requestArray;
+        const request = this.props.request;
         let blocks = '';
-        for (let i = 0; i < requestArray.length; i++) {
-            blocks += ' ◼';
-        }
-        if (requestArray.length === 0) {
-            return '[Unknown Type]';
-        } else {
-            if (requestArray[0].type === 'Sick and Safe Leave') {
-                return (<span className="sick">{requestArray[0].type}: {blocks}</span>);
-            } else if (requestArray[0].type === 'Vacation') {
-                return (<span className="vacation">{requestArray[0].type}: {blocks}</span>);
-            } else {
-                return (
-                    <span>
-                        {requestArray[0].type}
-                    </span>
-                );
+        for (let unit of request.units) {
+            if (unit.dayType.description === 'fullday') {
+                blocks += ' ◼';
+            } else if (unit.dayType.description === 'morning') {
+                blocks += ' ◩';
+            } else if (unit.dayType.description === 'afternoon') {
+                blocks += ' ◪';
             }
+        }
+
+        if (request.type === 'Sick and Safe Leave') {
+            return (<span className="sick">{request.type}: {blocks}</span>);
+        } else if (request.type === 'Vacation') {
+            return (<span className="vacation">{request.type}: {blocks}</span>);
+        } else {
+            return (
+                <span>
+                    {request.type}
+                </span>
+            );
         }
     }
 
@@ -84,7 +89,7 @@ class RequestCard extends Component {
     // Renders a cancel button on already approved cards.
     renderAdminButtons = () => {
         if (this.props.forAdmin && !this.props.past) {
-            if (this.props.requestArray.length > 0 && this.props.requestArray[0].status === 'pending') {
+            if (this.props.request.status === 'pending') {
                 return (
                     <div className="request-card-buttons">
                         <button onClick={this.deny}>
@@ -93,9 +98,9 @@ class RequestCard extends Component {
                         <button onClick={this.approve} className="approve">
                             <CheckCircleIcon fontSize="small" /> Approve
                         </button>
-                        <button onClick={this.edit}>
+                        {/* <button onClick={this.edit}>
                             Edit
-                        </button>
+                        </button> */}
                     </div>
                 );
             }
@@ -109,7 +114,7 @@ class RequestCard extends Component {
             return (
                 <div className="request-card-buttons">
                     <button onClick={this.withdraw}>
-                        <RemoveCircleIcon fontSize="small" /> Cancel Request
+                        <RemoveCircleIcon fontSize="small" /> Withdraw Request
                     </button>
                 </div>
             );
@@ -118,26 +123,22 @@ class RequestCard extends Component {
 
     // Handles when the admin presses the 'Approve' button
     approve = () => {
-        if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
-            const action = {
-                type: 'APPROVE_REQUEST',
-                payload: id
-            };
-            this.props.dispatch(action);
-        }
+        const id = this.props.request.id;
+        const action = {
+            type: 'APPROVE_REQUEST',
+            payload: id
+        };
+        this.props.dispatch(action);
     }
 
     // Handles when the admin presses the 'Deny' button
     deny = () => {
-        if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
-            const action = {
-                type: 'DENY_REQUEST',
-                payload: id
-            };
-            this.props.dispatch(action);
-        }
+        const id = this.props.request.id;
+        const action = {
+            type: 'DENY_REQUEST',
+            payload: id
+        };
+        this.props.dispatch(action);
     }
 
     // Handles when the admin presses the 'Edit' button
@@ -169,14 +170,12 @@ class RequestCard extends Component {
 
     // Handles when an employee presses the 'Withdraw' button (labeled cancel).
     withdraw = () => {
-        if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
-            const action = {
-                type: 'WITHDRAW_USER_REQUEST',
-                payload: id
-            };
-            this.props.dispatch(action);
-        }
+        const id = this.props.request.id;
+        const action = {
+            type: 'WITHDRAW_USER_REQUEST',
+            payload: id
+        };
+        this.props.dispatch(action);
     }
 
     // Show this component on the DOM
@@ -189,15 +188,21 @@ class RequestCard extends Component {
                 {this.renderConflicts()}
                 {this.renderAdminButtons()}
                 {this.renderEmployeeButtons()}
-                <EditDialog
+                {/* <EditDialog
                     open={this.state.editDialog}
                     closeEdit={this.closeEdit}
-                    startingArray={this.props.requestArray}
-                />
+                    startingArray={this.props.request}
+                /> */}
             </div>
         );
     }
 }
+
+RequestCard.propTypes = {
+    request: PropTypes.instanceOf(Request).isRequired,
+    forAdmin: PropTypes.bool.isRequired,
+    past: PropTypes.bool.isRequired
+};
 
 const mapStateToProps = reduxStore => ({
     reduxStore

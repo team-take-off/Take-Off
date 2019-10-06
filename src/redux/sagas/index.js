@@ -1,11 +1,10 @@
 import { all } from 'redux-saga/effects';
-import loginSaga from './loginSaga';
-import registrationSaga from './registrationSaga';
-import userSaga from './userSaga';
-import requestsSaga from './requestsSaga';
-import userRequestsSaga from './userRequestsSaga';
-import employeesSaga from './employeesSaga';
-import accruedTimeSaga from './accruedTimeSaga';
+import additionalTime from './additionalTime';
+import employees from './employees';
+import login from './login';
+import requests from './requests';
+import userRequests from './userRequests';
+import user from './user';
 
 // rootSaga is the primary saga.
 // It bundles up all of the other sagas so our project can use them.
@@ -16,12 +15,11 @@ import accruedTimeSaga from './accruedTimeSaga';
 // and login triggers setting the user
 export default function* rootSaga() {
   yield all([
-    loginSaga(),
-    registrationSaga(),
-    userSaga(),
-    requestsSaga(),
-    userRequestsSaga(),
-    employeesSaga(),
-    accruedTimeSaga(),
+    additionalTime(),
+    employees(),
+    login(),
+    requests(),
+    userRequests(),
+    user(),
   ]);
 }

@@ -14,14 +14,14 @@ import ProtectedRoute from '../ProtectedRoute/ProtectedRoute'
 
 import AdminAddEmployeePage from '../AdminAddEmployeePage/AdminAddEmployeePage';
 import AdminEditEmployeePage from '../AdminEditEmployeePage/AdminEditEmployeePage';
-import AdminEmployeeListPage from '../AdminEmployeeListPage/AdminEmployeeListPage';
-import AdminSearchEmployeePage from '../AdminSearchEmployeePage/AdminSearchEmployeePage';
 import AdminHomePage from '../AdminHomePage/AdminHomePage';
 import CalendarPage from '../CalendarPage/CalendarPage';
 import EmployeeHomePage from '../EmployeeHomePage/EmployeeHomePage';
 import EmployeeRequestsPage from '../EmployeeRequestsPage/EmployeeRequestsPage';
+import ManageEmployeesPage from '../ManageEmployeesPage/ManageEmployeesPage';
 import SickRequestPage from '../SickRequestPage/SickRequestPage';
 import VacationRequestPage from '../VacationRequestPage/VacationRequestPage';
+import SearchRequestsPage from '../SearchRequestsPage/SearchRequestsPage';
 import TestCronPage from '../TestCron/TestCronPage';
 
 import './App.css';
@@ -52,7 +52,7 @@ class App extends Component {
             <ProtectedRoute exact path="/home"
               component={EmployeeHomePage}
             />
-            <ProtectedRoute exact path="/employee_requests"
+            <ProtectedRoute exact path="/my_requests"
               component={EmployeeRequestsPage}
             />
             <ProtectedRoute exact path="/test_cron"
@@ -70,11 +70,11 @@ class App extends Component {
             <ProtectedRoute exact path="/calendar"
               component={CalendarPage}
             />
-            <ProtectedRoute exact path="/admin/search_employee"
-              component={AdminSearchEmployeePage}
+            <ProtectedRoute exact path="/admin/search_requests"
+              component={SearchRequestsPage}
             />
-            <ProtectedRoute exact path="/admin/list_employees"
-              component={AdminEmployeeListPage}
+            <ProtectedRoute exact path="/admin/manage_employees"
+              component={ManageEmployeesPage}
             />
             <ProtectedRoute exact path="/admin/add_employee"
               component={AdminAddEmployeePage}

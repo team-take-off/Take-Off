@@ -34,8 +34,8 @@ class Nav extends Component {
                     <div className={classnames(classes.desktop, "nav-right")}>
                         <Link className="nav-link" to="/admin/home">Home</Link>
                         <Link className="nav-link" to="/calendar">Calendar</Link>
-                        <Link className="nav-link" to="/admin/list_employees">Manage Employees</Link>
-                        <Link className="nav-link" to="/admin/search_employee">Search Requests</Link>
+                        <Link className="nav-link" to="/admin/manage_employees">Manage Employees</Link>
+                        <Link className="nav-link" to="/admin/search_requests">Search Requests</Link>
                         <ModeButton className="nav-link" />
                         <LogOutButton className="nav-link" />
                     </div>
@@ -44,7 +44,7 @@ class Nav extends Component {
                 return (
                     <div className={classnames(classes.desktop, "nav-right")}>
                         <Link className="nav-link" to="/home">Home</Link>
-                        <Link className="nav-link" to="/employee_requests">My Requests</Link>
+                        <Link className="nav-link" to="/my_requests">My Requests</Link>
                         <Link className="nav-link" to="/calendar">Calendar</Link>
                         {this.props.user.role_id === 1 && <ModeButton className="nav-link" />}
                         <LogOutButton className="nav-link" />

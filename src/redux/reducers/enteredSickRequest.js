@@ -1,11 +1,18 @@
-import moment from 'moment';
-import 'moment-business-days';
+// import moment from 'moment';
+// import 'moment-business-days';
+
+// const DEFAULT_REQUEST = {
+//     startDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
+//     startHours: 8,
+//     endDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
+//     endHours: 8,
+// };
 
 const DEFAULT_REQUEST = {
-    startDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
-    startHours: 8,
-    endDate: moment().nextBusinessDay().format('YYYY-MM-DD'),
-    endHours: 8,
+    startDate: '',
+    startDayType: 'fullday',
+    endDate: '',
+    endDayType: 'fullday',
 };
 
 const sickRequestDates = (state = DEFAULT_REQUEST, action) => {
@@ -21,20 +28,20 @@ const sickRequestDates = (state = DEFAULT_REQUEST, action) => {
                 startDate: startDate,
                 endDate: endDate
             };
-        case 'SET_SICK_START_HOURS':
+        case 'SET_SICK_START_DAY_TYPE':
             return {
                 ...state,
-                startHours: action.payload
+                startDayType: action.payload
             };
         case 'SET_SICK_END_DATE':
             return {
                 ...state,
                 endDate: action.payload
             };
-        case 'SET_SICK_END_HOURS':
+        case 'SET_SICK_END_DAY_TYPE':
             return {
                 ...state,
-                endHours: action.payload
+                endDayType: action.payload
             };
         case 'RESET_REQUEST':
             return DEFAULT_REQUEST;

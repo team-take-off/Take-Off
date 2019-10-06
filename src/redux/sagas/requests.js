@@ -1,10 +1,19 @@
 import { put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
+import Request from '../../classes/Request';
+
 function* fetchRequests(action) {
     try {
         const serverResponse = yield axios.get('api/request', { params: action.payload });
-        yield put({ type: 'SET_REQUESTS', payload: serverResponse.data });
+        const requests = yield {
+            pending: Request.loadArray(serverResponse.data.pending),
+            approved: Request.loadArray(serverResponse.data.approved),
+            denied: Request.loadArray(serverResponse.data.denied),
+            past: Request.loadArray(serverResponse.data.past),
+            years: serverResponse.data.years
+        };
+        yield put({ type: 'SET_REQUESTS', payload: requests });
     } catch (error) {
         console.log('Error in axios GET:', error);
     }
@@ -12,8 +21,8 @@ function* fetchRequests(action) {
 
 function* approveRequest(action) {
     try {
-        const batchID = action.payload;
-        yield axios.put(`api/admin/request/approved/${batchID}`, { requestStatus: 2 });
+        const id = action.payload;
+        yield axios.put(`api/request/${id}`, { requestStatus: 2 });
         yield put({ type: 'FETCH_REQUESTS' });
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });
@@ -24,8 +33,8 @@ function* approveRequest(action) {
 
 function* denyRequest(action) {
     try {
-        const batchID = action.payload;
-        yield axios.put(`api/admin/request/approved/${batchID}`, { requestStatus: 3 });
+        const id = action.payload;
+        yield axios.put(`api/request/${id}`, { requestStatus: 3 });
         yield put({ type: 'FETCH_REQUESTS' });
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });
@@ -36,8 +45,8 @@ function* denyRequest(action) {
 
 function* withdrawRequest(action) {
     try {
-        const batchID = action.payload;
-        yield axios.delete(`api/request/${batchID}`);
+        const requestID = action.payload;
+        yield axios.delete(`api/request/${requestID}`);
         yield put({ type: 'FETCH_REQUESTS' });
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });

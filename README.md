@@ -14,11 +14,11 @@ You will need to follow the steps below to setup the database to get this up and
 # 1. Create PostgreSQL database named 'take_off'
 createdb take_off
 
-# 2. Create database tables using SQL create statements in 'database.sql'.
-psql -E -f database.sql -d take_off
+# 2. Create database tables using SQL create statements in 'database_schema.sql'.
+psql -E -f database_schema.sql -d take_off
 
-# Optional: initalize database with sample data found in 'sample.sql'.
-psql -E -f sample.sql -d take_off
+# Optional: initalize database with sample data found in 'database_mockup.sql'.
+psql -E -f database_mockup.sql -d take_off
 
 # 3. Install Node dependencies/libraries using NPM
 npm install

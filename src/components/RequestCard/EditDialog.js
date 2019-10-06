@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dialog } from '@material-ui/core';
-import swal from 'sweetalert';
+// import swal from 'sweetalert';
 const moment = require('moment-business-days');
 
 class EditDialog extends Component {

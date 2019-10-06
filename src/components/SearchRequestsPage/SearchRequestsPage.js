@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
 
-class AdminSearchEmployeePage extends Component {
+class SearchRequestsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -67,4 +67,4 @@ const mapStateToProps = reduxStore => ({
 });
 
 // this allows us to use <App /> in index.js
-export default connect(mapStateToProps)(AdminSearchEmployeePage);
+export default connect(mapStateToProps)(SearchRequestsPage);

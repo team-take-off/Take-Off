@@ -3,9 +3,6 @@ const GRACE_PERIOD = 5;
 const VACATION_TYPE = 1;
 const SICK_TYPE = 2;
 
-const SUNDAY = '0';
-const SATURDAY = '6';
-
 class RequestClient {
     constructor(pool, config) {
         this.pool = pool;
@@ -39,18 +36,17 @@ class RequestClient {
 
     // Sort an array of requests into an array of arrays (grouped by batch ID)
     async sortIntoGroups(requestArray) {
-        // TODO: Ideally this sorting would be handled by the database select operation
         const uniqueGroupIDs = [];
         const groupArray = [];
-        for (let request of requestArray) {
-            const id = request.batch_of_requests_id;
+        for (let requestUnit of requestArray) {
+            const id = requestUnit.time_off_request_id;
             const index = await uniqueGroupIDs.indexOf(id);
             if (index < 0) {
                 await uniqueGroupIDs.push(id);
                 await groupArray.push([]);
-                await groupArray[groupArray.length - 1].push(request);
+                await groupArray[groupArray.length - 1].push(requestUnit);
             } else {
-                await groupArray[index].push(request);
+                await groupArray[index].push(requestUnit);
             }
         }
         return groupArray;
@@ -59,15 +55,13 @@ class RequestClient {
     // Returns an array of unique years for time-off requests
     async getYears() {
         const id = this.config.employee;
-        const year = this.config.year;
         const selectText = `
-        SELECT DISTINCT EXTRACT(YEAR FROM off_date) AS year_part
+        SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS year_part
         FROM time_off_request
-        JOIN batch_of_requests ON time_off_request.batch_of_requests_id = batch_of_requests.id
-            WHERE $1::numeric IS NULL OR batch_of_requests.employee_id = $1
-            AND $2::numeric IS NULL OR EXTRACT(YEAR FROM off_date) = $2;
+        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+            WHERE $1::numeric IS NULL OR time_off_request.employee_id = $1;
         `;
-        const { rows } = await this.client.query(selectText, [id, year]);
+        const { rows } = await this.client.query(selectText, [id]);
         const yearArray = await rows.map(row => row.year_part);
         return yearArray;
     }
@@ -76,20 +70,24 @@ class RequestClient {
     async composeJoinRequest(whereClause) {
         const joinText = `
         SELECT
-            time_off_request.id,
-            time_off_request.off_date AS date,
-            time_off_request.off_hours AS hours,
-            time_off_request.batch_of_requests_id,
-            batch_of_requests.date_requested AS date_requested,
+            time_off_request.id AS id,
+            request_unit.id AS request_unit_id,
+            DATE(request_unit.start_datetime) AS date,
+            EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
+            EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
+            EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
+            request_unit.time_off_request_id,
+            time_off_request.placed_datetime AS date_requested,
+            employee.id AS employee_id,
             employee.first_name,
             employee.last_name,
             leave_type.val AS type,
             request_status.val AS status
         FROM employee 
-        JOIN batch_of_requests ON employee.id = batch_of_requests.employee_id
-        JOIN leave_type ON leave_type.id = batch_of_requests.leave_type_id
-        JOIN request_status ON request_status.id = batch_of_requests.request_status_id
-        JOIN time_off_request ON batch_of_requests.id = time_off_request.batch_of_requests_id
+        JOIN time_off_request ON employee.id = time_off_request.employee_id
+        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
+        JOIN request_status ON request_status.id = time_off_request.request_status_id
+        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
         ${whereClause}
         ORDER BY date_requested;
         `;
@@ -102,9 +100,9 @@ class RequestClient {
         const year = this.config.year;
         const whereClause = `
         WHERE request_status.id = $1
-        AND $2::numeric IS NULL OR batch_of_requests.employee_id = $2
-        AND $3::numeric IS NULL OR EXTRACT(YEAR FROM time_off_request.off_date) = $3
-        AND time_off_request.off_date >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        AND ($2::numeric IS NULL OR time_off_request.employee_id = $2)
+        AND ($3::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $3)
+        AND time_off_request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
@@ -117,9 +115,9 @@ class RequestClient {
         const id = this.config.employee;
         const year = this.config.year;
         const whereClause = `
-        WHERE $1::numeric IS NULL OR batch_of_requests.employee_id = $1
-        AND $2::numeric IS NULL OR EXTRACT(YEAR FROM time_off_request.off_date) = $2
-        AND time_off_request.off_date < (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        WHERE ($1::numeric IS NULL OR time_off_request.employee_id = $1)
+        AND ($2::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $2)
+        AND time_off_request.end_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [id, year]);
@@ -127,122 +125,173 @@ class RequestClient {
         return requests;
     }
 
-    // Insert a new batch of requests and return the assigned id (i.e. the primary key)
-    async insertBatch(typeID) {
+    // Select total available hours of given type (e.g. vacation or sick) for current employee
+    async getTotalHours() {
         const userID = this.config.employee;
-        const insertText = `
-        INSERT INTO batch_of_requests
-        (employee_id, leave_type_id)
-        VALUES
-        ($1, $2)
-        RETURNING id;
-        `;
-        const { rows } = await this.client.query(insertText, [userID, typeID]);
-        const batchID = rows[0].id;
-        return batchID;
-    };
-
-    // Insert a new request for time-off. Then update the employee's total hours 
-    // available.
-    async insertRequest(request, userID, batchID, typeID) {
-        let hours;
-        if (typeID === VACATION_TYPE) {
-            hours = 'vacation_hours';
-        } else if (typeID === SICK_TYPE) {
-            hours = 'sick_hours';
+        const leaveTypeID = this.config.type;
+        let hoursType = '';
+        if (leaveTypeID === 1) {
+            hoursType = 'vacation_hours';
+        } else if (leaveTypeID === 2) {
+            hoursType = 'sick_hours';
         } else {
-            throw Error(`Error in request.router.js function insertRequest. Invalid typeID (${typeID}) must be 1 or 2.`);
+            throw Error(`Error in RequestClient.js function selectTotalHours(). Invalid leaveTypeID (${leaveTypeID}) must be 1 or 2.`);
         }
 
-        const date = moment(request.date, 'YYYY-MM-DD');
-        const day = date.format('d');
-        if (day !== SUNDAY && day !== SATURDAY) {
-            const insertRequest = `
-            INSERT INTO time_off_request
-            (off_date, batch_of_requests_id, off_hours)
-            VALUES
-            ($1, $2, $3);
-            `;
-            await this.client.query(insertRequest, [request.date, batchID, request.hours]);
-            const updateHours = `
-            UPDATE employee SET 
-            ${hours} = ${hours} - $1
-            WHERE id = $2;
-            `;
-            await this.client.query(updateHours, [request.hours, userID]);
-        }
+        const selectText = `
+        SELECT ${hoursType} AS hours
+        FROM employee
+        WHERE id = $1;
+        `;
+        const { rows } = await this.client.query(selectText, [userID]);
+        const hours = rows[0].hours;
+        return hours;
     }
 
-    // Returns a batch of requests object based on batch id
-    async getBatchData() {
-        const id = this.config.batch;
+    // Insert a new request and return the assigned id (i.e. the primary key)
+    async insertRequest(startTime, endTime) {
+        if (this.config.dryRun) {
+            return;
+        }
+
+        const employeeID = this.config.employee;
+        const leaveTypeID = this.config.type;
+
+        const insertText = `
+        INSERT INTO time_off_request
+        (employee_id, leave_type_id, request_status_id, start_datetime, end_datetime)
+        VALUES
+        ($1, $2, 1, $3, $4)
+        RETURNING id;
+        `;
+
+        const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, startTime, endTime]);
+        const requestID = rows[0].id;
+        return requestID;
+    };
+
+    // Insert a new requested day for time-off. Then update the employee's total
+    // hours available.
+    async insertRequestDay(day, requestID) {
+        if (this.config.dryRun) {
+            return;
+        }
+
+        const employeeID = this.config.employee;
+        const leaveTypeID = this.config.type;
+
+        let hoursType;
+        if (leaveTypeID === VACATION_TYPE) {
+            hoursType = 'vacation_hours';
+        } else if (leaveTypeID === SICK_TYPE) {
+            hoursType = 'sick_hours';
+        } else {
+            throw Error(`Error in RequestClient.js function insertRequestDay. Invalid typeID (${typeID}) must be 1 or 2.`);
+        }
+
+        const selectConflicting = `
+        SELECT request_unit.id
+        FROM request_unit
+        JOIN time_off_request ON request_unit.time_off_request_id = time_off_request.id
+        WHERE time_off_request.employee_id = $1
+        AND active = 1 
+        AND (request_unit.start_datetime <= $2 AND request_unit.end_datetime >= $2)
+            OR (request_unit.start_datetime <= $3 AND request_unit.end_datetime >= $3)
+        LIMIT 1;
+        `;
+        const { rows } = await this.client.query(selectConflicting, [employeeID, day.start, day.end]);
+        if (rows.length > 0) {
+            throw Error(`Error in RequestClient.js function insertRequestDay. Conflicting entries found.`);
+        }
+
+        const insertUnitText = `
+        INSERT INTO request_unit
+        (time_off_request_id, start_datetime, end_datetime)
+        VALUES
+        ($1, $2, $3);
+        `;
+        await this.client.query(insertUnitText, [requestID, day.start, day.end]);
+        const updateHours = `
+        UPDATE employee SET 
+        ${hoursType} = ${hoursType} - $1
+        WHERE id = $2;
+        `;
+        await this.client.query(updateHours, [day.hours, employeeID]);
+    }
+
+    // Returns summary data on a request based on id
+    async getRequestData(id) {
         const selectText = `
         SELECT 
-            id,
+            time_off_request.id,
             employee_id, 
-            request_status_id, 
-            leave_type_id
-        FROM batch_of_requests 
-        WHERE id = $1;
+            request_status_id,
+            leave_type_id,
+            SUM(EXTRACT(HOURS FROM request_unit.end_datetime - request_unit.start_datetime)) AS hours,
+            time_off_request.end_datetime <= (CURRENT_DATE + integer '${GRACE_PERIOD}') AS in_future
+        FROM time_off_request
+        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+        WHERE time_off_request.id = $1
+        GROUP BY time_off_request.id
+        LIMIT 1;
         `;
         const { rows } = await this.client.query(selectText, [id]);
         return {
             id: rows[0].id,
             employee: rows[0].employee_id,
             status: rows[0].request_status_id,
-            type: rows[0].leave_type_id
+            type: rows[0].leave_type_id,
+            hours: rows[0].hours
         };
     };
 
-    // Changes the status (PENDING, APPROVED, DENIED) of a batch of requests
-    async updateBatchStatus(id, status) {
+    // Changes the status (PENDING, APPROVED, DENIED) of a time-off request
+    async updateStatus(id, status) {
         const updateText = `
-        UPDATE batch_of_requests
+        UPDATE time_off_request
         SET request_status_id = $1
+        , active = (SELECT active FROM request_status WHERE id = $1)
         WHERE id = $2;
         `;
         await this.client.query(updateText, [status, id]);
     }
 
     // Refund the total number of off-hours found in a batch of requests
-    async refundBatchHours(batch) {
-        let hours;
-        if (batch.type === VACATION_TYPE) {
-            hours = 'vacation_hours';
-        } else if (batch.type === SICK_TYPE) {
-            hours = 'sick_hours';
+    async refundHours(request, userID, transactionType) {
+        let hours_column;
+        if (request.type === VACATION_TYPE) {
+            hours_column = 'vacation_hours';
+        } else if (request.type === SICK_TYPE) {
+            hours_column = 'sick_hours';
         } else {
-            throw Error(`Error in request.router.js function refundBatchHours. Invalid batch.type (${batch.type}).`);
+            throw Error(`Error in request.router.js function refundBatchHours. Invalid request.type (${request.type}).`);
         }
 
-        const sumHoursText = `
-        SELECT SUM(off_hours)
-        FROM time_off_request
-        WHERE batch_of_requests_id = $1;
-        `;
-        const { rows } = await this.client.query(sumHoursText, [batch.id]);
-        const refundHours = rows[0].sum;
-
-        const updateEmployeeText = `
+        const updateEmployee = `
         UPDATE employee
-        SET ${hours} = ${hours} + $1
+        SET ${hours_column} = ${hours_column} + $1
         WHERE id = $2
         `;
-        await this.client.query(updateEmployeeText, [refundHours, batch.employee]);
+        await this.client.query(updateEmployee, [request.hours, request.employee]);
+        const logUpdate = `
+        INSERT INTO transaction_log
+            (author_id, employee_id, leave_hours, leave_type_id, transaction_type_id)
+        VALUES
+            ($1, $2, $3, $4, $5);
+        `;
+        await this.client.query(logUpdate, [userID, request.employee, request.hours, request.type, transactionType]);
     }
 
-    // Deletes a batch of time-off requests
-    async deleteBatch(batch) {
-        const deleteRequestsText = `
+    // Deletes a time-off request
+    async deleteRequest(request, userID, transactionType) {
+        const deleteRequest = `
         DELETE FROM time_off_request
-        WHERE batch_of_requests_id = $1;
-        `;
-        await this.client.query(deleteRequestsText, [batch.id]);
-        const deleteBatchText = `
-        DELETE FROM batch_of_requests
         WHERE id = $1;
         `;
-        await this.client.query(deleteBatchText, [batch.id]);
+        await this.client.query(deleteRequest, [request.id]);
+        if (request.status === 1 || request.status === 2) {
+            await this.refundHours(request, userID, transactionType);
+        }
     }
 }
 

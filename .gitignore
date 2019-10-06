@@ -63,3 +63,6 @@ typings/
 
 # ignore package-lock as it complicates merging
 package-lock.json
+
+# developer copy of database mockup data
+database_mockup.dev.sql

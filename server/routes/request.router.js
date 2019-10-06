@@ -1,4 +1,6 @@
 const express = require('express');
+const moment = require('moment');
+
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
@@ -12,12 +14,100 @@ const PENDING_STATUS = 1;
 const APPROVED_STATUS = 2;
 const DENIED_STATUS = 3;
 
+const AUTOMATIC_ACCRUAL_TRANSACTION = 1;
+const AUTOMATIC_ADJUSTMENT_TRANSACTION = 2;
+const EMPLOYEE_REQUEST_TRANSACTION = 3;
+const EMPLOYEE_CANCEL_TRANSACTION = 4;
+const ADMIN_APPROVE_TRANSACTION = 5;
+const ADMIN_DENY_TRANSACTION = 6;
+const ADMIN_SPECIAL_TRANSACTION = 7;
+
 const parseIntOrNull = (num) => {
     const parsed = parseInt(num);
     if (parsed) {
         return parsed;
     }
     return null;
+}
+
+const parseBoolOrNull = (bool) => {
+    if (bool === undefined) {
+        return null;
+    }
+    return bool;
+}
+
+const getRequestsArray = (startDate, endDate) => {
+    let requests = [];
+    let currentDate = moment(startDate);
+    while (currentDate.isBefore(endDate)) {
+        if (currentDate.day() === 0 || currentDate.day() === 6 || isCompanyHoliday(currentDate)) {
+            currentDate.add(1, 'days');
+            continue;
+        }
+
+        if (currentDate.hour() === 9) {
+            const lookAheadFull = moment(currentDate).add(8, 'hours');
+            const lookAheadHalf = moment(currentDate).add(4, 'hours');
+            if (lookAheadFull.isSameOrBefore(endDate)) {
+                const newRequest = {
+                    start: moment(currentDate),
+                    end: moment(lookAheadFull),
+                    hours: 8
+                };
+                requests.push(newRequest);
+            } else if (lookAheadHalf.isSameOrBefore(endDate)) {
+                const newRequest = {
+                    start: moment(currentDate),
+                    end: moment(lookAheadHalf),
+                    hours: 4
+                };
+                requests.push(newRequest);
+            }
+            currentDate.add(1, 'days');
+        } else if (currentDate.hour() === 13) {
+            const lookAhead = moment(currentDate).add(4, 'hours');
+            if (lookAhead.isSameOrBefore(endDate)) {
+                const newRequest = {
+                    start: moment(currentDate),
+                    end: moment(lookAhead),
+                    hours: 4
+                };
+                requests.push(newRequest);
+            }
+            currentDate.add(20, 'hours');
+        }
+    }
+    return requests;
+}
+
+const isCompanyHoliday = (currentDate) => {
+    return false;
+}
+
+const getRequestUnits = (requestsArray) => {
+    requestUnits = [];
+    for (let request of requestsArray) {
+        if (request.start.year() === request.end.year() && request.start.dayOfYear() === request.end.dayOfYear()) {
+            if (request.start.hour() === 9 && request.end.hour() === 17) {
+                requestUnits.push({
+                    description: 'fullday',
+                    hours: 8
+                });
+            } else if (request.start.hour() === 9 && request.end.hour() === 13) {
+                requestUnits.push({
+                    description: 'morning',
+                    hours: 4
+                });
+            } else if (request.start.hour() === 13 && request.end.hour() === 17) {
+                requestUnits.push({
+                    description: 'afternoon',
+                    hours: 4
+                });
+            }
+        }
+    }
+    return requestUnits;
 }
 
 // Route GET /api/request
@@ -89,10 +179,18 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    const requestedDates = req.body.requestedDates;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
     const config = {
         employee: parseIntOrNull(req.user.id),
-        type: parseIntOrNull(req.body.typeID)
+        type: parseIntOrNull(req.body.typeID),
+        dryRun: parseBoolOrNull(req.body.dryRun)
+    };
+
+    const requestsArray = getRequestsArray(startDate, endDate);
+    const returnSummary = {
+        totalHours: 0,
+        requestUnits: getRequestUnits(requestsArray)
     };
 
     const client = new RequestClient(pool, config);
@@ -100,14 +198,16 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         await client.connect();
         try {
             await client.begin();
-            const batchID = await client.insertBatch();
-            for (let request of requestedDates) {
-                await client.insertRequest(request, batchID);
+            returnSummary.totalHours = await client.getTotalHours();
+            const requestID = await client.insertRequest(startDate, endDate);
+            for (let day of requestsArray) {
+                await client.insertRequestDay(day, requestID);
             }
             await client.commit();
-            await res.sendStatus(201);
+            await res.send(returnSummary);
         } catch (error) {
             await client.rollback();
+            await console.log(error);
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -122,21 +222,18 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 // Route PUT /api/request/:id
 // Update the value of approved for a batch of requested days off
 router.put('/:id', rejectNonAdmin, (req, res) => {
-    const batchID = req.params.id;
+    const id = req.params.id;
     const requestStatus = req.body.requestStatus;
-    const config = {
-        // batch: req.params.id
-    };
 
-    const client = new RequestClient(pool, config);
+    const client = new RequestClient(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const batch = await client.getBatchData(batchID);
-            await client.updateBatchStatus(batchID, requestStatus);
-            if (requestStatus === DENIED_STATUS && requestStatus !== batch.status) {
-                await client.refundBatchHours(batch);
+            const request = await client.getRequestData(id);
+            await client.updateStatus(id, requestStatus);
+            if (requestStatus === DENIED_STATUS && requestStatus !== request.status) {
+                await client.refundHours(request, req.user.id, ADMIN_DENY_TRANSACTION);
             }
             await client.commit();
             res.sendStatus(200);
@@ -156,28 +253,23 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 // Route DELETE /api/request/:id
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
-    const batchID = req.params.id;
+    const id = req.params.id;
+    const userID = req.user.id;
+    const userRole = req.user.role_id;
 
-    const client = new RequestClient(pool, config);
+    const client = new RequestClient(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            let employeeID = req.user.id;
-            const batch = await client.getBatchData(batchID);
-            if (req.user.role_id === ADMINISTRATOR_ROLE) {
-                employeeID = batch.employee;
-            } else if (employeeID !== batch.employee) {
-                throw new Error('Attempted unautharized query on route DELETE /api/request/:id.');
-            }
-
-            if (batch.status === PENDING_STATUS) {
-                // TODO: This should include a check to see if the deleted request is in the future and 
-                // Prevent non-admin users from deleting in that case.
-                await client.refundBatchHours(batch);
-            }
-
-            await client.deleteBatch(batch);
+            const request = await client.getRequestData(id);
+            if (userRole === ADMINISTRATOR_ROLE) {
+                await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
+            } else if (userID === request.employee && request.in_future) {
+                await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
+            } else {
+                throw new Error('Unautharized use of route DELETE /api/request/:id.');
+            } 
             await client.commit();
             res.sendStatus(200);
         } catch (error) {
