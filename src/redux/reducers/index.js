@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import adminMode from './adminMode';
+import dryrunUnits from './dryrunUnits';
 import employees from './employees';
 import enteredSickRequest from './enteredSickRequest';
 import enteredVacationRequest from './enteredVacationRequest';
@@ -17,6 +18,7 @@ import userRequests from './userRequests';
 // This is what we get when we use 'state' inside of 'mapStateToProps'
 const rootReducer = combineReducers({
   adminMode,
+  dryrunUnits,
   employees,
   enteredSickRequest,
   enteredVacationRequest,
