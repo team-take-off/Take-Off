@@ -185,7 +185,6 @@ class RequestForm extends Component {
                     <br />
                     <input type="submit" />
                 </form>
-                {this.props.reduxStore.dryrunUnits.length > 0 && (<p>[Dry Run]</p>)}
             </>
         ) 
     }

@@ -261,7 +261,7 @@ class RequestClient {
         let hours_column;
         if (request.type === VACATION_TYPE) {
             hours_column = 'vacation_hours';
-        } else if (batch.type === SICK_TYPE) {
+        } else if (request.type === SICK_TYPE) {
             hours_column = 'sick_hours';
         } else {
             throw Error(`Error in request.router.js function refundBatchHours. Invalid request.type (${request.type}).`);

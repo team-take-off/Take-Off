@@ -1,7 +1,3 @@
-# Feature Database (range, exclude, log)
-Dry run sends back units that would be added and calculates remaining hours off
-Fix bug preventing withdrawing sick time
-
 # Feature Improve Request Router 2
 Handle request sagas parameter objects.
 Fix bugs in request.router and RequestClient.
