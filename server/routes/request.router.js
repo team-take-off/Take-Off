@@ -1,5 +1,6 @@
 const express = require('express');
 const moment = require('moment');
+const momentHoliday = require('moment-holiday');
 
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
@@ -82,7 +83,20 @@ const getRequestsArray = (startDate, endDate) => {
 }
 
 const isCompanyHoliday = (currentDate) => {
-    return false;
+    const observedHolidays = [
+        'New Years Day',
+        'Martin Luther King Jr. Day',
+        'Washingtons Birthday',
+        'Memorial Day',
+        'Independence Day',
+        'Labor Day',
+        'Veterans Day',
+        'Thanksgiving Day',
+        'Day after Thanksgiving',
+        'Christmas Eve',
+        'Christmas Day'
+    ];
+    return currentDate.isHoliday(observedHolidays);
 }
 
 const getRequestUnits = (requestsArray) => {

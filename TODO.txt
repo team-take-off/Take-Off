@@ -1,3 +1,11 @@
+# Feature Detect Request Collisions
+Add a request collisions table to database that links two request batches that have any colliding dates
+When posting a request batch check the existing requests for collisions and insert into request collisions table as needed
+Return request collisions along with requests bundle
+Display request collisions on request card components
+When employee cancels a request delete any corresponding entries in collisions table
+When admin denies a request delete any corresponding entries in collisions table
+
 # Feature Improve Request Router 2
 Handle request sagas parameter objects.
 Fix bugs in request.router and RequestClient.
@@ -13,14 +21,6 @@ Add a settings tab visible to admin
 Admin dashboard for configuring company-wide holidays
 
 # Feature Saga Error Handling
-
-# Feature Detect Request Collisions
-Add a request collisions table to database that links two request batches that have any colliding dates
-When posting a request batch check the existing requests for collisions and insert into request collisions table as needed
-Return request collisions along with requests bundle
-Display request collisions on request card components
-When employee cancels a request delete any corresponding entries in collisions table
-When admin denies a request delete any corresponding entries in collisions table
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 
