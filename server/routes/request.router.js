@@ -92,10 +92,16 @@ const isCompanyHoliday = (currentDate) => {
         'Labor Day',
         'Veterans Day',
         'Thanksgiving Day',
-        'Day after Thanksgiving',
         'Christmas Eve',
         'Christmas Day'
     ];
+
+    // Note: Library moment-holiday incorrectly finds 'Day after Thanksgiving'
+    // for years where November 1st falls on Friday.
+    if (currentDate.month() === 10 && currentDate.day() === 5 && currentDate.date() >= 23 && currentDate.date() < 30) {
+        return true;
+    }
+
     return currentDate.isHoliday(observedHolidays);
 }
 
