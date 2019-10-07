@@ -1,5 +1,4 @@
 # Feature Detect Request Collisions
-When posting a request batch check the existing requests for collisions and insert into request collisions table as needed
 Return request collisions along with requests bundle
 Display request collisions on request card components
 When employee cancels a request delete any corresponding entries in collisions table
