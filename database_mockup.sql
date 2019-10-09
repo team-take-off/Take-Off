@@ -32,8 +32,6 @@ VALUES
     (4, '2019-10-28 09:00 AM', '2019-10-28 05:00 PM');
 
 INSERT INTO collision
-    (request_unit_1, request_unit_2)
+    (request_1, request_2)
 VALUES
-    (1, 4),
-    (2, 5),
-    (3, 6);
+    (1, 2);

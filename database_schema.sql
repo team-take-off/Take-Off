@@ -97,11 +97,11 @@ CREATE TABLE request_unit (
 	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
 );
 
--- Overlap between different employees' request_units
+-- Overlap between different employees' requests
 CREATE TABLE collision (
-	request_unit_1 INTEGER NOT NULL REFERENCES request_unit(id) ON DELETE CASCADE
-	, request_unit_2 INTEGER NOT NULL REFERENCES request_unit(id) ON DELETE CASCADE 
-	, PRIMARY KEY (request_unit_1, request_unit_2)
+	request_1 INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE
+	, request_2 INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE 
+	, PRIMARY KEY (request_1, request_2)
 );
 
 -- A log of transactions made to the other tables
