@@ -351,6 +351,15 @@ class RequestClient {
         await this.client.query(updateText, [status, id]);
     }
 
+    // Delete all entries in collisions table with a given request ID
+    async removeCollisions(id) {
+        const deleteText = `
+        DELETE FROM collision 
+        WHERE request_1 = $1 OR request_2 = $1;
+        `;
+        await this.client.query(deleteText, [id]);
+    }
+
     // Refund the total number of off-hours found in a batch of requests
     async refundHours(request, userID, transactionType) {
         let hours_column;

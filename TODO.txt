@@ -1,7 +1,3 @@
-# Feature Detect Request Collisions
-When employee cancels or withdraws a request delete any corresponding entries in collisions table
-When admin denies a request delete any corresponding entries in collisions table
-
 # Feature Admin Initialize Request History
 Bugfix: Editing employee data on ManageEmployeesPage no longer returns blank screen after submitting changes
 Add interface for adding back-logged requests on ManageEmployeesPage edit employee page

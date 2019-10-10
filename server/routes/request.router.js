@@ -261,6 +261,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             await client.updateStatus(id, requestStatus);
             if (requestStatus === DENIED_STATUS && requestStatus !== request.status) {
                 await client.refundHours(request, req.user.id, ADMIN_DENY_TRANSACTION);
+                await client.removeCollisions(request.id);
             }
             await client.commit();
             res.sendStatus(200);
