@@ -65,18 +65,20 @@ class RequestCard extends Component {
 
     // Renders an unordered list of conflicts with this request. Only applies if
     //  an array of conflicts was  sent via props.
-    renderConflicts = () => {
-        if (this.props.conflicts && this.props.conflicts.length > 0) {
+    renderCollisions = () => {
+        const collisions = this.props.request.collisions;
+        if (collisions && collisions.length > 0) {
             return (
                 <div>
-                    <h5>Conflicts:</h5>
+                    <h4>Conflicts:</h4>
                     <ul>
-                        {this.props.conflicts.map(
-                            (conflict, index) => {
-                                const name = conflict.name;
-                                const dateRange = new DateRange(conflict.dates);
-                                const approved = conflict.approved ? '(Approved)' : '(Pending)';
-                                return (<li key={index}>{name} - {dateRange.format('LL')} - {approved}</li>);
+                        {collisions.map(
+                            (collision, index) => {
+                                const firstName = collision.firstName;
+                                const lastName = collision.lastName;
+                                const dateRange = collision.startDate.format('LL') + ' — ' + collision.endDate.format('LL');
+                                const approved = collision.status === 'approved' ? '(Approved)' : '(Pending)';
+                                return (<li key={index}>{firstName} {lastName} - {dateRange} - {approved}</li>);
                             }
                         )}
                     </ul>
@@ -185,7 +187,9 @@ class RequestCard extends Component {
                 <h4>{this.renderName()}</h4>
                 <h5>{this.renderDateRange()}</h5>
                 <h6>{this.renderType()}</h6>
-                {this.renderConflicts()}
+                <div className="collisions">
+                    {this.renderCollisions()}
+                </div>
                 {this.renderAdminButtons()}
                 {this.renderEmployeeButtons()}
                 {/* <EditDialog

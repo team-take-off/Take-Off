@@ -1,5 +1,4 @@
 # Feature Detect Request Collisions
-Display request collisions on request card components
 When employee cancels or withdraws a request delete any corresponding entries in collisions table
 When admin denies a request delete any corresponding entries in collisions table
 
