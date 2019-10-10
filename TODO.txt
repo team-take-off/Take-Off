@@ -1,3 +1,12 @@
+# Feature Admin Initialize Request History
+Bugfix: Editing employee data on ManageEmployeesPage no longer returns blank screen after submitting changes
+Add interface for adding back-logged requests on ManageEmployeesPage edit employee page
+Change POST /api/request to accept changes from admin accounts that don't deduct hours
+
+# Feature Replace Accordion UI with Tabs 
+
+# Feature Notes on Requests
+
 # Feature Improve Request Router 2
 Handle request sagas parameter objects.
 Fix bugs in request.router and RequestClient.
@@ -7,20 +16,7 @@ Update employee list requests page to use the new reducer and route (for filteri
 Make default GET requests return (current) +/- two years from current date
 Enforce the 5 day grace period when employees try to cancel a request
 
-# Feature Check For Holidays
-Add a check for holidays to the server-side
-Add a settings tab visible to admin
-Admin dashboard for configuring company-wide holidays
-
 # Feature Saga Error Handling
-
-# Feature Detect Request Collisions
-Add a request collisions table to database that links two request batches that have any colliding dates
-When posting a request batch check the existing requests for collisions and insert into request collisions table as needed
-Return request collisions along with requests bundle
-Display request collisions on request card components
-When employee cancels a request delete any corresponding entries in collisions table
-When admin denies a request delete any corresponding entries in collisions table
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 

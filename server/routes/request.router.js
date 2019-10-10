@@ -1,5 +1,6 @@
 const express = require('express');
 const moment = require('moment');
+const momentHoliday = require('moment-holiday');
 
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
@@ -82,7 +83,26 @@ const getRequestsArray = (startDate, endDate) => {
 }
 
 const isCompanyHoliday = (currentDate) => {
-    return false;
+    const observedHolidays = [
+        'New Years Day',
+        'Martin Luther King Jr. Day',
+        'Washingtons Birthday',
+        'Memorial Day',
+        'Independence Day',
+        'Labor Day',
+        'Veterans Day',
+        'Thanksgiving Day',
+        'Christmas Eve',
+        'Christmas Day'
+    ];
+
+    // Note: Library moment-holiday incorrectly finds 'Day after Thanksgiving'
+    // for years where November 1st falls on Friday.
+    if (currentDate.month() === 10 && currentDate.day() === 5 && currentDate.date() >= 23 && currentDate.date() < 30) {
+        return true;
+    }
+
+    return currentDate.isHoliday(observedHolidays);
 }
 
 const getRequestUnits = (requestsArray) => {
@@ -179,8 +199,8 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    const startDate = req.body.startDate;
-    const endDate = req.body.endDate;
+    let startDate = req.body.startDate;
+    let endDate = req.body.endDate;
     const config = {
         employee: parseIntOrNull(req.user.id),
         type: parseIntOrNull(req.body.typeID),
@@ -192,6 +212,13 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         totalHours: 0,
         requestUnits: getRequestUnits(requestsArray)
     };
+    if (requestsArray.lenth === 0) {
+        res.send(returnSummary);
+        return;
+    }
+
+    startDate = requestsArray[0].start;
+    endDate = requestsArray[requestsArray.length - 1].end;
 
     const client = new RequestClient(pool, config);
     (async () => {
@@ -234,6 +261,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             await client.updateStatus(id, requestStatus);
             if (requestStatus === DENIED_STATUS && requestStatus !== request.status) {
                 await client.refundHours(request, req.user.id, ADMIN_DENY_TRANSACTION);
+                await client.removeCollisions(request.id);
             }
             await client.commit();
             res.sendStatus(200);

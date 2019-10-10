@@ -43,10 +43,36 @@ class RequestClient {
             const index = await uniqueGroupIDs.indexOf(id);
             if (index < 0) {
                 await uniqueGroupIDs.push(id);
-                await groupArray.push([]);
-                await groupArray[groupArray.length - 1].push(requestUnit);
+                const unitObject = {
+                    id: requestUnit.request_unit_id,
+                    date: requestUnit.date,
+                    is_afternoon: requestUnit.is_morning,
+                    is_fullday: requestUnit.is_fullday,
+                    is_morning: requestUnit.is_morning
+                };
+                const requestObject = {
+                    id: id,
+                    employee_id: requestUnit.employee_id,
+                    first_name: requestUnit.first_name,
+                    last_name: requestUnit.last_name,
+                    type: requestUnit.type,
+                    status: requestUnit.status,
+                    start_date: requestUnit.start_date,
+                    end_date: requestUnit.end_date,
+                    date_requested: requestUnit.date_requested,
+                    request_units: [unitObject],
+                    collisions: []
+                };
+                await groupArray.push(requestObject);
             } else {
-                await groupArray[index].push(requestUnit);
+                const unitObject = {
+                    id: requestUnit.request_unit_id,
+                    date: requestUnit.date,
+                    is_afternoon: requestUnit.is_morning,
+                    is_fullday: requestUnit.is_fullday,
+                    is_morning: requestUnit.is_morning
+                };
+                await groupArray[index].request_units.push(unitObject);
             }
         }
         return groupArray;
@@ -77,6 +103,8 @@ class RequestClient {
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
             request_unit.time_off_request_id,
+            time_off_request.start_datetime AS start_date,
+            time_off_request.end_datetime AS end_date,
             time_off_request.placed_datetime AS date_requested,
             employee.id AS employee_id,
             employee.first_name,
@@ -107,7 +135,55 @@ class RequestClient {
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
         const requests = await this.sortIntoGroups(rows);
+
+        for (let request of requests) {
+            if (request.status !== 'denied') {
+                const collisions = await this.getCollisions(request.id);
+                request.collisions = collisions;
+            }
+        }
         return requests;
+    }
+
+    async getCollisions(unit_id) {
+        const selectCollisions = `
+        SELECT
+            time_off_request.id AS id,
+            employee.id AS employee_id,
+            employee.first_name,
+            employee.last_name,
+            leave_type.val AS type,
+            request_status.val AS status,
+            time_off_request.start_datetime AS start_date,
+            time_off_request.end_datetime AS end_date,
+            time_off_request.placed_datetime AS date_requested
+        FROM employee 
+        JOIN time_off_request ON employee.id = time_off_request.employee_id
+        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
+        JOIN request_status ON request_status.id = time_off_request.request_status_id
+        JOIN collision ON collision.request_1 = time_off_request.id
+        WHERE collision.request_2 = $1 AND request_status.active = 1
+        UNION
+        SELECT
+            time_off_request.id AS id,
+            employee.id AS employee_id,
+            employee.first_name,
+            employee.last_name,
+            leave_type.val AS type,
+            request_status.val AS status,
+            time_off_request.start_datetime AS start_date,
+            time_off_request.end_datetime AS end_date,
+            time_off_request.placed_datetime AS date_requested
+        FROM employee 
+        JOIN time_off_request ON employee.id = time_off_request.employee_id
+        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
+        JOIN request_status ON request_status.id = time_off_request.request_status_id
+        JOIN collision ON collision.request_2 = time_off_request.id
+        WHERE collision.request_1 = $1 AND request_status.active = 1
+        ORDER BY date_requested;
+        `;
+        const { rows } = await this.client.query(selectCollisions, [unit_id]);
+        return rows;
     }
 
     // Returns an array of all request that are now in the past based on the grace period
@@ -164,9 +240,23 @@ class RequestClient {
         ($1, $2, 1, $3, $4)
         RETURNING id;
         `;
-
         const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, startTime, endTime]);
         const requestID = rows[0].id;
+
+        const insertCollisionsText = `
+        INSERT INTO collision
+        (request_1, request_2)
+            SELECT id AS request_1, $1 AS request_2
+            FROM time_off_request
+            WHERE id != $1
+            AND (
+                start_datetime <= $2 AND end_datetime >= $2
+                OR start_datetime <= $3 AND end_datetime >= $3
+                OR $2 <= start_datetime AND $3 >= start_datetime
+            );
+        `;
+        await this.client.query(insertCollisionsText, [requestID, startTime, endTime]);
+
         return requestID;
     };
 
@@ -195,11 +285,14 @@ class RequestClient {
         JOIN time_off_request ON request_unit.time_off_request_id = time_off_request.id
         WHERE time_off_request.employee_id = $1
         AND active = 1 
-        AND (request_unit.start_datetime <= $2 AND request_unit.end_datetime >= $2)
-            OR (request_unit.start_datetime <= $3 AND request_unit.end_datetime >= $3)
+        AND (
+            request_unit.start_datetime <= $2 AND request_unit.end_datetime >= $2
+            OR request_unit.start_datetime <= $3 AND request_unit.end_datetime >= $3
+            OR $2 <= request_unit.start_datetime AND $3 >= request_unit.start_datetime
+        )
         LIMIT 1;
         `;
-        const { rows } = await this.client.query(selectConflicting, [employeeID, day.start, day.end]);
+        const { rows } = await this.client.query(selectConflicting, [employeeID, day.start.format(), day.end.format()]);
         if (rows.length > 0) {
             throw Error(`Error in RequestClient.js function insertRequestDay. Conflicting entries found.`);
         }
@@ -208,9 +301,11 @@ class RequestClient {
         INSERT INTO request_unit
         (time_off_request_id, start_datetime, end_datetime)
         VALUES
-        ($1, $2, $3);
+        ($1, $2, $3)
+        RETURNING id;
         `;
-        await this.client.query(insertUnitText, [requestID, day.start, day.end]);
+        await this.client.query(insertUnitText, [requestID, day.start.format(), day.end.format()]);
+
         const updateHours = `
         UPDATE employee SET 
         ${hoursType} = ${hoursType} - $1
@@ -254,6 +349,15 @@ class RequestClient {
         WHERE id = $2;
         `;
         await this.client.query(updateText, [status, id]);
+    }
+
+    // Delete all entries in collisions table with a given request ID
+    async removeCollisions(id) {
+        const deleteText = `
+        DELETE FROM collision 
+        WHERE request_1 = $1 OR request_2 = $1;
+        `;
+        await this.client.query(deleteText, [id]);
     }
 
     // Refund the total number of off-hours found in a batch of requests

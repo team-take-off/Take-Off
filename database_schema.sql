@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS transaction_log;
+DROP TABLE IF EXISTS collision;
 DROP TABLE IF EXISTS request_unit;
 DROP TABLE IF EXISTS time_off_request;
 DROP TABLE IF EXISTS employee;
@@ -81,7 +82,7 @@ CREATE TABLE time_off_request (
 	, start_datetime TIMESTAMPTZ NOT NULL
 	, end_datetime TIMESTAMPTZ NOT NULL
 	, placed_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
-	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
+	, CONSTRAINT end_after_start CHECK(end_datetime >= start_datetime)
 	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&, int4range(0, active, '()') WITH &&)
 	, CONSTRAINT denied_status_implies_not_active CHECK((request_status_id != 3 AND active = 1) OR (request_status_id = 3 AND active = 0))
 );
@@ -94,6 +95,13 @@ CREATE TABLE request_unit (
 	, end_datetime TIMESTAMPTZ NOT NULL
 	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
 	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
+);
+
+-- Overlap between different employees' requests
+CREATE TABLE collision (
+	request_1 INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE
+	, request_2 INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE 
+	, PRIMARY KEY (request_1, request_2)
 );
 
 -- A log of transactions made to the other tables

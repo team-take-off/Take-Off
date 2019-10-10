@@ -10,6 +10,10 @@ class RequestUnit {
     }
 
     static loadArray(array) {
+        if (array === undefined) {
+            return [];
+        }
+        
         return array.map(
             unitElement => {
                 return new RequestUnit(

@@ -38,6 +38,15 @@ h5, h6 {
     margin-bottom: 0.8rem;
 }
 
+ul {
+    margin: 0;
+    padding: 0 20px;
+}
+
+li {
+    font-size: 0.8rem;
+}
+
 .request-card-buttons button {
     padding: 0.4rem 15px;
     margin-left: 5px;
@@ -79,6 +88,11 @@ h5, h6 {
 
 .sick {
     color: rgb(201, 120, 62);
+}
+
+.collisions {
+    color: #888;
+    margin: 1.8rem 0 0.8rem 10px;
 }
 
 .inner-dialog {
