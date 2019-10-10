@@ -12,10 +12,10 @@ VALUES
 INSERT INTO time_off_request
     (employee_id, leave_type_id, request_status_id, active, start_datetime, end_datetime)
 VALUES
-    (1, 1, 1, 1, '2019-10-22', '2019-10-24'),
-    (2, 2, 1, 1, '2019-10-22', '2019-10-24'),
-    (2, 2, 3, 0, '2019-10-22', '2019-10-24'),
-    (5, 1, 1, 1, '2019-10-28', '2019-10-28');
+    (1, 1, 1, 1, '2019-10-22 09:00 AM', '2019-10-24 01:00 PM'),
+    (2, 2, 1, 1, '2019-10-22 01:00 PM', '2019-10-24 05:00 PM'),
+    (2, 2, 3, 0, '2019-10-22 01:00 PM', '2019-10-24 05:00 PM'),
+    (5, 1, 1, 1, '2019-10-28 09:00 AM', '2019-10-28 05:00 PM');
 
 INSERT INTO request_unit
     (time_off_request_id, start_datetime, end_datetime)

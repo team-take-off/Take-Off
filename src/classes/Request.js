@@ -3,7 +3,7 @@ import RequestUnit from "./RequestUnit";
 import moment from 'moment';
 
 class Request {
-    constructor(id, employeeID, firstName, lastName, type, status, startDate, endDate, dateRequested, units) {
+    constructor(id, employeeID, firstName, lastName, type, status, startDate, endDate, dateRequested, units, collisions) {
         this.id = id;
         this.employeeID = employeeID;
         this.firstName = firstName;
@@ -14,13 +14,18 @@ class Request {
         this.endDate = moment(endDate);
         this.dateRequested = moment(dateRequested);
         this.units = units;
+        this.collisions = collisions;
     }
 
     static loadArray(array) {
+        if (array === undefined) {
+            return [];
+        }
+
         return array.map(
             request => {
                 const units = RequestUnit.loadArray(request.request_units);
-                // const collisions = Collision.loadArray()
+                const collisions = Request.loadArray(request.collisions);
                 return new Request(
                     request.id,
                     request.employee_id,
@@ -31,7 +36,8 @@ class Request {
                     request.start_date,
                     request.end_date,
                     request.date_requested,
-                    units
+                    units,
+                    collisions
                 );
             });
     }

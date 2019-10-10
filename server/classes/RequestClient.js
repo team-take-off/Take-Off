@@ -240,9 +240,23 @@ class RequestClient {
         ($1, $2, 1, $3, $4)
         RETURNING id;
         `;
-
         const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, startTime, endTime]);
         const requestID = rows[0].id;
+
+        const insertCollisionsText = `
+        INSERT INTO collision
+        (request_1, request_2)
+            SELECT id AS request_1, $1 AS request_2
+            FROM time_off_request
+            WHERE id != $1
+            AND (
+                start_datetime <= $2 AND end_datetime >= $2
+                OR start_datetime <= $3 AND end_datetime >= $3
+                OR $2 <= start_datetime AND $3 >= start_datetime
+            );
+        `;
+        await this.client.query(insertCollisionsText, [requestID, startTime, endTime]);
+
         return requestID;
     };
 
@@ -280,8 +294,6 @@ class RequestClient {
         `;
         const { rows } = await this.client.query(selectConflicting, [employeeID, day.start.format(), day.end.format()]);
         if (rows.length > 0) {
-            console.log('ID :', rows[0].id);
-            console.log('employee: ', employeeID, 'start', day.start.format(), 'end', day.end.format())
             throw Error(`Error in RequestClient.js function insertRequestDay. Conflicting entries found.`);
         }
 
@@ -292,22 +304,7 @@ class RequestClient {
         ($1, $2, $3)
         RETURNING id;
         `;
-        const newUnit = await this.client.query(insertUnitText, [requestID, day.start.format(), day.end.format()]);
-
-        const insertCollisionsText = `
-        INSERT INTO collision
-        (request_unit_1, request_unit_2)
-            SELECT request_unit.id, $1 as request_unit_2
-            FROM request_unit
-            JOIN time_off_request ON request_unit.time_off_request_id = time_off_request.id
-            WHERE employee_id != $2
-            AND (
-                request_unit.start_datetime <= $3 AND request_unit.end_datetime >= $3
-                OR request_unit.start_datetime <= $4 AND request_unit.end_datetime >= $4
-                OR $3 <= request_unit.start_datetime AND $4 >= request_unit.end_datetime
-            );
-        `;
-        await this.client.query(insertCollisionsText, [newUnit.rows[0].id, employeeID, day.start, day.end]);
+        await this.client.query(insertUnitText, [requestID, day.start.format(), day.end.format()]);
 
         const updateHours = `
         UPDATE employee SET 

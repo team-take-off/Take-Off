@@ -199,8 +199,8 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    const startDate = req.body.startDate;
-    const endDate = req.body.endDate;
+    let startDate = req.body.startDate;
+    let endDate = req.body.endDate;
     const config = {
         employee: parseIntOrNull(req.user.id),
         type: parseIntOrNull(req.body.typeID),
@@ -212,6 +212,13 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         totalHours: 0,
         requestUnits: getRequestUnits(requestsArray)
     };
+    if (requestsArray.lenth === 0) {
+        res.send(returnSummary);
+        return;
+    }
+
+    startDate = requestsArray[0].start;
+    endDate = requestsArray[requestsArray.length - 1].end;
 
     const client = new RequestClient(pool, config);
     (async () => {
