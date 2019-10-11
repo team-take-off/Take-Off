@@ -1,5 +1,5 @@
 # Feature Admin Initialize Request History
-Add interface for adding back-logged requests on ManageEmployeesPage edit employee page
+Add interface for adding back-logged requests on AdminEditEmployeePage edit employee page
 Change POST /api/request to accept changes from admin accounts that don't deduct hours
 
 # Feature Replace Accordion UI with Tabs 

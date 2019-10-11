@@ -1,0 +1,4 @@
+div.request-history-pane {
+    max-height: 25%;
+    overflow: scroll;
+}

@@ -1,24 +1,24 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import moment from 'moment';
 
-import './AdminEditEmployeePage.css';
+import './AdminEditRequestsPage.css';
 
 const HOURS_PER_DAY = 8.0;
 
-class AdminEditEmployeePage extends Component {
+class AdminEditRequestsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            id: '',
-            editURL: '',
             email: '',
             first_name: '',
             last_name: '',
             start_date: '',
             vacation_hours: '',
-            sick_hours: ''
+            sick_hours: '',
+
+            requestsRaw: undefined,
+            requests: []
         };
     }
 
@@ -26,6 +26,7 @@ class AdminEditEmployeePage extends Component {
     // server
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: { employee: this.props.match.params.id } })
     }
 
     // If any of the input data changes reload the selected employee data that 
@@ -33,6 +34,17 @@ class AdminEditEmployeePage extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.employees !== this.props.employees || prevProps.match.params.id !== this.props.match.params.id) {
             this.loadEmployeeState();
+        }
+        if (prevProps.requestsRaw !== this.props.requestsRaw) {
+            this.setState({
+                ...this.state,
+                requests: [
+                    ...this.props.requestsRaw.past,
+                    ...this.props.requestsRaw.denied,
+                    ...this.props.requestsRaw.pending,
+                    ...this.props.requestsRaw.approved
+                ]
+            });
         }
     }
 
@@ -49,7 +61,6 @@ class AdminEditEmployeePage extends Component {
         if (employee) {
             this.setState({
                 id: id,
-                editURL: '/admin/edit_requests/' + id,
                 email: employee.email,
                 first_name: employee.first_name,
                 last_name: employee.last_name,
@@ -106,52 +117,39 @@ class AdminEditEmployeePage extends Component {
     render() {
         return (
             <div className="page-container">
-                <h2>Edit Employee Account</h2>
+                <h2>Edit Employee Requests</h2>
                 <h3>{this.state.first_name} {this.state.last_name}</h3>
-                <form onSubmit={this.submit}>
-                    <label htmlFor="first_name">First Name:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="first_name" value={this.state.first_name} type="text" />
-                    <br />
-                    <label htmlFor="last_name">Last Name:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="last_name" value={this.state.last_name} type="text" />
-                    <br />
-                    <label htmlFor="email">Email:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="email" value={this.state.email} type="text" />
-                    <br />
-                    <label htmlFor="start_date">Start Date:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="start_date" value={this.state.start_date} type="date" />
-                    <br />
-                    <label htmlFor="vacation_days">Vacation (days):</label>
-                    <br />
-                    <input onChange={this.handleChangeVacationDays} name="vacation_days" value={this.state.vacation_hours / 8.0} type="number" />
-                    <br />
-                    <label htmlFor="vacation_hours">Vacation (hours):</label>
-                    <br />
-                    <input onChange={this.handleChange} name="vacation_hours" value={this.state.vacation_hours} type="number" />
-                    <br />
-                    <label htmlFor="sick_days">Sick & Safe (days):</label>
-                    <br />
-                    <input onChange={this.handleChangeSickDays} name="sick_days" value={this.state.sick_hours / 8.0} type="number" />
-                    <br />
-                    <label htmlFor="sick_hours">Sick & Safe (hours):</label>
-                    <br />
-                    <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
-                    <br />
-                    <input type="submit" />
-                    <input onClick={this.cancel} type="button" value="Cancel" />
-                </form>
-                <Link className="edit-link" to={this.state.editURL}>Edit Employee Requests</Link>
+                <div className="request-history-pane">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.requests.map(request =>
+                                <tr key={request.id}>
+                                    <td>{request.type}</td>
+                                    <td>{request.startDate.format('LL')}</td>
+                                    <td>{request.endDate.format('LL')}</td>
+                                    <td>({request.status})</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }
 }
 
 const mapStateToProps = reduxStore => ({
-    employees: reduxStore.employees
+    employees: reduxStore.employees,
+    requestsRaw: reduxStore.requests
 });
 
-export default connect(mapStateToProps)(AdminEditEmployeePage);
+export default connect(mapStateToProps)(AdminEditRequestsPage);
