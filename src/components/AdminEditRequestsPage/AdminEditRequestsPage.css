@@ -1,4 +1,37 @@
+table {
+    background-color: rgb(244, 244, 248);
+}
+
+tr.request-row td {
+    padding: 0.8rem 10px 0.8rem 5px;
+}
+
 div.request-history-pane {
     max-height: 25%;
     overflow: scroll;
+}
+
+.request-row button {
+  border-radius: 2px;
+  padding: 0.2rem 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin-left: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+form.request-form {
+    margin-left: 0;
+}
+
+.request-form table, .request-form tr, .request-form td {
+    background-color: inherit;
+    border: none;
+}
+
+.request-form td:first-child {
+    text-align: right;
 }

@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import './AdminEditRequestsPage.css';
-
-const HOURS_PER_DAY = 8.0;
 
 class AdminEditRequestsPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
+            id: '',
             first_name: '',
             last_name: '',
-            start_date: '',
-            vacation_hours: '',
-            sick_hours: '',
 
             requestsRaw: undefined,
             requests: []
@@ -61,56 +58,10 @@ class AdminEditRequestsPage extends Component {
         if (employee) {
             this.setState({
                 id: id,
-                email: employee.email,
                 first_name: employee.first_name,
-                last_name: employee.last_name,
-                start_date: moment(employee.start_date).format('YYYY-MM-DD'),
-                vacation_hours: employee.vacation_hours,
-                sick_hours: employee.sick_hours
+                last_name: employee.last_name
             });
         }
-    }
-
-    // Handle a change to any of the input fields
-    handleChange = (event) => {
-        this.setState({
-            ...this.state,
-            [event.target.name]: event.target.value
-        });
-    }
-
-    // Special handler function for setting vacation hours based on changes to
-    // vacation days
-    handleChangeVacationDays = (event) => {
-        this.setState({
-            ...this.state,
-            vacation_hours: event.target.value * HOURS_PER_DAY
-        });
-    }
-
-    // Special handler function for setting sick hours based on changes to
-    // sick days
-    handleChangeSickDays = (event) => {
-        this.setState({
-            ...this.state,
-            sick_hours: event.target.value * HOURS_PER_DAY
-        });
-    }
-
-    // Update the employee's data from state
-    submit = (event) => {
-        event.preventDefault();
-        const action = {
-            type: 'UPDATE_EMPLOYEE',
-            payload: this.state
-        };
-        this.props.dispatch(action);
-        this.props.history.push('/admin/manage_employees');
-    }
-
-    // Cancel using this form and navigate back to the employee list
-    cancel = () => {
-        this.props.history.push('/admin/manage_employees');
     }
 
     // Show this component on the DOM
@@ -132,16 +83,92 @@ class AdminEditRequestsPage extends Component {
                         </thead>
                         <tbody>
                             {this.state.requests.map(request =>
-                                <tr key={request.id}>
+                                <tr key={request.id} className="request-row">
                                     <td>{request.type}</td>
                                     <td>{request.startDate.format('LL')}</td>
                                     <td>{request.endDate.format('LL')}</td>
                                     <td>({request.status})</td>
+                                    <td>
+                                        <IconButton onClick={this.edit} aria-label="Delete">
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
+                <form className="request-form">
+                    <table>
+                        <tr>
+                            <td>
+                                <label htmlFor="leave_type">Leave Type:</label>
+                            </td>
+                            <td>
+                                <select name="leave_type" value="">
+                                    <option value="1">Vacation</option>
+                                    <option value="2">Sick and Safe</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label htmlFor="start_date">Start Date:</label>
+                            </td>
+                            <td>
+                                <input
+                                    onChange={this.setStartDate}
+                                    name="start_date"
+                                    type="date"
+                                    min={moment().subtract(7, 'days').format('YYYY-MM-DD')}
+                                    value=""
+                                />
+                                <select onChange={this.setStartDayType} value="">
+                                    <option value="fullday">Full Day</option>
+                                    <option value="morning">Morning</option>
+                                    <option value="afternoon">Afternoon</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label htmlFor="end_date">End Date:</label>
+                            </td>
+                            <td>
+                                <input
+                                    onChange={this.setEndDate}
+                                    name="end_date"
+                                    type="date"
+                                    min={moment().subtract(7, 'days').format('YYYY-MM-DD')}
+                                    value=""
+                                />
+                                <select onChange={this.setEndDayType} value="">
+                                    <option value="fullday">Full Day</option>
+                                    <option value="morning">Morning</option>
+                                    <option value="afternoon">Afternoon</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label htmlFor="end_date">Status:</label>
+                            </td>
+                            <td>
+                                <select onChange={this.setStatus} value="">
+                                    <option value="pending">Pending</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="denied">Denied</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="submit" value="Add Request" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
             </div>
         );
     }
