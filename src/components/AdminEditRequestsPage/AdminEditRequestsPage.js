@@ -15,7 +15,14 @@ class AdminEditRequestsPage extends Component {
             last_name: '',
 
             requestsRaw: undefined,
-            requests: []
+            requests: [],
+
+            leaveType: '',
+            startDate: '',
+            startDayType: 'fullday',
+            endDate: '',
+            endDayType: 'fullday',
+            status: ''
         };
     }
 
@@ -64,6 +71,103 @@ class AdminEditRequestsPage extends Component {
         }
     }
 
+    selectLeaveType = (event) => {
+        this.setState({
+            ...this.state,
+            leaveType: event.target.value
+        });
+    }
+
+    setStartDate = (event) => {
+        const newDate = event.target.value;
+        if (!this.state.endDate || moment(this.state.endDate).isBefore(moment(newDate))) {
+            this.setState({
+                ...this.state,
+                startDate: newDate,
+                endDate: newDate,
+                endDayType: this.state.startDayType
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                startDate: newDate
+            });
+        }
+    }
+
+    setEndDate = (event) => {
+        const newDate = event.target.value;
+        if (!this.state.startDate || moment(this.state.startDate).isAfter(moment(newDate))) {
+            this.setState({
+                ...this.state,
+                startDate: newDate,
+                endDate: newDate,
+                endDayType: this.state.startDayType
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                endDate: newDate
+            });
+        }
+    }
+
+    setStartDayType = (event) => {
+        const newDayType = event.target.value;
+        if (this.state.startDate === this.state.endDate) {
+            this.setState({
+                ...this.state,
+                startDayType: newDayType,
+                endDayType: newDayType
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                startDayType: newDayType,
+            });
+        }
+    }
+
+    setEndDayType = (event) => {
+        const newDayType = event.target.value;
+        if (this.state.startDate === this.state.endDate) {
+            this.setState({
+                ...this.state,
+                startDayType: newDayType,
+                endDayType: newDayType
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                endDayType: newDayType,
+            });
+        }
+    }
+
+    setStatus = (event) => {
+        this.setState({
+            ...this.state,
+            status: event.target.value
+        });
+    }
+
+    readyToSubmit = () => {
+        if (this.state.leaveType 
+            && this.state.startDate 
+            && this.state.startDayType 
+            && this.state.endDate 
+            && this.state.endDayType 
+            && this.state.status
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    submit = (event) => {
+        event.preventDefault();
+    }
+
     // Show this component on the DOM
     render() {
         return (
@@ -98,75 +202,77 @@ class AdminEditRequestsPage extends Component {
                         </tbody>
                     </table>
                 </div>
-                <form className="request-form">
+                <form className="request-form" onSubmit={this.submit}>
                     <table>
-                        <tr>
-                            <td>
-                                <label htmlFor="leave_type">Leave Type:</label>
-                            </td>
-                            <td>
-                                <select name="leave_type" value="">
-                                    <option value="1">Vacation</option>
-                                    <option value="2">Sick and Safe</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label htmlFor="start_date">Start Date:</label>
-                            </td>
-                            <td>
-                                <input
-                                    onChange={this.setStartDate}
-                                    name="start_date"
-                                    type="date"
-                                    min={moment().subtract(7, 'days').format('YYYY-MM-DD')}
-                                    value=""
-                                />
-                                <select onChange={this.setStartDayType} value="">
-                                    <option value="fullday">Full Day</option>
-                                    <option value="morning">Morning</option>
-                                    <option value="afternoon">Afternoon</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label htmlFor="end_date">End Date:</label>
-                            </td>
-                            <td>
-                                <input
-                                    onChange={this.setEndDate}
-                                    name="end_date"
-                                    type="date"
-                                    min={moment().subtract(7, 'days').format('YYYY-MM-DD')}
-                                    value=""
-                                />
-                                <select onChange={this.setEndDayType} value="">
-                                    <option value="fullday">Full Day</option>
-                                    <option value="morning">Morning</option>
-                                    <option value="afternoon">Afternoon</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label htmlFor="end_date">Status:</label>
-                            </td>
-                            <td>
-                                <select onChange={this.setStatus} value="">
-                                    <option value="pending">Pending</option>
-                                    <option value="approved">Approved</option>
-                                    <option value="denied">Denied</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="submit" value="Add Request" />
-                            </td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label htmlFor="leave_type">Leave Type:</label>
+                                </td>
+                                <td>
+                                    <select name="leave_type" onChange={this.selectLeaveType} value={this.state.leaveType}>
+                                        <option disabled value="">-- select --</option>
+                                        <option value="1">Vacation</option>
+                                        <option value="2">Sick and Safe</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label htmlFor="start_date">Start Date:</label>
+                                </td>
+                                <td>
+                                    <input
+                                        onChange={this.setStartDate}
+                                        name="start_date"
+                                        type="date"
+                                        value={this.state.startDate}
+                                    />
+                                    <select onChange={this.setStartDayType} value={this.state.startDayType}>
+                                        <option value="fullday">Full Day</option>
+                                        <option value="morning">Morning</option>
+                                        <option value="afternoon">Afternoon</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label htmlFor="end_date">End Date:</label>
+                                </td>
+                                <td>
+                                    <input
+                                        onChange={this.setEndDate}
+                                        name="end_date"
+                                        type="date"
+                                        value={this.state.endDate}
+                                    />
+                                    <select onChange={this.setEndDayType} value={this.state.endDayType} disabled={this.state.startDate === this.state.endDate}>
+                                        <option value="fullday">Full Day</option>
+                                        <option value="morning">Morning</option>
+                                        <option value="afternoon">Afternoon</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label htmlFor="end_date">Status:</label>
+                                </td>
+                                <td>
+                                    <select onChange={this.setStatus} value={this.state.status}>
+                                        <option disabled value="">-- select --</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="denied">Denied</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <input type="submit" value="Add Request" disabled={!this.readyToSubmit()} />
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </form>
             </div>
