@@ -7,7 +7,7 @@ tr.request-row td {
 }
 
 div.request-history-pane {
-    max-height: 25%;
+    max-height: 200px;
     overflow: scroll;
 }
 

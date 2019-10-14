@@ -4,6 +4,7 @@ import moment from 'moment';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+import DateRange from '../../modules/DateRange';
 import './AdminEditRequestsPage.css';
 
 class AdminEditRequestsPage extends Component {
@@ -30,7 +31,7 @@ class AdminEditRequestsPage extends Component {
     // server
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
-        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: { employee: this.props.match.params.id } })
+        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: { employee: this.props.match.params.id } });
     }
 
     // If any of the input data changes reload the selected employee data that 
@@ -69,6 +70,13 @@ class AdminEditRequestsPage extends Component {
                 last_name: employee.last_name
             });
         }
+    }
+
+    deleteRequest = (id) => {
+        this.props.dispatch({
+            type: 'DELETE_REQUEST',
+            payload: id
+        });
     }
 
     selectLeaveType = (event) => {
@@ -178,22 +186,20 @@ class AdminEditRequestsPage extends Component {
                     <table>
                         <thead>
                             <tr>
-                                <th>Type</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Status</th>
+                                <th>Leave Type</th>
+                                <th>Dates</th>
+                                <th>Request Status</th>
                                 <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.requests.map(request =>
                                 <tr key={request.id} className="request-row">
-                                    <td>{request.type}</td>
-                                    <td>{request.startDate.format('LL')}</td>
-                                    <td>{request.endDate.format('LL')}</td>
-                                    <td>({request.status})</td>
+                                    <td>{request.type === 'Vacation' ? 'Vacation' : 'Sick & Safe'}</td>
+                                    <td>{(new DateRange(request.units)).format('LL')}</td>
+                                    <td>[ {request.status} ]</td>
                                     <td>
-                                        <IconButton onClick={this.edit} aria-label="Delete">
+                                        <IconButton onClick={this.deleteRequest.bind(this, request.id)} aria-label="Delete">
                                             <DeleteIcon />
                                         </IconButton>
                                     </td>

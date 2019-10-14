@@ -46,7 +46,7 @@ class RequestClient {
                 const unitObject = {
                     id: requestUnit.request_unit_id,
                     date: requestUnit.date,
-                    is_afternoon: requestUnit.is_morning,
+                    is_afternoon: requestUnit.is_afternoon,
                     is_fullday: requestUnit.is_fullday,
                     is_morning: requestUnit.is_morning
                 };
@@ -68,7 +68,7 @@ class RequestClient {
                 const unitObject = {
                     id: requestUnit.request_unit_id,
                     date: requestUnit.date,
-                    is_afternoon: requestUnit.is_morning,
+                    is_afternoon: requestUnit.is_afternoon,
                     is_fullday: requestUnit.is_fullday,
                     is_morning: requestUnit.is_morning
                 };
@@ -387,13 +387,14 @@ class RequestClient {
     }
 
     // Deletes a time-off request
-    async deleteRequest(request, userID, transactionType) {
+    async deleteRequest(request, userID, adminEdit, transactionType) {
         const deleteRequest = `
         DELETE FROM time_off_request
         WHERE id = $1;
         `;
         await this.client.query(deleteRequest, [request.id]);
-        if (request.status === 1 || request.status === 2) {
+
+        if (!adminEdit && (request.status === 1 || request.status === 2)) {
             await this.refundHours(request, userID, transactionType);
         }
     }

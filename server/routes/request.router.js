@@ -282,6 +282,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const id = req.params.id;
+    const adminEdit = req.query.adminEdit;
     const userID = req.user.id;
     const userRole = req.user.role_id;
 
@@ -292,9 +293,13 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
             await client.begin();
             const request = await client.getRequestData(id);
             if (userRole === ADMINISTRATOR_ROLE) {
-                await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
+                if (adminEdit) {
+                    await client.deleteRequest(request, userID, adminEdit, ADMIN_SPECIAL_TRANSACTION);
+                } else {
+                    await client.deleteRequest(request, userID, adminEdit, ADMIN_DENY_TRANSACTION);
+                }
             } else if (userID === request.employee && request.in_future) {
-                await client.deleteRequest(request, userID, EMPLOYEE_CANCEL_TRANSACTION);
+                await client.deleteRequest(request, userID, adminEdit, EMPLOYEE_CANCEL_TRANSACTION);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 

@@ -55,6 +55,23 @@ function* withdrawRequest(action) {
     }
 }
 
+function* deleteRequest(action) {
+    try {
+        const requestID = action.payload;
+        yield axios.delete(`api/request/${requestID}`, {
+            params: {
+                adminEdit: true
+            }
+        });
+        yield console.log('in deleteRequest()');
+        yield put({ type: 'FETCH_REQUESTS' });
+        yield put({ type: 'FETCH_USER_REQUESTS' });
+        yield put({ type: 'FETCH_USER_INFO' });
+    } catch (error) {
+        console.log('Error in request saga deleteRequest():', error);
+    }
+}
+
 function* editRequest(action) {
     try {
         console.log(action.payload);
@@ -73,6 +90,7 @@ function* requestsSaga() {
     yield takeLatest('APPROVE_REQUEST', approveRequest);
     yield takeLatest('DENY_REQUEST', denyRequest);
     yield takeLatest('WITHDRAW_REQUEST', withdrawRequest);
+    yield takeLatest('DELETE_REQUEST', deleteRequest);
     yield takeLatest('EDIT_REQUESTS', editRequest);
 }
 

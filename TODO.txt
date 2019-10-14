@@ -1,6 +1,10 @@
 # Feature Admin Initialize Request History
 Change POST /api/request to accept changes from admin accounts that don't deduct hours
 
+# Unit testing
+
+# Streamline server-side API endpoints
+
 # Feature Replace Accordion UI with Tabs 
 
 # Feature Notes on Requests
