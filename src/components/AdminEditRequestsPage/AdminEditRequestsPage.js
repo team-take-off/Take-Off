@@ -7,6 +7,30 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import DateRange from '../../modules/DateRange';
 import './AdminEditRequestsPage.css';
 
+const START_HOUR = 9;
+const MIDDAY_HOUR = 13;
+const END_HOUR = 17;
+
+const getStartHour = (dayType) => {
+    if (dayType === 'fullday' || dayType === 'morning') {
+        return START_HOUR;
+    } else if (dayType === 'afternoon') {
+        return MIDDAY_HOUR;
+    } else {
+        return -1;
+    }
+}
+
+const getEndHour = (dayType) => {
+    if (dayType === 'fullday' || dayType === 'afternoon') {
+        return END_HOUR;
+    } else if (dayType === 'morning') {
+        return MIDDAY_HOUR;
+    } else {
+        return -1;
+    }
+}
+
 class AdminEditRequestsPage extends Component {
     constructor(props) {
         super(props);
@@ -174,6 +198,31 @@ class AdminEditRequestsPage extends Component {
 
     submit = (event) => {
         event.preventDefault();
+        if (this.readyToSubmit()) {
+            const startHour = getStartHour(this.state.startDayType);
+            const endHour = getEndHour(this.state.endDayType);
+            const action = {
+                type: 'ADD_REQUEST',
+                payload: {
+                    employee: this.state.id,
+                    typeID: this.state.leaveType,
+                    startDate: moment(this.state.startDate).set('hour', startHour),
+                    endDate: moment(this.state.endDate).set('hour', endHour),
+                    status: this.state.status
+                }
+            };
+            console.log(action);
+            this.props.dispatch(action);
+            this.setState({
+                ...this.state,
+                leaveType: '',
+                startDate: '',
+                startDayType: 'fullday',
+                endDate: '',
+                endDayType: 'fullday',
+                status: ''
+            });
+        }
     }
 
     // Show this component on the DOM
@@ -187,7 +236,7 @@ class AdminEditRequestsPage extends Component {
                         <thead>
                             <tr>
                                 <th>Leave Type</th>
-                                <th>Dates</th>
+                                <th>Date Range</th>
                                 <th>Request Status</th>
                                 <th>Delete</th>
                             </tr>
@@ -197,7 +246,7 @@ class AdminEditRequestsPage extends Component {
                                 <tr key={request.id} className="request-row">
                                     <td>{request.type === 'Vacation' ? 'Vacation' : 'Sick & Safe'}</td>
                                     <td>{(new DateRange(request.units)).format('LL')}</td>
-                                    <td>[ {request.status} ]</td>
+                                    <td>{request.status}</td>
                                     <td>
                                         <IconButton onClick={this.deleteRequest.bind(this, request.id)} aria-label="Delete">
                                             <DeleteIcon />
@@ -266,9 +315,9 @@ class AdminEditRequestsPage extends Component {
                                 <td>
                                     <select onChange={this.setStatus} value={this.state.status}>
                                         <option disabled value="">-- select --</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="approved">Approved</option>
-                                        <option value="denied">Denied</option>
+                                        <option value="1">Pending</option>
+                                        <option value="2">Approved</option>
+                                        <option value="3">Denied</option>
                                     </select>
                                 </td>
                             </tr>

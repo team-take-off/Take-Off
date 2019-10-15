@@ -232,15 +232,20 @@ class RequestClient {
 
         const employeeID = this.config.employee;
         const leaveTypeID = this.config.type;
+        const statusID = this.config.status;
+        let active = 1;
+        if (statusID === 3) {
+            active = 0;
+        }
 
         const insertText = `
         INSERT INTO time_off_request
-        (employee_id, leave_type_id, request_status_id, start_datetime, end_datetime)
+        (employee_id, leave_type_id, request_status_id, active, start_datetime, end_datetime)
         VALUES
-        ($1, $2, 1, $3, $4)
+        ($1, $2, $3, $4, $5, $6)
         RETURNING id;
         `;
-        const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, startTime, endTime]);
+        const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, statusID, active, startTime, endTime]);
         const requestID = rows[0].id;
 
         const insertCollisionsText = `
@@ -306,12 +311,14 @@ class RequestClient {
         `;
         await this.client.query(insertUnitText, [requestID, day.start.format(), day.end.format()]);
 
-        const updateHours = `
-        UPDATE employee SET 
-        ${hoursType} = ${hoursType} - $1
-        WHERE id = $2;
-        `;
-        await this.client.query(updateHours, [day.hours, employeeID]);
+        if (!this.config.adminEdit) {
+            const updateHours = `
+            UPDATE employee SET 
+            ${hoursType} = ${hoursType} - $1
+            WHERE id = $2;
+            `;
+            await this.client.query(updateHours, [day.hours, employeeID]);
+        }
     }
 
     // Returns summary data on a request based on id

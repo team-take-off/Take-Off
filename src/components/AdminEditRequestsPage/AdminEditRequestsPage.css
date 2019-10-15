@@ -2,12 +2,16 @@ table {
     background-color: rgb(244, 244, 248);
 }
 
+tbody td:nth-child(3) {
+    text-transform: capitalize;
+}
+
 tr.request-row td {
     padding: 0.8rem 10px 0.8rem 5px;
 }
 
 div.request-history-pane {
-    max-height: 200px;
+    max-height: 225px;
     overflow: scroll;
 }
 

@@ -199,11 +199,25 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
+    const adminEdit = req.user.role_id === ADMINISTRATOR_ROLE && req.query.adminEdit;
     let startDate = req.body.startDate;
     let endDate = req.body.endDate;
+
+    let employee;
+    let status;
+    if (adminEdit) {
+        employee = parseIntOrNull(req.body.employee);
+        status = parseIntOrNull(req.body.status);
+    } else {
+        employee = parseIntOrNull(req.user.id);
+        status = PENDING_STATUS;
+    }
+
     const config = {
-        employee: parseIntOrNull(req.user.id),
+        adminEdit: adminEdit,
+        employee: employee,
         type: parseIntOrNull(req.body.typeID),
+        status: status,
         dryRun: parseBoolOrNull(req.body.dryRun)
     };
 
@@ -282,7 +296,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const id = req.params.id;
-    const adminEdit = req.query.adminEdit;
+    const adminEdit = req.user.role_id === ADMINISTRATOR_ROLE && req.query.adminEdit;
     const userID = req.user.id;
     const userRole = req.user.role_id;
 

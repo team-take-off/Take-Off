@@ -19,6 +19,21 @@ function* fetchRequests(action) {
     }
 }
 
+function* addRequest(action) {
+    const employeeID = action.payload.employee;
+    try {
+        yield axios.post('api/request/', action.payload, {
+            params: {
+                adminEdit: true
+            }
+        });
+        yield put({ type: 'FETCH_REQUESTS', payload: { employee: employeeID } });
+    } catch (error) {
+        console.log('Error in saga addUserRequest(),', error);
+        alert('Unable to add new request for time-off');
+    }
+}
+
 function* approveRequest(action) {
     try {
         const id = action.payload;
@@ -87,6 +102,7 @@ function* editRequest(action) {
 
 function* requestsSaga() {
     yield takeLatest('FETCH_REQUESTS', fetchRequests);
+    yield takeLatest('ADD_REQUEST', addRequest);
     yield takeLatest('APPROVE_REQUEST', approveRequest);
     yield takeLatest('DENY_REQUEST', denyRequest);
     yield takeLatest('WITHDRAW_REQUEST', withdrawRequest);
