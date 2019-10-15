@@ -1,7 +1,6 @@
-# Feature Admin Initialize Request History
-Bugfix: Editing employee data on ManageEmployeesPage no longer returns blank screen after submitting changes
-Add interface for adding back-logged requests on ManageEmployeesPage edit employee page
-Change POST /api/request to accept changes from admin accounts that don't deduct hours
+# Unit testing
+
+# Streamline server-side API endpoints
 
 # Feature Replace Accordion UI with Tabs 
 

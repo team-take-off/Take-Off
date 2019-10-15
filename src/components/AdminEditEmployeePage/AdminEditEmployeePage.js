@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import moment from 'moment';
+
+import './AdminEditEmployeePage.css';
 
 const HOURS_PER_DAY = 8.0;
 
@@ -8,6 +11,8 @@ class AdminEditEmployeePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: '',
+            editURL: '',
             email: '',
             first_name: '',
             last_name: '',
@@ -44,6 +49,7 @@ class AdminEditEmployeePage extends Component {
         if (employee) {
             this.setState({
                 id: id,
+                editURL: '/admin/edit_requests/' + id,
                 email: employee.email,
                 first_name: employee.first_name,
                 last_name: employee.last_name,
@@ -88,19 +94,20 @@ class AdminEditEmployeePage extends Component {
             payload: this.state
         };
         this.props.dispatch(action);
-        this.props.history.push('/admin/list_employees');
+        this.props.history.push('/admin/manage_employees');
     }
 
     // Cancel using this form and navigate back to the employee list
     cancel = () => {
-        this.props.history.push('/admin/list_employees');
+        this.props.history.push('/admin/manage_employees');
     }
 
     // Show this component on the DOM
     render() {
         return (
             <div className="page-container">
-                <h2>Edit Employee</h2>
+                <h2>Edit Employee Account</h2>
+                <h3>{this.state.first_name} {this.state.last_name}</h3>
                 <form onSubmit={this.submit}>
                     <label htmlFor="first_name">First Name:</label>
                     <br />
@@ -137,6 +144,7 @@ class AdminEditEmployeePage extends Component {
                     <input type="submit" />
                     <input onClick={this.cancel} type="button" value="Cancel" />
                 </form>
+                <Link className="edit-link" to={this.state.editURL}>Edit Employee Requests</Link>
             </div>
         );
     }

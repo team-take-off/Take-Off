@@ -1,0 +1,11 @@
+.edit-link {
+    color: rgb(0, 127, 255);
+}
+
+.edit-link:hover {
+    text-decoration: none;
+}
+
+.edit-link:visited {
+    color: rgb(0, 127, 255);
+}
