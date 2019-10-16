@@ -1,21 +1,32 @@
-# Unit testing
-
-# Streamline server-side API endpoints
-
-# Feature Replace Accordion UI with Tabs 
-
-# Feature Notes on Requests
-
-# Feature Improve Request Router 2
-Handle request sagas parameter objects.
-Fix bugs in request.router and RequestClient.
-Consolidate functions in request.router and RequestClient
-Update admin search to use the new reducer and route (for filtering by year and employee)
-Update employee list requests page to use the new reducer and route (for filtering by year)
-Make default GET requests return (current) +/- two years from current date
-Enforce the 5 day grace period when employees try to cancel a request
-
-# Feature Saga Error Handling
+# Refactor API endpoints
+ - Unit testing
+ - Integration testing
+Remove route DELETE /api/employee
+Make DateRange a class on client-side
+Standardize async catch blocks in request router
+Create Request class on server-side to mitigate object relational impedance mismatch
+Create class for RequestType on server-side
+Create class for RequestType on client-side
+Create class for RequestStatus on server-side
+Create class for RequestStatus on client-side
+Remove need for parsing functions in request router
+Create a class CompanyHolidays
+Create route GET /api/company-holidays
+Clean up database schema, magic int flags, redundant columns, time_off_request to request, employee start date as timestamptz, etc
+Refactor DELETE /api/request
+Refactor PUT /api/request
+Remove dry-run option from POST /api/request to fix Heroku timeout error
+Create route GET /api/request/dry-run-units
+Use query parameters for route GET /api/request to filter requests by year, employee_id, status, etc
+Create route GET /api/request/year-available
+Create route GET /api/request/count
+Streamline authorization check for situations where access should be limited to admins or employee's acting on their own data
+Look into offset and limit defaults
+Look into structuring redux organizing state, normalizing state
+Replace Accordion UI with Tabs 
+Remove route GET /api/request/current-user
+Standardize terminology for requests and request units
+Move accruedTime router into employee router
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 
@@ -28,3 +39,15 @@ Add sick time rules module on the server-side
 Add sick time rules router on the server-side that allows querrying the sick time rules module from the client
 Modify test accrual rules page to also query sick time rules
 Add sick time cron module on the server-side that runs once per day and applies the rules in sick time rules module to give employees their accrued sick days
+
+# Separate admin client
+
+# Refactor redux/sagas
+
+# Migrate to React hooks
+
+# Styled-components
+
+# Feature Notes on Requests
+
+# Feature Saga Error Handling
