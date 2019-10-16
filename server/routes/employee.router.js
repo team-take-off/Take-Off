@@ -93,19 +93,4 @@ router.put('/active/:id', rejectNonAdmin, (req, res) =>{
     });
 });
 
-// TODO: The DELETE route is incomplete since it also needs to clean up data 
-// found in other tables related to the deleted employee.
-// router.delete('/:id', rejectNonAdmin, (req, res) => {
-
-//     console.log('req.params: ', req.params);
-//     const queryText = `DELETE FROM "employee" WHERE "id" = $1;`;
-//     pool.query(queryText, [req.params.id]).then(() => {
-//         res.sendStatus(200);
-//     }).catch((error) => {
-//         console.log('Error in Delete adminEmployee: ', error);
-//         res.sendStatus(500);
-//     });
-
-// });
-
 module.exports = router;
