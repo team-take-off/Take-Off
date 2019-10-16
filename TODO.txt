@@ -1,7 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Make DateRange a class on client-side
 Standardize async catch blocks in request router
 Create Request class on server-side to mitigate object relational impedance mismatch
 Create class for RequestType on server-side
