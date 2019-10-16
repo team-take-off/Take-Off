@@ -1,4 +1,7 @@
 # Take-Off
+
+![Language](https://img.shields.io/github/languages/top/team-take-off/Take-Off.svg?style=flat-square) ![RepoSize](https://img.shields.io/github/repo-size/team-take-off/Take-Off.svg?style=flat-square)
+
 This web application was built to manage requests for off days (vacation and sick leave) for the [Legal Rights Center](https://www.legalrightscenter.org) in Minneapolis, Minnesota.
 
 Users can login and and are authenticated at employee-level or administrator-level. Employees can make requests for off days and then view the status of those requests. Administrators can view the requests of all users and accept or deny requests. The status of a given request (pending, approved, denied) is then communicated back to the employee.
@@ -44,6 +47,12 @@ CLIENT_SECRET= # Your Google Authentication Client Secret
 CALLBACK_URL=http://localhost:5000/api/user/auth/google/callback
 SUCCESS_REDIRECT=http://localhost:3000/#/home
 FAIL_REDIRECT=http://localhost:3000/#/login
+```
+
+## Unit testing
+```bash
+# To run the unit tests
+npm test
 ```
 
 ## Description

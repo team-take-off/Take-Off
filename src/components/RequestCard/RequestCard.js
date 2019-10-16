@@ -5,7 +5,7 @@ import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import PropTypes from 'prop-types';
 
 import './RequestCard.css';
-import DateRange from '../../modules/DateRange';
+import DateRange from '../../classes/DateRange';
 // import EditDialog from './EditDialog';
 import Request from '../../classes/Request';
 
