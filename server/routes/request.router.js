@@ -152,6 +152,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
             res.send({ years, pending, approved, denied, past });
         } catch (error) {
             await client.rollback();
+            await console.log(error);
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -185,6 +186,7 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
             res.send({ years, pending, approved, denied, past });
         } catch (error) {
             await client.rollback();
+            await console.log(error);
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -281,6 +283,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             res.sendStatus(200);
         } catch (error) {
             await client.rollback();
+            await console.log(error);
             await res.sendStatus(500);
             throw error;
         } finally {
@@ -321,6 +324,7 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
             res.sendStatus(200);
         } catch (error) {
             await client.rollback();
+            await console.log(error);
             await res.sendStatus(500);
             throw error;
         } finally {
