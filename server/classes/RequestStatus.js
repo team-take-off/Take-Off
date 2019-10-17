@@ -15,7 +15,7 @@ class RequestStatus {
         } else if (lookup === code.APPROVED) {
             this.approved = true;
         } else if (lookup === code.DENIED) {
-            this.denied = true
+            this.denied = true;
         }
     }
 }

@@ -1,13 +1,14 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
+Create RequestUnit class
 Create Request class on server-side to mitigate object relational impedance mismatch
 Remove need for parsing functions in request router
+Remove dry-run option from POST /api/request to fix Heroku timeout error
 Clean up database schema, magic int flags, redundant columns, time_off_request to request, employee start date as timestamptz, 3rd normal form, FK indexing, etc
 Refactor DELETE /api/request
 Refactor PUT /api/request
-Remove dry-run option from POST /api/request to fix Heroku timeout error
-Create route GET /api/request/dry-run-units
+Refactor POST /api/request
 Use query parameters for route GET /api/request to filter requests by year, employee_id, status, etc
 Create route GET /api/request/year-available
 Create route GET /api/request/count
@@ -18,6 +19,7 @@ Replace Accordion UI with Tabs
 Remove route GET /api/request/current-user
 Standardize terminology for requests and request units
 Move accruedTime router into employee router
+Create route GET /api/request/dry-run/units
 Create class for RequestType on client-side
 Create class for RequestStatus on client-side
 

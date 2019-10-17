@@ -258,8 +258,8 @@ class RequestClient {
 
     // Insert a new requested day for time-off. Then update the employee's total
     // hours available.
-    async insertRequestDay(day, requestID) {
-        if (this.config.dryRun) {
+    async insertRequestDay(unit, requestID) {
+        if (unit.isBlank || this.config.dryRun) {
             return;
         }
 
@@ -279,7 +279,7 @@ class RequestClient {
         )
         LIMIT 1;
         `;
-        const { rows } = await this.client.query(selectConflicting, [employeeID, day.start.format(), day.end.format()]);
+        const { rows } = await this.client.query(selectConflicting, [employeeID, unit.startDate.format(), unit.endDate.format()]);
         if (rows.length > 0) {
             throw Error(`Error in RequestClient.js function insertRequestDay. Conflicting entries found.`);
         }
@@ -291,7 +291,7 @@ class RequestClient {
         ($1, $2, $3)
         RETURNING id;
         `;
-        await this.client.query(insertUnitText, [requestID, day.start.format(), day.end.format()]);
+        await this.client.query(insertUnitText, [requestID, unit.startDate.format(), unit.endDate.format()]);
 
         if (!this.config.adminEdit) {
             const updateHours = `
@@ -299,7 +299,7 @@ class RequestClient {
             ${typeHoursName} = ${typeHoursName} - $1
             WHERE id = $2;
             `;
-            await this.client.query(updateHours, [day.hours, employeeID]);
+            await this.client.query(updateHours, [unit.hours, employeeID]);
         }
     }
 

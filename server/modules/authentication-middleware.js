@@ -1,9 +1,9 @@
-Employee = require('../classes/User');
+User = require('../classes/User');
 
 const rejectUnauthenticated = (req, res, next) => {
   // check if logged in
-  const employee = new Employee(req.user);
-  if (req.isAuthenticated() && employee.active) {
+  const user = new User(req.user);
+  if (req.isAuthenticated() && user.active) {
     // They were authenticated! User may do the next thing
     // Note! They may not be Authorized to do all things
     next();
