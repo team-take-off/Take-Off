@@ -309,12 +309,12 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
             const request = await client.getRequestData(id);
             if (user.isAdministrator()) {
                 if (adminEdit) {
-                    await client.deleteRequest(request, user.getID(), adminEdit, ADMIN_SPECIAL_TRANSACTION);
+                    await client.deleteRequest(request, user.id, adminEdit, ADMIN_SPECIAL_TRANSACTION);
                 } else {
-                    await client.deleteRequest(request, user.getID(), adminEdit, ADMIN_DENY_TRANSACTION);
+                    await client.deleteRequest(request, user.id, adminEdit, ADMIN_DENY_TRANSACTION);
                 }
-            } else if (user.getID() === request.employee && request.in_future) {
-                await client.deleteRequest(request, user.getID(), adminEdit, EMPLOYEE_CANCEL_TRANSACTION);
+            } else if (user.id === request.employee && request.in_future) {
+                await client.deleteRequest(request, user.id, adminEdit, EMPLOYEE_CANCEL_TRANSACTION);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 

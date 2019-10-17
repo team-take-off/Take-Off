@@ -7,16 +7,8 @@ class User {
         this.role = new EmployeeRole(Number(userSession.role_id));
     }
 
-    getID() {
-        return this.id;
-    }
-
-    isActive() {
-        return this.active;
-    }
-
     isAdministrator() {
-        if (this.isActive() && this.role.isAdministrator()) {
+        if (this.active && this.role.isAdministrator()) {
             return true;
         }
         return false;

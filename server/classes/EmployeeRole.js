@@ -25,4 +25,4 @@ class EmployeeRole {
 }
 
 const employeeRole = module.exports = EmployeeRole;
-employeeRole.id = role;
+employeeRole.code = role;

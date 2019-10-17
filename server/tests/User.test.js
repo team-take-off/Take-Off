@@ -1,40 +1,40 @@
 User = require('../classes/User');
 EmployeeRole = require('../classes/EmployeeRole');
 
-describe('User method getID', () => {
-    test('Return the ID from user session', () => {
+describe('User property id', () => {
+    test('Equal id from user session', () => {
         const session = {
             id: 56,
             is_active: false,
-            role_id: EmployeeRole.id.EMPLOYEE
+            role_id: EmployeeRole.code.EMPLOYEE
         };
         const user = new User(session);
 
-        expect(user.getID()).toEqual(56);
+        expect(user.id).toEqual(56);
     });
 });
 
-describe('User method isActive', () => {
-    test('Return false if the user session indicates false', () => {
+describe('User property active', () => {
+    test('Equal is_active from the user session', () => {
         const session = {
             id: 56,
             is_active: false,
-            role_id: EmployeeRole.id.EMPLOYEE
+            role_id: EmployeeRole.code.EMPLOYEE
         };
         const user = new User(session);
 
-        expect(user.isActive()).toEqual(false);
+        expect(user.active).toEqual(false);
     });
 
     test('Return true if the user session indicates true', () => {
         const session = {
             id: 56,
             is_active: true,
-            role_id: EmployeeRole.id.EMPLOYEE
+            role_id: EmployeeRole.code.EMPLOYEE
         };
         const user = new User(session);
 
-        expect(user.isActive()).toEqual(true);
+        expect(user.active).toEqual(true);
     });
 });
 
@@ -43,7 +43,7 @@ describe('User method isAdministrator', () => {
         const session = {
             id: 56,
             is_active: true,
-            role_id: EmployeeRole.id.ADMINISTRATOR
+            role_id: EmployeeRole.code.ADMINISTRATOR
         };
         const user = new User(session);
 
@@ -54,7 +54,7 @@ describe('User method isAdministrator', () => {
         const session = {
             id: 56,
             is_active: false,
-            role_id: EmployeeRole.id.ADMINISTRATOR
+            role_id: EmployeeRole.code.ADMINISTRATOR
         };
         const user = new User(session);
 
@@ -65,7 +65,7 @@ describe('User method isAdministrator', () => {
         const session = {
             id: 56,
             is_active: true,
-            role_id: EmployeeRole.id.EMPLOYEE
+            role_id: EmployeeRole.code.EMPLOYEE
         };
         const user = new User(session);
 
