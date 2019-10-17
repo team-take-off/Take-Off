@@ -1,7 +1,6 @@
-const GRACE_PERIOD = 5;
+const RequestType = require('../classes/RequestType');
 
-const VACATION_TYPE = 1;
-const SICK_TYPE = 2;
+const GRACE_PERIOD = 5;
 
 class RequestClient {
     constructor(pool, config) {
@@ -273,16 +272,7 @@ class RequestClient {
         }
 
         const employeeID = this.config.employee;
-        const leaveTypeID = this.config.type;
-
-        let hoursType;
-        if (leaveTypeID === VACATION_TYPE) {
-            hoursType = 'vacation_hours';
-        } else if (leaveTypeID === SICK_TYPE) {
-            hoursType = 'sick_hours';
-        } else {
-            throw Error(`Error in RequestClient.js function insertRequestDay. Invalid typeID (${typeID}) must be 1 or 2.`);
-        }
+        const typeHoursName = (new RequestType(this.config.type)).columnName;
 
         const selectConflicting = `
         SELECT request_unit.id
@@ -314,7 +304,7 @@ class RequestClient {
         if (!this.config.adminEdit) {
             const updateHours = `
             UPDATE employee SET 
-            ${hoursType} = ${hoursType} - $1
+            ${typeHoursName} = ${typeHoursName} - $1
             WHERE id = $2;
             `;
             await this.client.query(updateHours, [day.hours, employeeID]);
@@ -369,18 +359,10 @@ class RequestClient {
 
     // Refund the total number of off-hours found in a batch of requests
     async refundHours(request, userID, transactionType) {
-        let hours_column;
-        if (request.type === VACATION_TYPE) {
-            hours_column = 'vacation_hours';
-        } else if (request.type === SICK_TYPE) {
-            hours_column = 'sick_hours';
-        } else {
-            throw Error(`Error in request.router.js function refundBatchHours. Invalid request.type (${request.type}).`);
-        }
-
+        const typeHoursName = (new RequestType(request.type)).columnName;
         const updateEmployee = `
         UPDATE employee
-        SET ${hours_column} = ${hours_column} + $1
+        SET ${typeHoursName} = ${typeHoursName} + $1
         WHERE id = $2
         `;
         await this.client.query(updateEmployee, [request.hours, request.employee]);

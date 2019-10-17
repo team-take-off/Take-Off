@@ -1,4 +1,4 @@
-const role = {
+const code = {
     ADMINISTRATOR: 1,
     EMPLOYEE: 2
 };
@@ -8,9 +8,9 @@ class EmployeeRole {
         this.administrator = false;
         this.employee = false;
 
-        if (lookup === role.ADMINISTRATOR) {
+        if (lookup === code.ADMINISTRATOR) {
             this.administrator = true;
-        } else if (lookup === role.EMPLOYEE) {
+        } else if (lookup === code.EMPLOYEE) {
             this.employee = true;
         }
     }
@@ -25,4 +25,4 @@ class EmployeeRole {
 }
 
 const employeeRole = module.exports = EmployeeRole;
-employeeRole.code = role;
+employeeRole.code = code;
