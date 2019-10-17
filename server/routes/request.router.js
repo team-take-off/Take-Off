@@ -7,11 +7,8 @@ const pool = require('../modules/pool');
 const router = express.Router();
 
 const RequestClient = require('../classes/RequestClient');
+const RequestStatus = require('../classes/RequestStatus');
 const User = require('../classes/User');
-
-const PENDING_STATUS = 1;
-const APPROVED_STATUS = 2;
-const DENIED_STATUS = 3;
 
 const AUTOMATIC_ACCRUAL_TRANSACTION = 1;
 const AUTOMATIC_ADJUSTMENT_TRANSACTION = 2;
@@ -142,9 +139,9 @@ router.get('/', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const years = await client.getYears();
-            const pending = await client.getRequests(PENDING_STATUS);
-            const approved = await client.getRequests(APPROVED_STATUS);
-            const denied = await client.getRequests(DENIED_STATUS);
+            const pending = await client.getRequests(RequestStatus.code.PENDING);
+            const approved = await client.getRequests(RequestStatus.code.APPROVED);
+            const denied = await client.getRequests(RequestStatus.code.DENIED);
             const past = await client.getPastRequests();
             await client.commit();
             res.send({ years, pending, approved, denied, past });
@@ -176,9 +173,9 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const years = await client.getYears();
-            const pending = await client.getRequests(PENDING_STATUS);
-            const approved = await client.getRequests(APPROVED_STATUS);
-            const denied = await client.getRequests(DENIED_STATUS);
+            const pending = await client.getRequests(RequestStatus.code.PENDING);
+            const approved = await client.getRequests(RequestStatus.code.APPROVED);
+            const denied = await client.getRequests(RequestStatus.code.DENIED);
             const past = await client.getPastRequests();
             await client.commit();
             res.send({ years, pending, approved, denied, past });
@@ -211,7 +208,7 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         status = parseIntOrNull(req.body.status);
     } else {
         employee = parseIntOrNull(req.user.id);
-        status = PENDING_STATUS;
+        status = RequestStatus.code.PENDING;
     }
 
     const config = {
@@ -266,6 +263,7 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 router.put('/:id', rejectNonAdmin, (req, res) => {
     const id = req.params.id;
     const requestStatus = req.body.requestStatus;
+    const status = new RequestStatus(req.body.requestStatus);
 
     const client = new RequestClient(pool);
     (async () => {
@@ -274,7 +272,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             await client.begin();
             const request = await client.getRequestData(id);
             await client.updateStatus(id, requestStatus);
-            if (requestStatus === DENIED_STATUS && requestStatus !== request.status) {
+            if (status.denied && requestStatus !== request.status) {
                 await client.refundHours(request, req.user.id, ADMIN_DENY_TRANSACTION);
                 await client.removeCollisions(request.id);
             }

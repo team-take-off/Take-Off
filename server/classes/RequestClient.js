@@ -203,18 +203,10 @@ class RequestClient {
     // Select total available hours of given type (e.g. vacation or sick) for current employee
     async getTotalHours() {
         const userID = this.config.employee;
-        const leaveTypeID = this.config.type;
-        let hoursType = '';
-        if (leaveTypeID === 1) {
-            hoursType = 'vacation_hours';
-        } else if (leaveTypeID === 2) {
-            hoursType = 'sick_hours';
-        } else {
-            throw Error(`Error in RequestClient.js function selectTotalHours(). Invalid leaveTypeID (${leaveTypeID}) must be 1 or 2.`);
-        }
+        const typeHoursName = (new RequestType(this.config.type)).columnName;
 
         const selectText = `
-        SELECT ${hoursType} AS hours
+        SELECT ${typeHoursName} AS hours
         FROM employee
         WHERE id = $1;
         `;

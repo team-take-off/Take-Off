@@ -2,7 +2,6 @@
  - Unit testing
  - Integration testing
 Create Request class on server-side to mitigate object relational impedance mismatch
-Create class for RequestStatus
 Remove need for parsing functions in request router
 Create a class CompanyHolidays
 Create route GET /api/company-holidays
