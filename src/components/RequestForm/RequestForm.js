@@ -35,18 +35,18 @@ class RequestForm extends Component {
         };
         await this.props.dispatch(action);
 
-        const startHour = getStartHour(this.props.type.startDayType);
-        const endHour = getEndHour(this.props.type.endDayType);
-        const actionAdd = {
-            type: 'ADD_USER_REQUEST',
-            payload: {
-                typeID: this.props.typeid,
-                startDate: moment(this.props.type.startDate).set('hour', startHour),
-                endDate: moment(this.props.type.endDate).set('hour', endHour),
-                dryRun: true
-            }
-        };
-        await this.props.dispatch(actionAdd);
+        // const startHour = getStartHour(this.props.type.startDayType);
+        // const endHour = getEndHour(this.props.type.endDayType);
+        // const actionAdd = {
+        //     type: 'ADD_USER_REQUEST',
+        //     payload: {
+        //         typeID: this.props.typeid,
+        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
+        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
+        //         dryRun: true
+        //     }
+        // };
+        // await this.props.dispatch(actionAdd);
     }
 
     setEndDate = async (event) => {
@@ -56,18 +56,18 @@ class RequestForm extends Component {
         };
         await this.props.dispatch(action);
 
-        const startHour = getStartHour(this.props.type.startDayType);
-        const endHour = getEndHour(this.props.type.endDayType);
-        const actionAdd = {
-            type: 'ADD_USER_REQUEST',
-            payload: {
-                typeID: this.props.typeid,
-                startDate: moment(this.props.type.startDate).set('hour', startHour),
-                endDate: moment(this.props.type.endDate).set('hour', endHour),
-                dryRun: true
-            }
-        };
-        await this.props.dispatch(actionAdd);
+        // const startHour = getStartHour(this.props.type.startDayType);
+        // const endHour = getEndHour(this.props.type.endDayType);
+        // const actionAdd = {
+        //     type: 'ADD_USER_REQUEST',
+        //     payload: {
+        //         typeID: this.props.typeid,
+        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
+        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
+        //         dryRun: true
+        //     }
+        // };
+        // await this.props.dispatch(actionAdd);
     }
 
     setStartDayType = async (event) => {
@@ -86,18 +86,18 @@ class RequestForm extends Component {
             await this.props.dispatch(actionMatchStart);
         }
 
-        const startHour = getStartHour(this.props.type.startDayType);
-        const endHour = getEndHour(this.props.type.endDayType);
-        const actionAdd = {
-            type: 'ADD_USER_REQUEST',
-            payload: {
-                typeID: this.props.typeid,
-                startDate: moment(this.props.type.startDate).set('hour', startHour),
-                endDate: moment(this.props.type.endDate).set('hour', endHour),
-                dryRun: true
-            }
-        };
-        await this.props.dispatch(actionAdd);
+        // const startHour = getStartHour(this.props.type.startDayType);
+        // const endHour = getEndHour(this.props.type.endDayType);
+        // const actionAdd = {
+        //     type: 'ADD_USER_REQUEST',
+        //     payload: {
+        //         typeID: this.props.typeid,
+        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
+        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
+        //         dryRun: true
+        //     }
+        // };
+        // await this.props.dispatch(actionAdd);
     }
 
     setEndDayType = async (event) => {
@@ -107,18 +107,18 @@ class RequestForm extends Component {
         };
         await this.props.dispatch(action);
 
-        const startHour = getStartHour(this.props.type.startDayType);
-        const endHour = getEndHour(this.props.type.endDayType);
-        const actionAdd = {
-            type: 'ADD_USER_REQUEST',
-            payload: {
-                typeID: this.props.typeid,
-                startDate: moment(this.props.type.startDate).set('hour', startHour),
-                endDate: moment(this.props.type.endDate).set('hour', endHour),
-                dryRun: true
-            }
-        };
-        await this.props.dispatch(actionAdd);
+        // const startHour = getStartHour(this.props.type.startDayType);
+        // const endHour = getEndHour(this.props.type.endDayType);
+        // const actionAdd = {
+        //     type: 'ADD_USER_REQUEST',
+        //     payload: {
+        //         typeID: this.props.typeid,
+        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
+        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
+        //         dryRun: true
+        //     }
+        // };
+        // await this.props.dispatch(actionAdd);
     }
 
     submit = async (event) => {

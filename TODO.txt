@@ -1,7 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Create RequestUnit class
 Create Request class on server-side to mitigate object relational impedance mismatch
 Remove need for parsing functions in request router
 Remove dry-run option from POST /api/request to fix Heroku timeout error
