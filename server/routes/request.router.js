@@ -121,7 +121,6 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 
     const units = RequestUnit.findUnits(startDate, endDate);
     if (units.length === 0) {
-        res.send(returnSummary);
         res.sendStatus(201);
         return;
     }
