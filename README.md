@@ -49,10 +49,13 @@ SUCCESS_REDIRECT=http://localhost:3000/#/home
 FAIL_REDIRECT=http://localhost:3000/#/login
 ```
 
-## Unit testing
+## Automated Testing
 ```bash
-# To run the unit tests
-npm test
+# Run unit tests for client-side code
+npm run test
+
+# Run unit tests for server-side code
+npm run serverTest
 ```
 
 ## Description
@@ -111,9 +114,9 @@ On Submit Query, the request is sent to the admin for approval, and the user is 
 - [x] Requests are filter and sorted depending on user selections and page context to generally place the most relevant requests forward 
 - [x] Administrators can register new user accounts and edit the account data for existing users
 - [x] Calendar views display all active requests to help employees and administrators plan time off
+- [x] Detect collisions between requested dates and all other requested dates
 
 ### Future Features
-- [ ] Detect collisions between requested dates and all other requested dates
 - [ ] Add accrued employee vacation and sick time throughout the year with Node-cron tasks
 - [ ] Allow more flexible back and forth between employees and administrators such as an in-app way for employees the request retroactive changes to their requests 
 - [ ] Add employee images to their request cards from their Google accounts

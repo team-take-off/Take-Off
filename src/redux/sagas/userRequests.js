@@ -22,8 +22,7 @@ function* fetchUserRequests(action) {
 
 function* addUserRequest(action) {
     try {
-        const summary = yield axios.post('api/request/', action.payload);
-        yield put({ type: 'SET_DRYRUN_UNITS', payload: summary.data.requestUnits })
+        yield axios.post('api/request/', action.payload);
         yield put({ type: 'FETCH_USER_INFO' }); 
         yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_REQUESTS' });
