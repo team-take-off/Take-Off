@@ -7,9 +7,7 @@ const pool = require('../modules/pool');
 const router = express.Router();
 
 const RequestClient = require('../classes/RequestClient');
-
-const ADMINISTRATOR_ROLE = 1;
-const EMPLOYEE_ROLE = 2;
+const User = require('../classes/User');
 
 const PENDING_STATUS = 1;
 const APPROVED_STATUS = 2;
@@ -201,7 +199,8 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
-    const adminEdit = req.user.role_id === ADMINISTRATOR_ROLE && req.query.adminEdit;
+    const user = new User(req.user);
+    const adminEdit = user.isAdministrator() && req.query.adminEdit;
     let startDate = req.body.startDate;
     let endDate = req.body.endDate;
 
@@ -299,9 +298,8 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 // Removes a batch of requested days off belonging to one user (based on batch ID)
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const id = req.params.id;
-    const adminEdit = req.user.role_id === ADMINISTRATOR_ROLE && req.query.adminEdit;
-    const userID = req.user.id;
-    const userRole = req.user.role_id;
+    const user = new User(req.user);
+    const adminEdit = user.isAdministrator() && req.query.adminEdit;
 
     const client = new RequestClient(pool);
     (async () => {
@@ -309,14 +307,14 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const request = await client.getRequestData(id);
-            if (userRole === ADMINISTRATOR_ROLE) {
+            if (user.isAdministrator()) {
                 if (adminEdit) {
-                    await client.deleteRequest(request, userID, adminEdit, ADMIN_SPECIAL_TRANSACTION);
+                    await client.deleteRequest(request, user.getID(), adminEdit, ADMIN_SPECIAL_TRANSACTION);
                 } else {
-                    await client.deleteRequest(request, userID, adminEdit, ADMIN_DENY_TRANSACTION);
+                    await client.deleteRequest(request, user.getID(), adminEdit, ADMIN_DENY_TRANSACTION);
                 }
-            } else if (userID === request.employee && request.in_future) {
-                await client.deleteRequest(request, userID, adminEdit, EMPLOYEE_CANCEL_TRANSACTION);
+            } else if (user.getID() === request.employee && request.in_future) {
+                await client.deleteRequest(request, user.getID(), adminEdit, EMPLOYEE_CANCEL_TRANSACTION);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 
