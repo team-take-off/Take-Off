@@ -49,10 +49,13 @@ SUCCESS_REDIRECT=http://localhost:3000/#/home
 FAIL_REDIRECT=http://localhost:3000/#/login
 ```
 
-## Unit testing
+## Automated Testing
 ```bash
-# To run the unit tests
-npm test
+# Run unit tests for client-side code
+npm run test
+
+# Run unit tests for server-side code
+npm run serverTest
 ```
 
 ## Description
