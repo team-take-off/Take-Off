@@ -1,22 +1,15 @@
 const express = require('express');
 const moment = require('moment');
-const momentHoliday = require('moment-holiday');
 
 const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentication-middleware');
 const pool = require('../modules/pool');
 const router = express.Router();
 
+const CompanyHolidays = require('../classes/CompanyHolidays');
 const RequestClient = require('../classes/RequestClient');
 const RequestStatus = require('../classes/RequestStatus');
+const TransactionCodes = require('../constants/TransactionCodes');
 const User = require('../classes/User');
-
-const AUTOMATIC_ACCRUAL_TRANSACTION = 1;
-const AUTOMATIC_ADJUSTMENT_TRANSACTION = 2;
-const EMPLOYEE_REQUEST_TRANSACTION = 3;
-const EMPLOYEE_CANCEL_TRANSACTION = 4;
-const ADMIN_APPROVE_TRANSACTION = 5;
-const ADMIN_DENY_TRANSACTION = 6;
-const ADMIN_SPECIAL_TRANSACTION = 7;
 
 const parseIntOrNull = (num) => {
     const parsed = parseInt(num);
@@ -37,7 +30,7 @@ const getRequestsArray = (startDate, endDate) => {
     let requests = [];
     let currentDate = moment(startDate);
     while (currentDate.isBefore(endDate)) {
-        if (currentDate.day() === 0 || currentDate.day() === 6 || isCompanyHoliday(currentDate)) {
+        if (currentDate.day() === 0 || currentDate.day() === 6 || CompanyHolidays.isDayOff(currentDate)) {
             currentDate.add(1, 'days');
             continue;
         }
@@ -75,29 +68,6 @@ const getRequestsArray = (startDate, endDate) => {
         }
     }
     return requests;
-}
-
-const isCompanyHoliday = (currentDate) => {
-    const observedHolidays = [
-        'New Years Day',
-        'Martin Luther King Jr. Day',
-        'Washingtons Birthday',
-        'Memorial Day',
-        'Independence Day',
-        'Labor Day',
-        'Veterans Day',
-        'Thanksgiving Day',
-        'Christmas Eve',
-        'Christmas Day'
-    ];
-
-    // Note: Library moment-holiday incorrectly finds 'Day after Thanksgiving'
-    // for years where November 1st falls on Friday.
-    if (currentDate.month() === 10 && currentDate.day() === 5 && currentDate.date() >= 23 && currentDate.date() < 30) {
-        return true;
-    }
-
-    return currentDate.isHoliday(observedHolidays);
 }
 
 const getRequestUnits = (requestsArray) => {
@@ -273,7 +243,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             const request = await client.getRequestData(id);
             await client.updateStatus(id, requestStatus);
             if (status.denied && requestStatus !== request.status) {
-                await client.refundHours(request, req.user.id, ADMIN_DENY_TRANSACTION);
+                await client.refundHours(request, req.user.id, TransactionCodes.ADMIN_DENY);
                 await client.removeCollisions(request.id);
             }
             await client.commit();
@@ -307,12 +277,12 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
             const request = await client.getRequestData(id);
             if (user.isAdministrator()) {
                 if (adminEdit) {
-                    await client.deleteRequest(request, user.id, adminEdit, ADMIN_SPECIAL_TRANSACTION);
+                    await client.deleteRequest(request, user.id, adminEdit, TransactionCodes.ADMIN_SPECIAL);
                 } else {
-                    await client.deleteRequest(request, user.id, adminEdit, ADMIN_DENY_TRANSACTION);
+                    await client.deleteRequest(request, user.id, adminEdit, TransactionCodes.ADMIN_DENY);
                 }
             } else if (user.id === request.employee && request.in_future) {
-                await client.deleteRequest(request, user.id, adminEdit, EMPLOYEE_CANCEL_TRANSACTION);
+                await client.deleteRequest(request, user.id, adminEdit, TransactionCodes.EMPLOYEE_CANCEL);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 
