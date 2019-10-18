@@ -34,6 +34,18 @@ class Request {
         }
     }
 
+    formatStatus() {
+        if (this.status === 1) {
+            return '(Pending)';
+        } else if (this.status === 2) {
+            return '(Approved)';
+        } else if (this.status === 3) {
+            return '(Denied)';
+        } else {
+            return '[ Unknown Status ]';
+        }
+    }
+
     isPending() {
         return this.status.lookup === 1;
     }

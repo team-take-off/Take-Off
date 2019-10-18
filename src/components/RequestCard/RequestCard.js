@@ -8,6 +8,7 @@ import './RequestCard.css';
 import DateRange from '../../classes/DateRange';
 // import EditDialog from './EditDialog';
 import Request from '../../classes/Request';
+import RequestUnit from '../../classes/RequestUnit';
 
 class RequestCard extends Component {
 
@@ -66,11 +67,12 @@ class RequestCard extends Component {
                     <ul>
                         {collisions.map(
                             (collision, index) => {
-                                const firstName = collision.firstName;
-                                const lastName = collision.lastName;
-                                const dateRange = collision.startDate.format('LL') + ' — ' + collision.endDate.format('LL');
-                                const approved = collision.status === 'approved' ? '(Approved)' : '(Pending)';
-                                return (<li key={index}>{firstName} {lastName} - {dateRange} - {approved}</li>);
+                                const firstName = collision.employee.firstName;
+                                const lastName = collision.employee.lastName;
+                                const collisionUnits = [new RequestUnit(1, collision.startDate, true, false, false, false), new RequestUnit(1, collision.endDate, true, false, false, false)];
+                                const dateRange = new DateRange(collisionUnits);
+                                const status = collision.formatStatus();
+                                return (<li key={index}>{firstName} {lastName} - {dateRange.format('LL')} - {status}</li>);
                             }
                         )}
                     </ul>

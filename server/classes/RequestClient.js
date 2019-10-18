@@ -1,5 +1,6 @@
-const Request = require('../classes/Request');
-const RequestType = require('../classes/RequestType');
+const Collision = require('./Collision');
+const Request = require('./Request');
+const RequestType = require('./RequestType');
 
 const GRACE_PERIOD = 5;
 
@@ -94,11 +95,12 @@ class RequestClient {
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
-        const requests = await Request.loadQuery(rows);
+        const requests = Request.loadQuery(rows);
 
         for (let request of requests) {
             if (request.status !== 'denied') {
-                const collisions = await this.getCollisions(request.id);
+                const collisionRows = await this.getCollisions(request.id);
+                const collisions = Collision.loadQuery(collisionRows);
                 request.collisions = collisions;
             }
         }
@@ -114,6 +116,7 @@ class RequestClient {
             employee.last_name,
             leave_type.val AS type,
             request_status.val AS status,
+            time_off_request.request_status_id AS status_id,
             time_off_request.start_datetime AS start_date,
             time_off_request.end_datetime AS end_date,
             time_off_request.placed_datetime AS date_requested
@@ -131,6 +134,7 @@ class RequestClient {
             employee.last_name,
             leave_type.val AS type,
             request_status.val AS status,
+            time_off_request.request_status_id AS status_id,
             time_off_request.start_datetime AS start_date,
             time_off_request.end_datetime AS end_date,
             time_off_request.placed_datetime AS date_requested

@@ -3,7 +3,7 @@
  - Integration testing
 Remove need for parsing functions in request router
 Remove dry-run option from POST /api/request
-Daylight savings issue on Heroku and collisions data range formatting
+Daylight savings issue on Heroku and collisions date range formatting
 Clean up database schema, magic int flags, redundant columns, time_off_request to request, employee start date as timestamptz, 3rd normal form, FK indexing, etc
 Refactor DELETE /api/request
 Refactor PUT /api/request
