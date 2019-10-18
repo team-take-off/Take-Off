@@ -1,15 +1,15 @@
 class Employee {
-    constructor(id, active, role) {
+    constructor(id, firstName, lastName) {
         this.id = id;
-        this.active = active;
-        this.role = role;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     getJSON() {
         return {
             id: this.id,
-            active: this.active,
-            role: this.role.getJSON()
+            firstName: this.firstName,
+            lastName: this.lastName
         };
     }
 }

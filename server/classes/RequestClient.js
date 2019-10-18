@@ -1,3 +1,4 @@
+const Request = require('../classes/Request');
 const RequestType = require('../classes/RequestType');
 
 const GRACE_PERIOD = 5;
@@ -33,50 +34,6 @@ class RequestClient {
         this.client.release();
     }
 
-    // Sort an array of requests into an array of arrays (grouped by batch ID)
-    async sortIntoGroups(requestArray) {
-        const uniqueGroupIDs = [];
-        const groupArray = [];
-        for (let requestUnit of requestArray) {
-            const id = requestUnit.time_off_request_id;
-            const index = await uniqueGroupIDs.indexOf(id);
-            if (index < 0) {
-                await uniqueGroupIDs.push(id);
-                const unitObject = {
-                    id: requestUnit.request_unit_id,
-                    date: requestUnit.date,
-                    is_afternoon: requestUnit.is_afternoon,
-                    is_fullday: requestUnit.is_fullday,
-                    is_morning: requestUnit.is_morning
-                };
-                const requestObject = {
-                    id: id,
-                    employee_id: requestUnit.employee_id,
-                    first_name: requestUnit.first_name,
-                    last_name: requestUnit.last_name,
-                    type: requestUnit.type,
-                    status: requestUnit.status,
-                    start_date: requestUnit.start_date,
-                    end_date: requestUnit.end_date,
-                    date_requested: requestUnit.date_requested,
-                    request_units: [unitObject],
-                    collisions: []
-                };
-                await groupArray.push(requestObject);
-            } else {
-                const unitObject = {
-                    id: requestUnit.request_unit_id,
-                    date: requestUnit.date,
-                    is_afternoon: requestUnit.is_afternoon,
-                    is_fullday: requestUnit.is_fullday,
-                    is_morning: requestUnit.is_morning
-                };
-                await groupArray[index].request_units.push(unitObject);
-            }
-        }
-        return groupArray;
-    }
-
     // Returns an array of unique years for time-off requests
     async getYears() {
         const id = this.config.employee;
@@ -98,6 +55,8 @@ class RequestClient {
             time_off_request.id AS id,
             request_unit.id AS request_unit_id,
             DATE(request_unit.start_datetime) AS date,
+            request_unit.start_datetime AS unit_start_date,
+            request_unit.end_datetime AS unit_end_date,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
@@ -109,6 +68,7 @@ class RequestClient {
             employee.first_name,
             employee.last_name,
             leave_type.val AS type,
+            time_off_request.leave_type_id AS type_id,
             request_status.val AS status
         FROM employee 
         JOIN time_off_request ON employee.id = time_off_request.employee_id
@@ -133,7 +93,7 @@ class RequestClient {
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
-        const requests = await this.sortIntoGroups(rows);
+        const requests = await Request.loadQuery(rows);
 
         for (let request of requests) {
             if (request.status !== 'denied') {
@@ -196,7 +156,7 @@ class RequestClient {
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [id, year]);
-        const requests = await this.sortIntoGroups(rows);
+        const requests = await Request.loadQuery(rows);
         return requests;
     }
 

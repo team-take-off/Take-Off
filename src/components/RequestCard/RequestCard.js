@@ -18,8 +18,8 @@ class RequestCard extends Component {
     // Display the employee's name if possible
     renderName = () => {
         const request = this.props.request;
-        if (request.firstName && request.lastName) {
-            return `${request.firstName} ${request.lastName}`;
+        if (request.employee.firstName && request.employee.lastName) {
+            return `${request.employee.firstName} ${request.employee.lastName}`;
         } else {
             return '[Unknown Name]';
         }
@@ -47,20 +47,12 @@ class RequestCard extends Component {
                 blocks += ' ◩';
             } else if (unit.dayType.description === 'afternoon') {
                 blocks += ' ◪';
+            } else if (unit.dayType.description === 'blank') {
+                blocks += ' □';
             }
         }
 
-        if (request.type === 'Sick and Safe Leave') {
-            return (<span className="sick">{request.type}: {blocks}</span>);
-        } else if (request.type === 'Vacation') {
-            return (<span className="vacation">{request.type}: {blocks}</span>);
-        } else {
-            return (
-                <span>
-                    {request.type}
-                </span>
-            );
-        }
+        return (<span className={request.getSpanClass()}>{request.formatType()}: {blocks}</span>);
     }
 
     // Renders an unordered list of conflicts with this request. Only applies if

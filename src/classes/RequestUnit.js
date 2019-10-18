@@ -3,10 +3,10 @@ import moment from 'moment';
 import DayType from './DayType';
 
 class RequestUnit {
-    constructor(id, date, isFullDay, isMorning, isAfternoon) {
+    constructor(id, date, isFullDay, isMorning, isAfternoon, isBlank) {
         this.id = id;
         this.date = moment(date);
-        this.dayType = new DayType(isFullDay, isMorning, isAfternoon);
+        this.dayType = new DayType(isFullDay, isMorning, isAfternoon, isBlank);
     }
 
     static loadArray(array) {
@@ -17,11 +17,12 @@ class RequestUnit {
         return array.map(
             unitElement => {
                 return new RequestUnit(
-                    unitElement.request_unit_id,
+                    unitElement.id,
                     unitElement.date,
-                    unitElement.is_fullday,
-                    unitElement.is_morning,
-                    unitElement.is_afternoon
+                    unitElement.isFullday,
+                    unitElement.isMorning,
+                    unitElement.isAfternoon,
+                    unitElement.isBlank
                 );
             });
     }

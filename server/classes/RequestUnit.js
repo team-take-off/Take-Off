@@ -120,8 +120,7 @@ class RequestUnit {
     getJSON() {
         return {
             id: this.id,
-            startDate: startDate.format(),
-            endDate: endDate.format(),
+            date: this.startDate.format(),
             isFullday: this.isFullday,
             isAfternoon: this.isAfternoon,
             isMorning: this.isMorning,

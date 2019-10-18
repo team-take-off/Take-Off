@@ -3,11 +3,10 @@ EmployeeRole = require('../classes/EmployeeRole');
 
 describe('Employee constructor function', () => {
     test('Constructor running for simple input', () => {
-        const employee = new Employee(1, true, new EmployeeRole(EmployeeRole.code.EMPLOYEE));
+        const employee = new Employee(1, 'Ada', 'Lovelace');
 
         expect(employee.id).toBe(1);
-        expect(employee.active).toBe(true);
-        expect(employee.role.isEmployee()).toBe(true);
-        expect(employee.role.isAdministrator()).toBe(false);
+        expect(employee.firstName).toEqual('Ada');
+        expect(employee.lastName).toEqual('Lovelace');
     });
 });
