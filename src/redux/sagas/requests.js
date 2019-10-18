@@ -75,7 +75,7 @@ function* deleteRequest(action) {
         const requestID = action.payload;
         yield axios.delete(`api/request/${requestID}`, {
             params: {
-                adminEdit: true
+                specialEdit: true
             }
         });
         yield console.log('in deleteRequest()');

@@ -190,11 +190,19 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 });
 
 // Route DELETE /api/request/:id
-// Removes a batch of requested days off belonging to one user (based on batch ID)
+// Removes a time off request
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const id = req.params.id;
     const user = new User(req.user);
-    const adminEdit = user.isAdministrator() && req.query.adminEdit;
+    const specialEdit = req.query.specialEdit;
+    let transactionCode;
+    if (user.isAdministrator() && specialEdit) {
+        transactionCode = TransactionCodes.ADMIN_SPECIAL;
+    } else if (user.isAdministrator()) {
+        transactionCode = TransactionCodes.ADMIN_DENY;
+    } else {
+        transactionCode = TransactionCodes.EMPLOYEE_CANCEL;
+    }
 
     const client = new RequestClient(pool);
     (async () => {
@@ -202,14 +210,8 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const request = await client.getRequestData(id);
-            if (user.isAdministrator()) {
-                if (adminEdit) {
-                    await client.deleteRequest(request, user.id, adminEdit, TransactionCodes.ADMIN_SPECIAL);
-                } else {
-                    await client.deleteRequest(request, user.id, adminEdit, TransactionCodes.ADMIN_DENY);
-                }
-            } else if (user.id === request.employee && request.in_future) {
-                await client.deleteRequest(request, user.id, adminEdit, TransactionCodes.EMPLOYEE_CANCEL);
+            if (user.isAdministrator() || user.id === request.employee && request.in_future) {
+                await client.deleteRequest(request, user.id, transactionCode);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 

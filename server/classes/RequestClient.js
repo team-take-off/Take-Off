@@ -1,6 +1,7 @@
 const Collision = require('./Collision');
 const Request = require('./Request');
 const RequestType = require('./RequestType');
+const TransactionCodes = require('../constants/TransactionCodes');
 
 const GRACE_PERIOD = 5;
 
@@ -302,12 +303,24 @@ class RequestClient {
         await this.client.query(deleteText, [id]);
     }
 
+    // Deletes a time-off request
+    async deleteRequest(request, userID, transactionCode) {
+        const deleteRequest = `
+        DELETE FROM request
+        WHERE id = $1;
+        `;
+        await this.client.query(deleteRequest, [request.id]);
+        if (transactionCode !== TransactionCodes.ADMIN_SPECIAL) {
+            await this.refundHours(request, userID, transactionCode);
+        }
+    }
+
     // Refund the total number of off-hours found in a batch of requests
-    async refundHours(request, userID, transactionType) {
-        const typeHoursName = (new RequestType(request.type)).columnName;
+    async refundHours(request, userID, transactionCode) {
+        const hoursColumn = RequestType.columnName(request.type);
         const updateEmployee = `
         UPDATE employee
-        SET ${typeHoursName} = ${typeHoursName} + $1
+        SET ${hoursColumn} = ${hoursColumn} + $1
         WHERE id = $2
         `;
         await this.client.query(updateEmployee, [request.hours, request.employee]);
@@ -317,20 +330,7 @@ class RequestClient {
         VALUES
             ($1, $2, $3, $4, $5);
         `;
-        await this.client.query(logUpdate, [userID, request.employee, request.hours, request.type, transactionType]);
-    }
-
-    // Deletes a time-off request
-    async deleteRequest(request, userID, adminEdit, transactionType) {
-        const deleteRequest = `
-        DELETE FROM request
-        WHERE id = $1;
-        `;
-        await this.client.query(deleteRequest, [request.id]);
-
-        if (!adminEdit && (request.status === 1 || request.status === 2)) {
-            await this.refundHours(request, userID, transactionType);
-        }
+        await this.client.query(logUpdate, [userID, request.employee, request.hours, request.type, transactionCode]);
     }
 }
 
