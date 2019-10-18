@@ -182,10 +182,6 @@ class RequestClient {
 
     // Insert a new request and return the assigned id (i.e. the primary key)
     async insertRequest(startTime, endTime) {
-        if (this.config.dryRun) {
-            return;
-        }
-
         const employeeID = this.config.employee;
         const leaveTypeID = this.config.type;
         const statusID = this.config.status;
@@ -224,10 +220,6 @@ class RequestClient {
     // Insert a new requested day for time-off. Then update the employee's total
     // hours available.
     async insertRequestDay(unit, requestID) {
-        if (unit.isBlank || this.config.dryRun) {
-            return;
-        }
-
         const employeeID = this.config.employee;
         const typeHoursName = (new RequestType(this.config.type)).columnName;
 

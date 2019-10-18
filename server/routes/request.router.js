@@ -116,7 +116,6 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         employee: employee,
         type: parseIntOrNull(req.body.typeID),
         status: status,
-        dryRun: parseBoolOrNull(req.body.dryRun)
     };
 
     const units = RequestUnit.findUnits(startDate, endDate);

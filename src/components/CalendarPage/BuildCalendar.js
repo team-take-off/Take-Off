@@ -36,7 +36,7 @@ class BuildAdminCalendar extends Component {
         const lastUnit = request.units[request.units.length - 1];
 
         const calendarEvent = {
-            title: `${request.firstName}: ${request.type}`,
+            title: `${request.employee.firstName}: ${request.formatType()}`,
             start: moment(startUnit.date),
             end: moment(lastUnit.date).add(1, 'day')
         };
