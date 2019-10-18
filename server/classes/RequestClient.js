@@ -1,5 +1,6 @@
 const Collision = require('./Collision');
 const Request = require('./Request');
+const RequestStatus = require('./RequestStatus');
 const RequestType = require('./RequestType');
 const TransactionCodes = require('../constants/TransactionCodes');
 
@@ -266,7 +267,7 @@ class RequestClient {
             status_id,
             leave_type_id,
             SUM(EXTRACT(HOURS FROM request_unit.end_datetime - request_unit.start_datetime)) AS hours,
-            request.end_datetime <= (CURRENT_DATE + integer '${GRACE_PERIOD}') AS in_future
+            request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}') AS in_future
         FROM request
         JOIN request_unit ON request.id = request_unit.request_id
         WHERE request.id = $1
@@ -279,19 +280,21 @@ class RequestClient {
             employee: rows[0].employee_id,
             status: rows[0].status_id,
             type: rows[0].leave_type_id,
-            hours: rows[0].hours
+            hours: rows[0].hours,
+            in_future: rows[0].in_future
         };
     };
 
     // Changes the status (PENDING, APPROVED, DENIED) of a time-off request
     async updateStatus(id, status) {
-        const active = (status === 1 || status === 2);
+        const status_id = status.lookup;
+        const active = status_id !== RequestStatus.code.DENIED;
         const updateText = `
         UPDATE request
         SET status_id = $1, active = $2
         WHERE id = $3;
         `;
-        await this.client.query(updateText, [status, active, id]);
+        await this.client.query(updateText, [status_id, active, id]);
     }
 
     // Delete all entries in collisions table with a given request ID
@@ -304,19 +307,19 @@ class RequestClient {
     }
 
     // Deletes a time-off request
-    async deleteRequest(request, userID, transactionCode) {
+    async deleteRequest(request, user, transactionCode) {
         const deleteRequest = `
         DELETE FROM request
         WHERE id = $1;
         `;
         await this.client.query(deleteRequest, [request.id]);
-        if (transactionCode !== TransactionCodes.ADMIN_SPECIAL) {
-            await this.refundHours(request, userID, transactionCode);
+        if (!request.denied && transactionCode !== TransactionCodes.ADMIN_SPECIAL) {
+            await this.refundHours(request, user, transactionCode);
         }
     }
 
     // Refund the total number of off-hours found in a batch of requests
-    async refundHours(request, userID, transactionCode) {
+    async refundHours(request, user, transactionCode) {
         const hoursColumn = RequestType.columnName(request.type);
         const updateEmployee = `
         UPDATE employee
@@ -330,7 +333,7 @@ class RequestClient {
         VALUES
             ($1, $2, $3, $4, $5);
         `;
-        await this.client.query(logUpdate, [userID, request.employee, request.hours, request.type, transactionCode]);
+        await this.client.query(logUpdate, [user.id, request.employee, request.hours, request.type, transactionCode]);
     }
 }
 

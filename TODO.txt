@@ -1,7 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Refactor PUT /api/request
 Refactor POST /api/request
 Fix bug where deleting a from request history on AdminEditRequestsPage requires refresh 
 Use query parameters for route GET /api/request to filter requests by year, employee_id, status, etc

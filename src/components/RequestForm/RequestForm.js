@@ -34,19 +34,6 @@ class RequestForm extends Component {
             payload: event.target.value
         };
         await this.props.dispatch(action);
-
-        // const startHour = getStartHour(this.props.type.startDayType);
-        // const endHour = getEndHour(this.props.type.endDayType);
-        // const actionAdd = {
-        //     type: 'ADD_USER_REQUEST',
-        //     payload: {
-        //         typeID: this.props.typeid,
-        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
-        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
-        //         dryRun: true
-        //     }
-        // };
-        // await this.props.dispatch(actionAdd);
     }
 
     setEndDate = async (event) => {
@@ -55,19 +42,6 @@ class RequestForm extends Component {
             payload: event.target.value
         };
         await this.props.dispatch(action);
-
-        // const startHour = getStartHour(this.props.type.startDayType);
-        // const endHour = getEndHour(this.props.type.endDayType);
-        // const actionAdd = {
-        //     type: 'ADD_USER_REQUEST',
-        //     payload: {
-        //         typeID: this.props.typeid,
-        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
-        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
-        //         dryRun: true
-        //     }
-        // };
-        // await this.props.dispatch(actionAdd);
     }
 
     setStartDayType = async (event) => {
@@ -85,19 +59,6 @@ class RequestForm extends Component {
             };
             await this.props.dispatch(actionMatchStart);
         }
-
-        // const startHour = getStartHour(this.props.type.startDayType);
-        // const endHour = getEndHour(this.props.type.endDayType);
-        // const actionAdd = {
-        //     type: 'ADD_USER_REQUEST',
-        //     payload: {
-        //         typeID: this.props.typeid,
-        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
-        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
-        //         dryRun: true
-        //     }
-        // };
-        // await this.props.dispatch(actionAdd);
     }
 
     setEndDayType = async (event) => {
@@ -106,19 +67,6 @@ class RequestForm extends Component {
             payload: event.target.value
         };
         await this.props.dispatch(action);
-
-        // const startHour = getStartHour(this.props.type.startDayType);
-        // const endHour = getEndHour(this.props.type.endDayType);
-        // const actionAdd = {
-        //     type: 'ADD_USER_REQUEST',
-        //     payload: {
-        //         typeID: this.props.typeid,
-        //         startDate: moment(this.props.type.startDate).set('hour', startHour),
-        //         endDate: moment(this.props.type.endDate).set('hour', endHour),
-        //         dryRun: true
-        //     }
-        // };
-        // await this.props.dispatch(actionAdd);
     }
 
     submit = async (event) => {
@@ -130,11 +78,6 @@ class RequestForm extends Component {
 
         const startMoment = moment(`${startDate} ${startHour} +0000`, 'YYYY-MM-DD HH Z').utc();
         const endMoment = moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z').utc();
-
-        console.log('+++++++');
-        console.log(startMoment.format());
-        console.log(endMoment.format());
-        console.log('+++++++');
 
         const action = {
             type: 'ADD_USER_REQUEST',
@@ -167,7 +110,7 @@ class RequestForm extends Component {
                         onChange={this.setStartDate}
                         name="start_date" 
                         type="date" 
-                        min={moment().subtract(7, 'days').format('YYYY-MM-DD')} 
+                        min={moment().subtract(5, 'days').format('YYYY-MM-DD')} 
                         value={this.props.type.startDate}
                     />
                     <select onChange={this.setStartDayType} value={this.props.type.startDayType}>

@@ -156,11 +156,11 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 });
 
 // Route PUT /api/request/:id
-// Update the value of approved for a batch of requested days off
+// Update the status (pending, approved, denied) for a request
 router.put('/:id', rejectNonAdmin, (req, res) => {
     const id = req.params.id;
-    const requestStatus = req.body.requestStatus;
-    const status = new RequestStatus(req.body.requestStatus);
+    const user = new User(req.user);
+    const newStatus = new RequestStatus(req.body.requestStatus);
 
     const client = new RequestClient(pool);
     (async () => {
@@ -168,9 +168,10 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
         try {
             await client.begin();
             const request = await client.getRequestData(id);
-            await client.updateStatus(id, requestStatus);
-            if (status.denied && requestStatus !== request.status) {
-                await client.refundHours(request, req.user.id, TransactionCodes.ADMIN_DENY);
+            const currentStatus = request.status;
+            await client.updateStatus(id, newStatus);
+            if (newStatus.denied && newStatus.lookup !== currentStatus) {
+                await client.refundHours(request, user, TransactionCodes.ADMIN_DENY);
                 await client.removeCollisions(request.id);
             }
             await client.commit();
@@ -210,8 +211,8 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
         try {
             await client.begin();
             const request = await client.getRequestData(id);
-            if (user.isAdministrator() || user.id === request.employee && request.in_future) {
-                await client.deleteRequest(request, user.id, transactionCode);
+            if (user.isAdministrator() || (user.id === request.employee && request.in_future)) {
+                await client.deleteRequest(request, user, transactionCode);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 
