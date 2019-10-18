@@ -48,6 +48,9 @@ class RequestUnit {
             this.startDate = moment(start);
             this.endDate = moment(end);
 
+            console.log('startDate: ', this.startDate.format());
+            console.log('startDate.hour(): ', this.startDate.hour());
+
             if (this.startDate.hour() === hour.START_DAY && this.endDate.hour() === hour.END_DAY) {
                 this.isFullday = true;
                 this.isBlank = false;
