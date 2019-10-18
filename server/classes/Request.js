@@ -25,7 +25,7 @@ class Request {
         const groupArray = [];
 
         for (let row of rows) {
-            const id = row.time_off_request_id;
+            const id = row.id;
             const index = uniqueGroupIDs.indexOf(id);
             if (index < 0) {
                 uniqueGroupIDs.push(id);

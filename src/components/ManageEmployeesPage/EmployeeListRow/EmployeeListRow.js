@@ -120,11 +120,12 @@ class EmployeeListRow extends Component {
     // Show this component on the DOM
     render() {
         const employee = this.props.employee;
+        const employeeStartMoment = moment(employee.start_date, 'YYYY-MM-DD').utc();
         return (
             <tr className={employee.is_active ? "employee-row" : "employee-row deactivated-row"}>
                 <td>{employee.first_name} {employee.last_name}</td>
                 <td>{employee.email}</td>
-                <td>{moment(employee.start_date).format('MMM DD, YYYY')}</td>
+                <td>{employeeStartMoment.format('MMM DD, YYYY')}</td>
                 <td>
                     {this.displayHoursAsDays(employee.vacation_hours)}
                     {/* <button onClick={this.addVacation} className="add-days">+</button>

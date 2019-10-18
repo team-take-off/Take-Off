@@ -40,9 +40,9 @@ class RequestClient {
         const id = this.config.employee;
         const selectText = `
         SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS year_part
-        FROM time_off_request
-        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
-            WHERE $1::numeric IS NULL OR time_off_request.employee_id = $1;
+        FROM request
+        JOIN request_unit ON request.id = request_unit.request_id
+            WHERE $1::numeric IS NULL OR request.employee_id = $1;
         `;
         const { rows } = await this.client.query(selectText, [id]);
         const yearArray = await rows.map(row => row.year_part);
@@ -53,30 +53,29 @@ class RequestClient {
     async composeJoinRequest(whereClause) {
         const joinText = `
         SELECT
-            time_off_request.id AS id,
-            request_unit.id AS request_unit_id,
+            request.id AS id,
             DATE(request_unit.start_datetime) AS date,
             request_unit.start_datetime AS unit_start_date,
             request_unit.end_datetime AS unit_end_date,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
             EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
-            request_unit.time_off_request_id,
-            time_off_request.start_datetime AS start_date,
-            time_off_request.end_datetime AS end_date,
-            time_off_request.placed_datetime AS date_requested,
+            request_unit.request_id,
+            request.start_datetime AS start_date,
+            request.end_datetime AS end_date,
+            request.placed_datetime AS date_requested,
             employee.id AS employee_id,
             employee.first_name,
             employee.last_name,
             leave_type.val AS type,
-            time_off_request.leave_type_id AS type_id,
+            request.leave_type_id AS type_id,
             request_status.val AS status,
-            time_off_request.request_status_id AS status_id
+            request.status_id
         FROM employee 
-        JOIN time_off_request ON employee.id = time_off_request.employee_id
-        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
-        JOIN request_status ON request_status.id = time_off_request.request_status_id
-        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
+        JOIN request ON employee.id = request.employee_id
+        JOIN leave_type ON leave_type.id = request.leave_type_id
+        JOIN request_status ON request_status.id = request.status_id
+        JOIN request_unit ON request.id = request_unit.request_id
         ${whereClause}
         ORDER BY date_requested;
         `;
@@ -89,9 +88,9 @@ class RequestClient {
         const year = this.config.year;
         const whereClause = `
         WHERE request_status.id = $1
-        AND ($2::numeric IS NULL OR time_off_request.employee_id = $2)
+        AND ($2::numeric IS NULL OR request.employee_id = $2)
         AND ($3::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $3)
-        AND time_off_request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        AND request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [status, id, year]);
@@ -110,40 +109,40 @@ class RequestClient {
     async getCollisions(unit_id) {
         const selectCollisions = `
         SELECT
-            time_off_request.id AS id,
+            request.id AS id,
             employee.id AS employee_id,
             employee.first_name,
             employee.last_name,
             leave_type.val AS type,
             request_status.val AS status,
-            time_off_request.request_status_id AS status_id,
-            time_off_request.start_datetime AS start_date,
-            time_off_request.end_datetime AS end_date,
-            time_off_request.placed_datetime AS date_requested
+            request.status_id,
+            request.start_datetime AS start_date,
+            request.end_datetime AS end_date,
+            request.placed_datetime AS date_requested
         FROM employee 
-        JOIN time_off_request ON employee.id = time_off_request.employee_id
-        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
-        JOIN request_status ON request_status.id = time_off_request.request_status_id
-        JOIN collision ON collision.request_1 = time_off_request.id
-        WHERE collision.request_2 = $1 AND request_status.active = 1
+        JOIN request ON employee.id = request.employee_id
+        JOIN leave_type ON leave_type.id = request.leave_type_id
+        JOIN request_status ON request_status.id = request.status_id
+        JOIN collision ON collision.request_1 = request.id
+        WHERE collision.request_2 = $1 AND request.active
         UNION
         SELECT
-            time_off_request.id AS id,
+            request.id AS id,
             employee.id AS employee_id,
             employee.first_name,
             employee.last_name,
             leave_type.val AS type,
             request_status.val AS status,
-            time_off_request.request_status_id AS status_id,
-            time_off_request.start_datetime AS start_date,
-            time_off_request.end_datetime AS end_date,
-            time_off_request.placed_datetime AS date_requested
+            request.status_id,
+            request.start_datetime AS start_date,
+            request.end_datetime AS end_date,
+            request.placed_datetime AS date_requested
         FROM employee 
-        JOIN time_off_request ON employee.id = time_off_request.employee_id
-        JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
-        JOIN request_status ON request_status.id = time_off_request.request_status_id
-        JOIN collision ON collision.request_2 = time_off_request.id
-        WHERE collision.request_1 = $1 AND request_status.active = 1
+        JOIN request ON employee.id = request.employee_id
+        JOIN leave_type ON leave_type.id = request.leave_type_id
+        JOIN request_status ON request_status.id = request.status_id
+        JOIN collision ON collision.request_2 = request.id
+        WHERE collision.request_1 = $1 AND request.active
         ORDER BY date_requested;
         `;
         const { rows } = await this.client.query(selectCollisions, [unit_id]);
@@ -155,9 +154,9 @@ class RequestClient {
         const id = this.config.employee;
         const year = this.config.year;
         const whereClause = `
-        WHERE ($1::numeric IS NULL OR time_off_request.employee_id = $1)
+        WHERE ($1::numeric IS NULL OR request.employee_id = $1)
         AND ($2::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $2)
-        AND time_off_request.end_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')
+        AND request.end_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')
         `;
         const selectText = await this.composeJoinRequest(whereClause);
         const { rows } = await this.client.query(selectText, [id, year]);
@@ -185,14 +184,11 @@ class RequestClient {
         const employeeID = this.config.employee;
         const leaveTypeID = this.config.type;
         const statusID = this.config.status;
-        let active = 1;
-        if (statusID === 3) {
-            active = 0;
-        }
+        const active = (statusID === 1 || statusID === 2);
 
         const insertText = `
-        INSERT INTO time_off_request
-        (employee_id, leave_type_id, request_status_id, active, start_datetime, end_datetime)
+        INSERT INTO request
+        (employee_id, leave_type_id, status_id, active, start_datetime, end_datetime)
         VALUES
         ($1, $2, $3, $4, $5, $6)
         RETURNING id;
@@ -204,7 +200,7 @@ class RequestClient {
         INSERT INTO collision
         (request_1, request_2)
             SELECT id AS request_1, $1 AS request_2
-            FROM time_off_request
+            FROM request
             WHERE id != $1
             AND (
                 start_datetime <= $2 AND end_datetime >= $2
@@ -226,9 +222,9 @@ class RequestClient {
         const selectConflicting = `
         SELECT request_unit.id
         FROM request_unit
-        JOIN time_off_request ON request_unit.time_off_request_id = time_off_request.id
-        WHERE time_off_request.employee_id = $1
-        AND active = 1 
+        JOIN request ON request_unit.request_id = request.id
+        WHERE request.employee_id = $1
+        AND active
         AND (
             request_unit.start_datetime <= $2 AND request_unit.end_datetime >= $2
             OR request_unit.start_datetime <= $3 AND request_unit.end_datetime >= $3
@@ -243,7 +239,7 @@ class RequestClient {
 
         const insertUnitText = `
         INSERT INTO request_unit
-        (time_off_request_id, start_datetime, end_datetime)
+        (request_id, start_datetime, end_datetime)
         VALUES
         ($1, $2, $3)
         RETURNING id;
@@ -264,23 +260,23 @@ class RequestClient {
     async getRequestData(id) {
         const selectText = `
         SELECT 
-            time_off_request.id,
+            request.id,
             employee_id, 
-            request_status_id,
+            status_id,
             leave_type_id,
             SUM(EXTRACT(HOURS FROM request_unit.end_datetime - request_unit.start_datetime)) AS hours,
-            time_off_request.end_datetime <= (CURRENT_DATE + integer '${GRACE_PERIOD}') AS in_future
-        FROM time_off_request
-        JOIN request_unit ON time_off_request.id = request_unit.time_off_request_id
-        WHERE time_off_request.id = $1
-        GROUP BY time_off_request.id
+            request.end_datetime <= (CURRENT_DATE + integer '${GRACE_PERIOD}') AS in_future
+        FROM request
+        JOIN request_unit ON request.id = request_unit.request_id
+        WHERE request.id = $1
+        GROUP BY request.id
         LIMIT 1;
         `;
         const { rows } = await this.client.query(selectText, [id]);
         return {
             id: rows[0].id,
             employee: rows[0].employee_id,
-            status: rows[0].request_status_id,
+            status: rows[0].status_id,
             type: rows[0].leave_type_id,
             hours: rows[0].hours
         };
@@ -288,13 +284,13 @@ class RequestClient {
 
     // Changes the status (PENDING, APPROVED, DENIED) of a time-off request
     async updateStatus(id, status) {
+        const active = (status === 1 || status === 2);
         const updateText = `
-        UPDATE time_off_request
-        SET request_status_id = $1
-        , active = (SELECT active FROM request_status WHERE id = $1)
-        WHERE id = $2;
+        UPDATE request
+        SET status_id = $1, active = $2
+        WHERE id = $3;
         `;
-        await this.client.query(updateText, [status, id]);
+        await this.client.query(updateText, [status, active, id]);
     }
 
     // Delete all entries in collisions table with a given request ID
@@ -327,7 +323,7 @@ class RequestClient {
     // Deletes a time-off request
     async deleteRequest(request, userID, adminEdit, transactionType) {
         const deleteRequest = `
-        DELETE FROM time_off_request
+        DELETE FROM request
         WHERE id = $1;
         `;
         await this.client.query(deleteRequest, [request.id]);

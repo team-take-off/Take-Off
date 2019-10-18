@@ -1,8 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Daylight savings issue on Heroku
-Clean up database schema, magic int flags, redundant columns, time_off_request to request, employee start date as timestamptz, 3rd normal form, FK indexing, etc
 Refactor DELETE /api/request
 Refactor PUT /api/request
 Refactor POST /api/request
