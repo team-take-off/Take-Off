@@ -203,13 +203,15 @@ class AdminEditRequestsPage extends Component {
             const startHour = getStartHour(this.state.startDayType);
             const endDate = this.state.endDate;
             const endHour = getEndHour(this.state.endDayType);
+            const startMoment = moment(`${startDate} ${startHour} +0000`, 'YYYY-MM-DD HH Z').utc();
+            const endMoment = moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z').utc();
             const action = {
                 type: 'ADD_REQUEST',
                 payload: {
                     employee: this.state.id,
                     typeID: this.state.leaveType,
-                    startDate: moment(`${startDate} ${startHour} +0000`, 'YYYY-MM-DD HH Z'),
-                    endDate: moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z'),
+                    startDate: startMoment.format(),
+                    endDate: endMoment.format(),
                     status: this.state.status
                 }
             };
@@ -246,9 +248,9 @@ class AdminEditRequestsPage extends Component {
                         <tbody>
                             {this.state.requests.map(request =>
                                 <tr key={request.id} className="request-row">
-                                    <td>{request.type === 'Vacation' ? 'Vacation' : 'Sick & Safe'}</td>
+                                    <td>{request.formatType()}</td>
                                     <td>{(new DateRange(request.units)).format('LL')}</td>
-                                    <td>{request.status}</td>
+                                    <td>{request.formatStatus()}</td>
                                     <td>
                                         <IconButton onClick={this.deleteRequest.bind(this, request.id)} aria-label="Delete">
                                             <DeleteIcon />

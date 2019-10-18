@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
+import moment from 'moment';
 
 class AdminAddEmployeePage extends Component {
 
@@ -22,9 +23,15 @@ class AdminAddEmployeePage extends Component {
 
     submit = (event) => {
         event.preventDefault();
+
+        const startDate = this.state.start_date;
+        const startMoment = moment(`${startDate} +0000`, 'YYYY-MM-DD Z').utc();
         const action = {
             type: 'ADD_EMPLOYEE',
-            payload: this.state
+            payload: {
+                ...this.state,
+                start_date: startMoment.format()
+            }
         };
         this.props.dispatch(action);
         this.props.history.push('/admin/manage_employees');

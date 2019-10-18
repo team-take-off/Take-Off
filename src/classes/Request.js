@@ -35,11 +35,11 @@ class Request {
     }
 
     formatStatus() {
-        if (this.status === 1) {
+        if (this.status === 1 || this.status.lookup === 1) {
             return '(Pending)';
-        } else if (this.status === 2) {
+        } else if (this.status === 2 || this.status.lookup === 2) {
             return '(Approved)';
-        } else if (this.status === 3) {
+        } else if (this.status === 3 || this.status.lookup === 3) {
             return '(Denied)';
         } else {
             return '[ Unknown Status ]';
