@@ -199,15 +199,17 @@ class AdminEditRequestsPage extends Component {
     submit = (event) => {
         event.preventDefault();
         if (this.readyToSubmit()) {
+            const startDate = this.state.startDate;
             const startHour = getStartHour(this.state.startDayType);
+            const endDate = this.state.endDate;
             const endHour = getEndHour(this.state.endDayType);
             const action = {
                 type: 'ADD_REQUEST',
                 payload: {
                     employee: this.state.id,
                     typeID: this.state.leaveType,
-                    startDate: moment(this.state.startDate).set('hour', startHour),
-                    endDate: moment(this.state.endDate).set('hour', endHour),
+                    startDate: moment(`${startDate} ${startHour} +0000`, 'YYYY-MM-DD HH Z'),
+                    endDate: moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z'),
                     status: this.state.status
                 }
             };

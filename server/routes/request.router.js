@@ -119,10 +119,10 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         status: status,
     };
 
-    console.log('startDate: ', moment(startDate).format());
-    console.log('  endDate: ', moment(endDate).format());
+    const startMoment = moment(startDate, 'YYYY-MM-DDTHH:mm:ssZ').utc();
+    const endMoment = moment(endDate, 'YYYY-MM-DDTHH:mm:ssZ').utc();
 
-    const units = RequestUnit.findUnits(startDate, endDate);
+    const units = RequestUnit.findUnits(startMoment, endMoment);
     if (units.length === 0) {
         res.sendStatus(201);
         return;

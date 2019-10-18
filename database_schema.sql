@@ -79,11 +79,11 @@ CREATE TABLE time_off_request (
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
 	, request_status_id INTEGER NOT NULL REFERENCES request_status(id)
 	, active INT NOT NULL DEFAULT 1
-	, start_datetime TIMESTAMPTZ NOT NULL
-	, end_datetime TIMESTAMPTZ NOT NULL
-	, placed_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	, start_datetime TIMESTAMP NOT NULL
+	, end_datetime TIMESTAMP NOT NULL
+	, placed_datetime TIMESTAMP NOT NULL DEFAULT NOW()
 	, CONSTRAINT end_after_start CHECK(end_datetime >= start_datetime)
-	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&, int4range(0, active, '()') WITH &&)
+	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tsrange(start_datetime, end_datetime) WITH &&, int4range(0, active, '()') WITH &&)
 	, CONSTRAINT denied_status_implies_not_active CHECK((request_status_id != 3 AND active = 1) OR (request_status_id = 3 AND active = 0))
 );
 
@@ -91,10 +91,10 @@ CREATE TABLE time_off_request (
 CREATE TABLE request_unit (
 	id SERIAL PRIMARY KEY
 	, time_off_request_id INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE
-	, start_datetime TIMESTAMPTZ NOT NULL
-	, end_datetime TIMESTAMPTZ NOT NULL
+	, start_datetime TIMESTAMP NOT NULL
+	, end_datetime TIMESTAMP NOT NULL
 	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
-	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
+	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tsrange(start_datetime, end_datetime) WITH &&)
 );
 
 -- Overlap between different employees' requests
@@ -112,5 +112,5 @@ CREATE TABLE transaction_log (
 	, leave_hours INTEGER NOT NULL
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
 	, transaction_type_id INTEGER NOT NULL REFERENCES transaction_type(id)
-	, transaction_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	, transaction_datetime TIMESTAMP NOT NULL DEFAULT NOW()
 );

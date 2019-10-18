@@ -123,15 +123,25 @@ class RequestForm extends Component {
 
     submit = async (event) => {
         event.preventDefault();
+        const startDate = this.props.type.startDate;
         const startHour = getStartHour(this.props.type.startDayType);
+        const endDate = this.props.type.endDate;
         const endHour = getEndHour(this.props.type.endDayType);
+
+        const startMoment = moment(`${startDate} ${startHour} +0000`, 'YYYY-MM-DD HH Z').utc();
+        const endMoment = moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z').utc();
+
+        console.log('+++++++');
+        console.log(startMoment.format());
+        console.log(endMoment.format());
+        console.log('+++++++');
+
         const action = {
             type: 'ADD_USER_REQUEST',
             payload: {
                 typeID: this.props.typeid,
-                startDate: moment(this.props.type.startDate).set('hour', startHour),
-                endDate: moment(this.props.type.endDate).set('hour', endHour),
-                dryRun: false
+                startDate: startMoment.format(),
+                endDate: endMoment.format(),
             }
         };
         await this.props.dispatch(action);
