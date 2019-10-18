@@ -34,6 +34,18 @@ class Request {
         }
     }
 
+    isPending() {
+        return this.status.lookup === 1;
+    }
+
+    isApproved() {
+        return this.status.lookup === 2;
+    }
+
+    isDenied() {
+        return this.status.lookup === 3;
+    }
+
     static loadArray(array) {
         if (array === undefined) {
             return [];

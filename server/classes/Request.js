@@ -31,7 +31,7 @@ class Request {
                 await uniqueGroupIDs.push(id);
                 const unit = new RequestUnit(row.request_unit_id, row.unit_start_date, row.unit_end_date);
                 const employee = new Employee(row.employee_id, row.first_name, row.last_name);
-                const request = new Request(id, employee, row.type_id, row.status, row.start_date, row.end_date);
+                const request = new Request(id, employee, row.type_id, row.status_id, row.start_date, row.end_date);
                 request.addUnit(unit);
                 await groupArray.push(request);
             } else {

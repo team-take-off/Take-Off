@@ -69,7 +69,8 @@ class RequestClient {
             employee.last_name,
             leave_type.val AS type,
             time_off_request.leave_type_id AS type_id,
-            request_status.val AS status
+            request_status.val AS status,
+            time_off_request.request_status_id AS status_id
         FROM employee 
         JOIN time_off_request ON employee.id = time_off_request.employee_id
         JOIN leave_type ON leave_type.id = time_off_request.leave_type_id
