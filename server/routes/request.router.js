@@ -108,7 +108,7 @@ router.get('/year-available', rejectUnauthenticated, (req, res) => {
         await client.connect();
         try {
             await client.begin();
-            const years = await client.getYearsFilter(employee, leave, status);
+            const years = await client.getYears(employee, leave, status);
             await client.commit();
             res.send(years);
         } catch (error) {
@@ -122,6 +122,36 @@ router.get('/year-available', rejectUnauthenticated, (req, res) => {
     })().catch((error) => {
         console.error(error.stack);
         console.log('SQL error using GET /api/request/year-available');
+    });
+});
+
+// Route GET /api/request/count
+// Returns number of requests that satisfy the optional filters
+router.get('/count', rejectUnauthenticated, (req, res) => {
+    const employee = req.query.employee;
+    const year = req.query.year;
+    const leave = req.query.leave;
+    const status = req.query.status;
+
+    const client = new RequestClient(pool);
+    (async () => {
+        await client.connect();
+        try {
+            await client.begin();
+            const count = await client.getCount(employee, year, leave, status);
+            await client.commit();
+            res.send({ count });
+        } catch (error) {
+            await client.rollback();
+            await console.log(error);
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using GET /api/request/count');
     });
 });
 

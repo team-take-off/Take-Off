@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const Collision = require('./Collision');
 const Request = require('./Request');
 const RequestStatus = require('./RequestStatus');
@@ -5,6 +7,8 @@ const RequestType = require('./RequestType');
 const TransactionCodes = require('../constants/TransactionCodes');
 
 const GRACE_PERIOD = 5;
+
+const MOMENT_DB_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
 class RequestClient {
     constructor(pool, config) {
@@ -37,23 +41,9 @@ class RequestClient {
         this.client.release();
     }
 
-    // Returns an array of unique years for time-off requests
-    async getYears() {
-        const id = this.config.employee;
-        const selectText = `
-        SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS year_part
-        FROM request
-        JOIN request_unit ON request.id = request_unit.request_id
-            WHERE $1::numeric IS NULL OR request.employee_id = $1;
-        `;
-        const { rows } = await this.client.query(selectText, [id]);
-        const yearArray = await rows.map(row => row.year_part);
-        return yearArray;
-    }
-
     // Returns an array of unique years for time-off requests that meet optional
     // filter criteria
-    async getYearsFilter(employee, leave, status) {        
+    async getYears(employee, leave, status) {        
         const selectText = `
         SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS extract_year
         FROM request
@@ -65,6 +55,46 @@ class RequestClient {
         `;
         const { rows } = await this.client.query(selectText, [employee, leave, status]);
         return rows.map(row => row.extract_year);
+    }
+
+    // Returns the number of time-off requests that satisfy all of the optional 
+    // filter criteria
+    async getCount(employee, year, leave, status) {
+        const startDate = RequestClient.getFilterStartDate(year);
+        const endDate = RequestClient.getFilterEndDate(year);
+
+        const selectText = `
+        SELECT COUNT(id) AS count
+        FROM request
+            WHERE ($1::numeric IS NULL OR employee_id = $1)
+            AND ($2::numeric IS NULL OR leave_type_id = $2)
+            AND ($3::numeric IS NULL OR status_id = $3)
+            AND (start_datetime <= $5 AND end_datetime >= $4);
+        `;
+        const { rows } = await this.client.query(selectText, [employee, leave, status, startDate, endDate]);
+        return rows[0].count;
+    }
+
+    // Filter range defaults to +/- one year from current year. If a year is 
+    // provided it filters from the start of that year to the end.
+    static getFilterStartDate(year) {
+        if (year) {
+            return moment(year, 'YYYY').startOf('year');
+        } else {
+            const currentYear = moment().year();
+            return moment(currentYear, 'YYYY').subtract(1, 'years').startOf('year');
+        }
+    }
+
+    // Filter range defaults to +/- one year from current year. If a year is 
+    // provided it filters from the start of that year to the end.
+    static getFilterEndDate(year) {
+        if (year) {
+            return moment(year, 'YYYY').endOf('year');
+        } else {
+            const currentYear = moment().year();
+            return moment(currentYear, 'YYYY').add(1, 'years').endOf('year');
+        }
     }
 
     // Selects all time-off requests restricted by provided WHERE clauses
@@ -185,7 +215,7 @@ class RequestClient {
     // Select total available hours of given type (e.g. vacation or sick) for current employee
     async getTotalHours() {
         const userID = this.config.employee;
-        const typeHoursName = (new RequestType(this.config.type)).columnName;
+        const typeHoursName = RequestType.columnName(this.config.type);
 
         const selectText = `
         SELECT ${typeHoursName} AS hours

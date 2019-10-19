@@ -1,7 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Create route GET /api/request/count with filtering parameters
 Use query parameters for route GET /api/request to filter requests by year, employee_id, status, etc
 Streamline authorization check (middleware?) for situations where access should be limited to admins or employee's acting on their own data
 Look into offset and limit defaults
