@@ -96,6 +96,35 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
     });
 });
 
+// Route GET /api/request/year-available
+// Returns list of available years
+router.get('/year-available', rejectUnauthenticated, (req, res) => {
+    const employee = req.query.employee;
+    const leave = req.query.leave;
+    const status = req.query.status;
+
+    const client = new RequestClient(pool);
+    (async () => {
+        await client.connect();
+        try {
+            await client.begin();
+            const years = await client.getYearsFilter(employee, leave, status);
+            await client.commit();
+            res.send(years);
+        } catch (error) {
+            await client.rollback();
+            await console.log(error);
+            await res.sendStatus(500);
+            throw error;
+        } finally {
+            client.release();
+        }
+    })().catch((error) => {
+        console.error(error.stack);
+        console.log('SQL error using GET /api/request/year-available');
+    });
+});
+
 // Route POST /api/request
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {

@@ -51,6 +51,22 @@ class RequestClient {
         return yearArray;
     }
 
+    // Returns an array of unique years for time-off requests that meet optional
+    // filter criteria
+    async getYearsFilter(employee, leave, status) {        
+        const selectText = `
+        SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS extract_year
+        FROM request
+        JOIN request_unit ON request.id = request_unit.request_id
+            WHERE ($1::numeric IS NULL OR request.employee_id = $1)
+            AND ($2::numeric IS NULL OR request.leave_type_id = $2)
+            AND ($3::numeric IS NULL OR request.status_id = $3)
+        ORDER BY extract_year ASC;
+        `;
+        const { rows } = await this.client.query(selectText, [employee, leave, status]);
+        return rows.map(row => row.extract_year);
+    }
+
     // Selects all time-off requests restricted by provided WHERE clauses
     async composeJoinRequest(whereClause) {
         const joinText = `
