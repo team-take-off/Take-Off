@@ -68,16 +68,17 @@ function* withdrawRequest(action) {
 
 function* deleteRequest(action) {
     try {
-        const requestID = action.payload;
+        const requestID = action.payload.id;
+        const employeeID = action.payload.employee;
+
         yield axios.delete(`api/request/${requestID}`, {
             params: {
                 specialEdit: true
             }
         });
-        yield console.log('in deleteRequest()');
-        yield put({ type: 'FETCH_REQUESTS' });
-        yield put({ type: 'FETCH_USER_REQUESTS' });
-        yield put({ type: 'FETCH_USER_INFO' });
+        yield put({ type: 'FETCH_REQUESTS', payload: { employee: employeeID } });
+        // yield put({ type: 'FETCH_USER_REQUESTS' });
+        // yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in request saga deleteRequest():', error);
     }

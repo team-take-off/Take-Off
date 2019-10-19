@@ -99,7 +99,10 @@ class AdminEditRequestsPage extends Component {
     deleteRequest = (id) => {
         this.props.dispatch({
             type: 'DELETE_REQUEST',
-            payload: id
+            payload: {
+                id: id,
+                employee: this.props.match.params.id
+            }
         });
     }
 
