@@ -2,6 +2,7 @@
  - Unit testing
  - Integration testing
 Fix bug where deleting from request history on AdminEditRequestsPage requires refresh 
+Fix bug where the employee start date displayed in AdminEditEmployee page is off by one on Heroku
 Create route GET /api/request/year-available
 Use query parameters for route GET /api/request to filter requests by year, employee_id, status, etc
 Create route GET /api/request/count with filtering parameters

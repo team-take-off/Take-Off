@@ -53,7 +53,7 @@ class AdminEditEmployeePage extends Component {
                 email: employee.email,
                 first_name: employee.first_name,
                 last_name: employee.last_name,
-                start_date: moment(employee.start_date).format('YYYY-MM-DD'),
+                start_date: moment(employee.start_date, 'YYYY-MM-DD').format('YYYY-MM-DD'),
                 vacation_hours: employee.vacation_hours,
                 sick_hours: employee.sick_hours
             });
