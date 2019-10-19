@@ -182,11 +182,13 @@ class RequestClient {
     }
 
     // Insert a new request and return the assigned id (i.e. the primary key)
-    async insertRequest(startTime, endTime) {
-        const employeeID = this.config.employee;
-        const leaveTypeID = this.config.type;
-        const statusID = this.config.status;
-        const active = (statusID === 1 || statusID === 2);
+    async insertRequest(request, specialEdit) {
+        const employeeID = request.employee.id;
+        const leaveTypeID = request.type.lookup;
+        const statusID = request.status.lookup;
+        const startDate = request.startDate;
+        const endDate = request.endDate;
+        const active = statusID !== RequestStatus.code.DENIED;
 
         const insertText = `
         INSERT INTO request
@@ -195,8 +197,12 @@ class RequestClient {
         ($1, $2, $3, $4, $5, $6)
         RETURNING id;
         `;
-        const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, statusID, active, startTime, endTime]);
+        const { rows } = await this.client.query(insertText, [employeeID, leaveTypeID, statusID, active, startDate, endDate]);
         const requestID = rows[0].id;
+
+        for (let unit of request.units) {
+            await this.insertRequestUnit(unit, requestID, employeeID, request.type.columnName, specialEdit);
+        }
 
         const insertCollisionsText = `
         INSERT INTO collision
@@ -210,17 +216,12 @@ class RequestClient {
                 OR $2 <= start_datetime AND $3 >= start_datetime
             );
         `;
-        await this.client.query(insertCollisionsText, [requestID, startTime, endTime]);
-
-        return requestID;
+        await this.client.query(insertCollisionsText, [requestID, startDate, endDate]);
     };
 
     // Insert a new requested day for time-off. Then update the employee's total
     // hours available.
-    async insertRequestDay(unit, requestID) {
-        const employeeID = this.config.employee;
-        const typeHoursName = (new RequestType(this.config.type)).columnName;
-
+    async insertRequestUnit(unit, requestID, employeeID, hoursColumnName, specialEdit) {        
         const selectConflicting = `
         SELECT request_unit.id
         FROM request_unit
@@ -236,7 +237,7 @@ class RequestClient {
         `;
         const { rows } = await this.client.query(selectConflicting, [employeeID, unit.startDate.format(), unit.endDate.format()]);
         if (rows.length > 0) {
-            throw Error(`Error in RequestClient.js function insertRequestDay. Conflicting entries found.`);
+            throw Error(`Error in RequestClient.js function insertRequestUnit. Conflicting entries found.`);
         }
 
         const insertUnitText = `
@@ -248,10 +249,10 @@ class RequestClient {
         `;
         await this.client.query(insertUnitText, [requestID, unit.startDate.format(), unit.endDate.format()]);
 
-        if (!this.config.adminEdit) {
+        if (!specialEdit) {
             const updateHours = `
             UPDATE employee SET 
-            ${typeHoursName} = ${typeHoursName} - $1
+            ${hoursColumnName} = ${hoursColumnName} - $1
             WHERE id = $2;
             `;
             await this.client.query(updateHours, [unit.hours, employeeID]);
@@ -313,7 +314,7 @@ class RequestClient {
         WHERE id = $1;
         `;
         await this.client.query(deleteRequest, [request.id]);
-        if (!request.denied && transactionCode !== TransactionCodes.ADMIN_SPECIAL) {
+        if (request.status !== RequestStatus.code.DENIED && transactionCode !== TransactionCodes.ADMIN_SPECIAL) {
             await this.refundHours(request, user, transactionCode);
         }
     }

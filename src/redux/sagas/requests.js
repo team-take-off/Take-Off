@@ -22,11 +22,7 @@ function* fetchRequests(action) {
 function* addRequest(action) {
     const employeeID = action.payload.employee;
     try {
-        yield axios.post('api/request/', action.payload, {
-            params: {
-                adminEdit: true
-            }
-        });
+        yield axios.post('api/request/', action.payload);
         yield put({ type: 'FETCH_REQUESTS', payload: { employee: employeeID } });
     } catch (error) {
         console.log('Error in saga addUserRequest(),', error);

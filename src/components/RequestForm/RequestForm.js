@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 
+import RequestType from '../../classes/RequestType';
+import RequestStatus from '../../classes/RequestStatus';
+
 const START_HOUR = 9;
 const MIDDAY_HOUR = 13;
 const END_HOUR = 17;
@@ -30,7 +33,7 @@ class RequestForm extends Component {
 
     setStartDate = async (event) => {
         const action = {
-            type: (this.props.typeid === 1 ? 'SET_VACATION_START_DATE' : 'SET_SICK_START_DATE'),
+            type: (this.props.typeid === RequestType.VACATION ? 'SET_VACATION_START_DATE' : 'SET_SICK_START_DATE'),
             payload: event.target.value
         };
         await this.props.dispatch(action);
@@ -38,7 +41,7 @@ class RequestForm extends Component {
 
     setEndDate = async (event) => {
         const action = {
-            type: (this.props.typeid === 1 ? 'SET_VACATION_END_DATE' : 'SET_SICK_END_DATE'),
+            type: (this.props.typeid === RequestType.VACATION ? 'SET_VACATION_END_DATE' : 'SET_SICK_END_DATE'),
             payload: event.target.value
         };
         await this.props.dispatch(action);
@@ -47,14 +50,14 @@ class RequestForm extends Component {
     setStartDayType = async (event) => {
         const dayType = event.target.value;
         const action = {
-            type: (this.props.typeid === 1 ? 'SET_VACATION_START_DAY_TYPE' : 'SET_SICK_START_DAY_TYPE'),
+            type: (this.props.typeid === RequestType.VACATION ? 'SET_VACATION_START_DAY_TYPE' : 'SET_SICK_START_DAY_TYPE'),
             payload: dayType
         };
         await this.props.dispatch(action);
 
         if (this.props.type.startDate === this.props.type.endDate) {
             const actionMatchStart = {
-                type: (this.props.typeid === 1 ? 'SET_VACATION_END_DAY_TYPE' : 'SET_SICK_END_DAY_TYPE'),
+                type: (this.props.typeid === RequestType.VACATION ? 'SET_VACATION_END_DAY_TYPE' : 'SET_SICK_END_DAY_TYPE'),
                 payload: dayType
             };
             await this.props.dispatch(actionMatchStart);
@@ -63,7 +66,7 @@ class RequestForm extends Component {
 
     setEndDayType = async (event) => {
         const action = {
-            type: (this.props.typeid === 1 ? 'SET_VACATION_END_DAY_TYPE' : 'SET_SICK_END_DAY_TYPE'),
+            type: (this.props.typeid === RequestType.VACATION ? 'SET_VACATION_END_DAY_TYPE' : 'SET_SICK_END_DAY_TYPE'),
             payload: event.target.value
         };
         await this.props.dispatch(action);
@@ -82,9 +85,11 @@ class RequestForm extends Component {
         const action = {
             type: 'ADD_USER_REQUEST',
             payload: {
-                typeID: this.props.typeid,
+                type: this.props.typeid,
                 startDate: startMoment.format(),
                 endDate: endMoment.format(),
+                employee: this.props.reduxStore.user.id,
+                status: RequestStatus.PENDING
             }
         };
         await this.props.dispatch(action);

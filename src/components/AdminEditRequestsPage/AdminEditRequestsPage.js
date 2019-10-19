@@ -209,7 +209,7 @@ class AdminEditRequestsPage extends Component {
                 type: 'ADD_REQUEST',
                 payload: {
                     employee: this.state.id,
-                    typeID: this.state.leaveType,
+                    type: this.state.leaveType,
                     startDate: startMoment.format(),
                     endDate: endMoment.format(),
                     status: this.state.status

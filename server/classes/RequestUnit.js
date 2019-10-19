@@ -1,6 +1,9 @@
 const moment = require('moment');
 const CompanyHolidays = require('./CompanyHolidays');
 
+const MOMENT_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ';
+const DATABASE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+
 const hour = {
     START_DAY: 9,
     MID_DAY: 13,
@@ -45,8 +48,10 @@ class RequestUnit {
         this.description = 'blank'; // TODO: Remove this after refactoring client-side
 
         if (start && end) {
-            this.startDate = moment(start);
-            this.endDate = moment(end);
+            // this.startDate = moment(start, DATABASE_FORMAT).utc();
+            // this.endDate = moment(end, DATABASE_FORMAT).utc();
+            this.startDate = moment(start, DATABASE_FORMAT);
+            this.endDate = moment(end, DATABASE_FORMAT);
 
             if (this.startDate.hour() === hour.START_DAY && this.endDate.hour() === hour.END_DAY) {
                 this.isFullday = true;
@@ -67,12 +72,15 @@ class RequestUnit {
         }
     }
 
-    static findUnits(startDate, endDate) {
+    static findUnits(start, end) {
+        this.startDate = moment(start, MOMENT_FORMAT).utc();
+        this.endDate = moment(end, MOMENT_FORMAT).utc();
+
         let units = [];
-        let current = moment(startDate);
+        let current = moment(this.startDate);
         normalizeHours(current);
 
-        while (current.isBefore(endDate)) {
+        while (current.isBefore(this.endDate)) {
             if (current.day() === day.SUNDAY || current.day() === day.SATURDAY || CompanyHolidays.isDayOff(current)) {
                 units.push(new RequestUnit());
                 advanceTime(current);
@@ -82,16 +90,16 @@ class RequestUnit {
             if (current.hour() === hour.START_DAY) {
                 const nextFullDay = fullDayAhead(current);
                 const nextHalfDay = halfDayAhead(current);
-                if (nextFullDay.isSameOrBefore(endDate)) {
+                if (nextFullDay.isSameOrBefore(this.endDate)) {
                     const newUnit = new RequestUnit(undefined, current, nextFullDay);
                     units.push(newUnit);
-                } else if (nextHalfDay.isSameOrBefore(endDate)) {
+                } else if (nextHalfDay.isSameOrBefore(this.endDate)) {
                     const newUnit = new RequestUnit(undefined, current, nextHalfDay);
                     units.push(newUnit);
                 }
             } else if (current.hour() === hour.MID_DAY) {
                 const nextHalfDay = halfDayAhead(current);
-                if (nextHalfDay.isSameOrBefore(endDate)) {
+                if (nextHalfDay.isSameOrBefore(this.endDate)) {
                     const newUnit = new RequestUnit(undefined, current, nextHalfDay);
                     units.push(newUnit);
                 }

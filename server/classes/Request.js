@@ -20,6 +20,10 @@ class Request {
         this.units.push(unit.getJSON());
     }
 
+    setUnits(units) {
+        this.units = units;
+    }
+
     static loadQuery(rows) {
         const uniqueGroupIDs = [];
         const groupArray = [];

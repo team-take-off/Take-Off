@@ -5,6 +5,8 @@ const { rejectUnauthenticated, rejectNonAdmin } = require('../modules/authentica
 const pool = require('../modules/pool');
 const router = express.Router();
 
+const Employee = require('../classes/Employee');
+const Request = require('../classes/Request');
 const RequestClient = require('../classes/RequestClient');
 const RequestStatus = require('../classes/RequestStatus');
 const RequestUnit = require('../classes/RequestUnit');
@@ -98,47 +100,39 @@ router.get('/current-user', rejectUnauthenticated, (req, res) => {
 // User adds requested time-off to the database
 router.post('/', rejectUnauthenticated, (req, res) => {
     const user = new User(req.user);
-    const adminEdit = user.isAdministrator() && req.query.adminEdit;
-    let startDate = req.body.startDate;
-    let endDate = req.body.endDate;
+    const employeeID = req.body.employee;
+    const type = Number(req.body.type);
+    const status = Number(req.body.status);
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+    const specialEdit = req.body.specialEdit && user.isAdministrator();
 
-    let employee;
-    let status;
-    if (adminEdit) {
-        employee = parseIntOrNull(req.body.employee);
-        status = parseIntOrNull(req.body.status);
-    } else {
-        employee = parseIntOrNull(req.user.id);
-        status = RequestStatus.code.PENDING;
+    if (employeeID === undefined || type === undefined || status === undefined || startDate === undefined || endDate === undefined) {
+        res.sendStatus(400);
+        return;
+    }
+    if ((employeeID != user.id || status !== RequestStatus.code.PENDING) && !user.isAdministrator()) {
+        res.sendStatus(403);
+        return;
     }
 
-    const config = {
-        adminEdit: adminEdit,
-        employee: employee,
-        type: parseIntOrNull(req.body.typeID),
-        status: status,
-    };
-
-    const startMoment = moment(startDate, 'YYYY-MM-DDTHH:mm:ssZ').utc();
-    const endMoment = moment(endDate, 'YYYY-MM-DDTHH:mm:ssZ').utc();
-
-    const units = RequestUnit.findUnits(startMoment, endMoment);
+    const units = RequestUnit.findUnits(startDate, endDate);
     if (units.length === 0) {
         res.sendStatus(201);
         return;
     }
-    startDate = units[0].startDate;
-    endDate = units[units.length - 1].endDate;
+    const startDateTrimmed = units[0].startDate;
+    const endDateTrimmed = units[units.length - 1].endDate;
+    const employee = new Employee(employeeID);
+    const request = new Request(undefined, employee, type, status, startDateTrimmed, endDateTrimmed);
+    request.setUnits(units);
 
-    const client = new RequestClient(pool, config);
+    const client = new RequestClient(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const requestID = await client.insertRequest(startDate, endDate);
-            for (let unit of units) {
-                await client.insertRequestDay(unit, requestID);
-            }
+            await client.insertRequest(request, specialEdit);
             await client.commit();
             await res.sendStatus(201);
         } catch (error) {
