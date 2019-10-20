@@ -1,9 +1,9 @@
 const moment = require('moment');
 
-const Collision = require('./Collision');
-const Request = require('./Request');
-const RequestStatus = require('./RequestStatus');
-const RequestType = require('./RequestType');
+const Collision = require('../classes/Collision');
+const Request = require('../classes/Request');
+const RequestStatus = require('../classes/RequestStatus');
+const RequestType = require('../classes/RequestType');
 const TransactionCodes = require('../constants/TransactionCodes');
 
 const GRACE_PERIOD = 5;
@@ -137,7 +137,7 @@ class RequestClient {
         JOIN request_status ON request_status.id = request.status_id
         JOIN request_unit ON request.id = request_unit.request_id
         ${whereClause}
-        ORDER BY date_requested;
+        ORDER BY request.start_datetime ASC;
         `;
 
         const { rows } = await this.client.query(selectText, [status, employee, year]);

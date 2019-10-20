@@ -1,11 +1,11 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Controller pattern to allow testing of server-side. Create controllers directory. Rename RequestClient as RequestController.
 Simplify JOIN request in GET /api/request
 Replace Accordion UI with Tabs 
 Look into structuring redux organizing state, normalizing state
 Fix SearchRequestsPage
+Combine addLeave() and subLeave() in additional time saga
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 

@@ -7,7 +7,7 @@ const router = express.Router();
 
 const Employee = require('../classes/Employee');
 const Request = require('../classes/Request');
-const RequestClient = require('../classes/RequestClient');
+const RequestController = require('../controllers/RequestController');
 const RequestStatus = require('../classes/RequestStatus');
 const RequestUnit = require('../classes/RequestUnit');
 const TransactionCodes = require('../constants/TransactionCodes');
@@ -37,7 +37,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
     const status = parseInteger(req.query.status);
     const past = parseBoolean(req.query.past);
 
-    const client = new RequestClient(pool);
+    const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
@@ -66,7 +66,7 @@ router.get('/year-available', rejectUnauthenticated, (req, res) => {
     const leave = parseInteger(req.query.leave);
     const status = parseInteger(req.query.status);
 
-    const client = new RequestClient(pool);
+    const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
@@ -96,7 +96,7 @@ router.get('/count', rejectUnauthenticated, (req, res) => {
     const leave = parseInteger(req.query.leave);
     const status = parseInteger(req.query.status);
 
-    const client = new RequestClient(pool);
+    const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
@@ -149,7 +149,7 @@ router.post('/', rejectUnauthenticated, (req, res) => {
     const request = new Request(undefined, employee, type, status, startDateTrimmed, endDateTrimmed);
     request.setUnits(units);
 
-    const client = new RequestClient(pool);
+    const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
@@ -178,7 +178,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
     const user = new User(req.user);
     const newStatus = new RequestStatus(req.body.requestStatus);
 
-    const client = new RequestClient(pool);
+    const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
@@ -222,7 +222,7 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
         transactionCode = TransactionCodes.EMPLOYEE_CANCEL;
     }
 
-    const client = new RequestClient(pool);
+    const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
