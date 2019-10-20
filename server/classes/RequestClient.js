@@ -97,39 +97,6 @@ class RequestClient {
         }
     }
 
-    // Selects all time-off requests restricted by provided WHERE clauses
-    // async composeJoinRequest(whereClause) {
-    //     const joinText = `
-    //     SELECT
-    //         request.id AS id,
-    //         DATE(request_unit.start_datetime) AS date,
-    //         request_unit.start_datetime AS unit_start_date,
-    //         request_unit.end_datetime AS unit_end_date,
-    //         EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
-    //         EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
-    //         EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
-    //         request_unit.request_id,
-    //         request.start_datetime AS start_date,
-    //         request.end_datetime AS end_date,
-    //         request.placed_datetime AS date_requested,
-    //         employee.id AS employee_id,
-    //         employee.first_name,
-    //         employee.last_name,
-    //         leave_type.val AS type,
-    //         request.leave_type_id AS type_id,
-    //         request_status.val AS status,
-    //         request.status_id
-    //     FROM employee 
-    //     JOIN request ON employee.id = request.employee_id
-    //     JOIN leave_type ON leave_type.id = request.leave_type_id
-    //     JOIN request_status ON request_status.id = request.status_id
-    //     JOIN request_unit ON request.id = request_unit.request_id
-    //     ${whereClause}
-    //     ORDER BY date_requested;
-    //     `;
-    //     return joinText;
-    // }
-
     // Returns an array of requests that have a given status and year
     async getRequests(employee, year, leave, status, past) {
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
@@ -228,19 +195,6 @@ class RequestClient {
         const { rows } = await this.client.query(selectCollisions, [unit_id]);
         return rows;
     }
-
-    // Returns an array of all request that are now in the past based on the grace period
-    // async getPastRequests(employee, year) {
-    //     const whereClause = `
-    //     WHERE ($1::numeric IS NULL OR request.employee_id = $1)
-    //     AND ($2::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $2)
-    //     AND request.end_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')
-    //     `;
-    //     const selectText = await this.composeJoinRequest(whereClause);
-    //     const { rows } = await this.client.query(selectText, [employee, year]);
-    //     const requests = await Request.loadQuery(rows);
-    //     return requests;
-    // }
 
     // Select total available hours of given type (e.g. vacation or sick) for current employee
     async getTotalHours() {

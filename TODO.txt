@@ -1,16 +1,11 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Streamline authorization check (rejectNonOwner middleware) for situations where access should be limited to admins or employee's acting on their own data
-Look into offset and limit defaults
-Look into structuring redux organizing state, normalizing state
-Replace Accordion UI with Tabs 
-Remove route GET /api/request/current-user
-Standardize terminology for requests and request units
 Move accruedTime router into employee router GET /api/employee/accrued-time
-Create route GET /api/request/dry-run/units
-Controller pattern to allow unit testing of server-side. Create controller directory. Rename RequestClient as RequestController.
+Controller pattern to allow testing of server-side. Create controller directory. Rename RequestClient as RequestController.
 Simplify JOIN request in GET /api/request
+Replace Accordion UI with Tabs 
+Look into structuring redux organizing state, normalizing state
 Fix SearchRequestsPage
 
 # Feature Node Cron Vacation

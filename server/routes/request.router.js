@@ -133,7 +133,7 @@ router.post('/', rejectUnauthenticated, (req, res) => {
         res.sendStatus(400);
         return;
     }
-    if ((employeeID != user.id || status !== RequestStatus.code.PENDING) && !user.isAdministrator()) {
+    if (!user.isAdministrator() && (employeeID != user.id || status !== RequestStatus.code.PENDING)) {
         res.sendStatus(403);
         return;
     }
@@ -212,6 +212,7 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const id = req.params.id;
     const user = new User(req.user);
     const specialEdit = req.query.specialEdit;
+
     let transactionCode;
     if (user.isAdministrator() && specialEdit) {
         transactionCode = TransactionCodes.ADMIN_SPECIAL;
