@@ -158,7 +158,10 @@ class RequestCard extends Component {
             const id = this.props.requestArray[0].batch_of_requests_id;
             const action = {
                 type: 'WITHDRAW_USER_REQUEST',
-                payload: id
+                payload: {
+                    id,
+                    user: this.props.reduxStore.user.id
+                }
             };
             this.props.dispatch(action);
         }
@@ -169,7 +172,10 @@ class RequestCard extends Component {
         const id = this.props.request.id;
         const action = {
             type: 'WITHDRAW_USER_REQUEST',
-            payload: id
+            payload: {
+                id,
+                user: this.props.reduxStore.user.id
+            }
         };
         this.props.dispatch(action);
     }

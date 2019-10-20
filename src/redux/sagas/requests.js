@@ -5,13 +5,23 @@ import Request from '../../classes/Request';
 
 function* fetchRequests(action) {
     try {
-        const serverResponse = yield axios.get('api/request', { params: action.payload });
+        let year = null;
+        if (action.payload) {
+            year = action.payload.year;
+        }
+        const years = yield axios.get('/api/request/year-available', { params: action.payload });
+        
+        const pending = yield axios.get('api/request/', { params: { year, status: 1 } });
+        const approved = yield axios.get('api/request/', { params: { year, status: 2 } });
+        const denied = yield axios.get('api/request/', { params: { year, status: 3 } });
+        const past = yield axios.get('api/request/', { params: { year, past: true } });
+
         const requests = yield {
-            pending: Request.loadArray(serverResponse.data.pending),
-            approved: Request.loadArray(serverResponse.data.approved),
-            denied: Request.loadArray(serverResponse.data.denied),
-            past: Request.loadArray(serverResponse.data.past),
-            years: serverResponse.data.years
+            pending: Request.loadArray(pending.data),
+            approved: Request.loadArray(approved.data),
+            denied: Request.loadArray(denied.data),
+            past: Request.loadArray(past.data),
+            years: years.data
         };
         yield put({ type: 'SET_REQUESTS', payload: requests });
     } catch (error) {

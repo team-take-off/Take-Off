@@ -13,41 +13,38 @@ const RequestUnit = require('../classes/RequestUnit');
 const TransactionCodes = require('../constants/TransactionCodes');
 const User = require('../classes/User');
 
-const parseIntOrNull = (num) => {
-    const parsed = parseInt(num);
-    if (parsed) {
-        return parsed;
-    }
-    return null;
-}
-
-const parseBoolOrNull = (bool) => {
-    if (bool === undefined) {
+const parseInteger = (input) => {
+    const parsed = parseInt(input);
+    if (isNaN(parsed)) {
         return null;
     }
-    return bool;
+    return parsed;
+}
+
+const parseBoolean = (input) => {
+    if (input === undefined) {
+        return null;
+    }
+    return Boolean(input);
 }
 
 // Route GET /api/request
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
-    const config = {
-        employee: parseIntOrNull(req.query.employee),
-        year: parseIntOrNull(req.query.year)
-    };
+    const employee = parseInteger(req.query.employee);
+    const year = parseInteger(req.query.year);
+    const leave = parseInteger(req.query.leave);
+    const status = parseInteger(req.query.status);
+    const past = parseBoolean(req.query.past);
 
-    const client = new RequestClient(pool, config);
+    const client = new RequestClient(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const years = await client.getYears();
-            const pending = await client.getRequests(RequestStatus.code.PENDING);
-            const approved = await client.getRequests(RequestStatus.code.APPROVED);
-            const denied = await client.getRequests(RequestStatus.code.DENIED);
-            const past = await client.getPastRequests();
+            const requests = await client.getRequests(employee, year, leave, status, past);
             await client.commit();
-            res.send({ years, pending, approved, denied, past });
+            res.send(requests);
         } catch (error) {
             await client.rollback();
             await console.log(error);
@@ -62,46 +59,12 @@ router.get('/', rejectUnauthenticated, (req, res) => {
     });
 });
 
-// Route GET /api/request/current-user
-// Returns an array all requested days off for the currently authenticated user
-router.get('/current-user', rejectUnauthenticated, (req, res) => {
-    const config = {
-        employee: parseIntOrNull(req.user.id),
-        year: parseIntOrNull(req.query.year)
-    };
-
-    const client = new RequestClient(pool, config);
-    (async () => {
-        await client.connect();
-        try {
-            await client.begin();
-            const years = await client.getYears();
-            const pending = await client.getRequests(RequestStatus.code.PENDING);
-            const approved = await client.getRequests(RequestStatus.code.APPROVED);
-            const denied = await client.getRequests(RequestStatus.code.DENIED);
-            const past = await client.getPastRequests();
-            await client.commit();
-            res.send({ years, pending, approved, denied, past });
-        } catch (error) {
-            await client.rollback();
-            await console.log(error);
-            await res.sendStatus(500);
-            throw error;
-        } finally {
-            client.release();
-        }
-    })().catch((error) => {
-        console.error(error.stack);
-        console.log('SQL error using GET /api/request/current-user');
-    });
-});
-
 // Route GET /api/request/year-available
 // Returns list of available years
 router.get('/year-available', rejectUnauthenticated, (req, res) => {
-    const employee = req.query.employee;
-    const leave = req.query.leave;
-    const status = req.query.status;
+    const employee = parseInteger(req.query.employee);
+    const leave = parseInteger(req.query.leave);
+    const status = parseInteger(req.query.status);
 
     const client = new RequestClient(pool);
     (async () => {
@@ -128,10 +91,10 @@ router.get('/year-available', rejectUnauthenticated, (req, res) => {
 // Route GET /api/request/count
 // Returns number of requests that satisfy the optional filters
 router.get('/count', rejectUnauthenticated, (req, res) => {
-    const employee = req.query.employee;
-    const year = req.query.year;
-    const leave = req.query.leave;
-    const status = req.query.status;
+    const employee = parseInteger(req.query.employee);
+    const year = parseInteger(req.query.year);
+    const leave = parseInteger(req.query.leave);
+    const status = parseInteger(req.query.status);
 
     const client = new RequestClient(pool);
     (async () => {

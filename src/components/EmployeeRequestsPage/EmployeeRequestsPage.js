@@ -4,13 +4,16 @@ import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpan
 
 class EmployeeRequestsPage extends Component {
     componentDidMount() {
-        this.props.dispatch({ type: 'FETCH_USER_REQUESTS' });
+        this.props.dispatch({ type: 'FETCH_USER_REQUESTS', payload: { user: this.props.reduxStore.user.id } });
     }
 
     handleYearChange = (event) => {
         const action = {
             type: 'FETCH_USER_REQUESTS',
-            payload: { year: event.target.value }
+            payload: {
+                year: event.target.value,
+                user: this.props.reduxStore.user.id
+            }
         };
         this.props.dispatch(action);
     }

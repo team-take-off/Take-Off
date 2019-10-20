@@ -85,6 +85,7 @@ class RequestForm extends Component {
         const action = {
             type: 'ADD_USER_REQUEST',
             payload: {
+                user: this.props.reduxStore.user.id,
                 type: this.props.typeid,
                 startDate: startMoment.format(),
                 endDate: endMoment.format(),
