@@ -9,6 +9,7 @@ import swal from 'sweetalert';
 import moment from 'moment';
 
 import './EmployeeListRow.css';
+import RequestType from '../../../classes/RequestType';
 
 const HOURS_PER_DAY = 8;
 
@@ -29,26 +30,26 @@ class EmployeeListRow extends Component {
     // Add one day of vacation to this rows's employee
     addVacation = () => {
         const emp_id = this.props.employee.id;
-        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'vacation', hours: HOURS_PER_DAY}});
+        this.props.dispatch({ type: 'ADD_LEAVE_DAY', payload: { id: emp_id, leaveType: RequestType.VACATION, hours: HOURS_PER_DAY}});
     }
 
     // Remove one day of vacation from this rows's employee
     subtractVacation = () => {
         const emp_id = this.props.employee.id;
-        this.props.dispatch({type: 'SUB_LEAVE_DAY', payload: { id: emp_id, leaveType: 'vacation', hours: -HOURS_PER_DAY}});
+        this.props.dispatch({ type: 'SUB_LEAVE_DAY', payload: { id: emp_id, leaveType: RequestType.VACATION, hours: -HOURS_PER_DAY}});
     }
 
     // Add one day of sick and safe leave to this rows's employee
     addSick = () => {
         console.log('In EmployeeListRow pressed addSick()');
         const emp_id = this.props.employee.id;
-        this.props.dispatch({type: 'ADD_LEAVE_DAY', payload: {id: emp_id, leaveType: 'sick', hours: HOURS_PER_DAY}});
+        this.props.dispatch({ type: 'ADD_LEAVE_DAY', payload: { id: emp_id, leaveType: RequestType.SICK_AND_SAFE, hours: HOURS_PER_DAY}});
     }
 
     // Remove one day of sick leave from this rows's employee
     subtractSick = () => {
         const emp_id = this.props.employee.id;
-        this.props.dispatch({type: 'SUB_LEAVE_DAY', payload: { id: emp_id, leaveType: 'sick', hours: -HOURS_PER_DAY}});
+        this.props.dispatch({ type: 'SUB_LEAVE_DAY', payload: { id: emp_id, leaveType: RequestType.SICK_AND_SAFE, hours: -HOURS_PER_DAY}});
     }
 
     // Bring up a page for editing this row's employee data

@@ -9,7 +9,6 @@ const sessionMiddleware = require('./modules/session-middleware');
 const passport = require('./strategies/google.strategy');
 
 // Route includes
-const accruedTimeRouter = require('./routes/accruedTime.router');
 const companyHolidaysRouter = require('./routes/companyHolidays.router');
 const employeeRouter = require('./routes/employee.router');
 const requestRouter = require('./routes/request.router');
@@ -31,7 +30,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 /* Routes */
-app.use('/api/accrued-time', accruedTimeRouter);
 app.use('/api/company-holidays', companyHolidaysRouter);
 app.use('/api/employee', employeeRouter);
 app.use('/api/request', requestRouter);

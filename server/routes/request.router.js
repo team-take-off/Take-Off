@@ -123,8 +123,8 @@ router.get('/count', rejectUnauthenticated, (req, res) => {
 router.post('/', rejectUnauthenticated, (req, res) => {
     const user = new User(req.user);
     const employeeID = req.body.employee;
-    const type = Number(req.body.type);
-    const status = Number(req.body.status);
+    const type = parseInteger(req.body.type);
+    const status = parseInteger(req.body.status);
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
     const specialEdit = req.body.specialEdit && user.isAdministrator();
@@ -211,7 +211,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
 router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const id = req.params.id;
     const user = new User(req.user);
-    const specialEdit = req.query.specialEdit;
+    const specialEdit = parseBoolean(req.query.specialEdit);
 
     let transactionCode;
     if (user.isAdministrator() && specialEdit) {

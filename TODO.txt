@@ -1,8 +1,7 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Move accruedTime router into employee router GET /api/employee/accrued-time
-Controller pattern to allow testing of server-side. Create controller directory. Rename RequestClient as RequestController.
+Controller pattern to allow testing of server-side. Create controllers directory. Rename RequestClient as RequestController.
 Simplify JOIN request in GET /api/request
 Replace Accordion UI with Tabs 
 Look into structuring redux organizing state, normalizing state

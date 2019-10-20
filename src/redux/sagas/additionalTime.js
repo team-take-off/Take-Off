@@ -4,7 +4,7 @@ import axios from 'axios';
 function* addLeave(action) {
     const additionalLeave = action.payload.leaveType;
     try {
-        yield axios.put(`/api/accrued-time/${action.payload.id}`, action.payload);
+        yield axios.put(`/api/employee/accrued-time/${action.payload.id}`, action.payload);
         yield put({type: 'FETCH_EMPLOYEES'});
     } catch (error) {
         if (additionalLeave === 'vacation') {
@@ -19,7 +19,7 @@ function* addLeave(action) {
 
 function* subLeave(action) {
     try {
-        yield axios.put(`/api/accrued-time/${action.payload.id}`, action.payload);
+        yield axios.put(`/api/employee/accrued-time/${action.payload.id}`, action.payload);
         yield put({ type: 'FETCH_EMPLOYEES' });
     } catch (error) {
         console.log('error in subLeave saga,', error);
