@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
+
 import BuildCalendar from './BuildCalendar';
+import Nav from '../Nav/Nav';
 
 class AdminCalendarPage extends Component {
     componentDidMount() { 
@@ -10,9 +12,12 @@ class AdminCalendarPage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div>
-                <BuildCalendar requests={this.props.requests} />
-            </div>
+            <>
+                <Nav history={this.props.history} />
+                <div>
+                    <BuildCalendar requests={this.props.requests} />
+                </div>
+            </>
         );
     }
 }

@@ -73,12 +73,12 @@ class DynamicDrawer extends Component {
                 <ListItem button>
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/manage_employees')}>Manage Employees</Button>
                 </ListItem>
-                <ListItem button>
+                {/* <ListItem button>
                     <Button style={buttonStyle} onClick={() => this.props.history.push('/admin/search_requests')}>Search Requests</Button>
-                </ListItem>
+                </ListItem> */}
                 <Divider />
                 <ListItem button>
-                    <ModeButton style={logoutButtonStyle} />
+                    <ModeButton history={this.props.history} style={logoutButtonStyle} />
                 </ListItem>
                 <ListItem button>
                     <Button style={logoutButtonStyle} onClick={() => this.props.dispatch({ type: 'LOGOUT' })}>Logout</Button>
@@ -104,7 +104,7 @@ class DynamicDrawer extends Component {
                 <Divider />
                 {this.props.user.role_id === 1 && 
                     <ListItem button>
-                        <ModeButton style={logoutButtonStyle} />
+                        <ModeButton history={this.props.history} style={logoutButtonStyle} />
                     </ListItem>
                 }
                 <ListItem button>

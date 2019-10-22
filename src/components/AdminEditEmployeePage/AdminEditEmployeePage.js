@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 
 import './AdminEditEmployeePage.css';
+import Nav from '../Nav/Nav';
 
 const HOURS_PER_DAY = 8.0;
 
@@ -105,47 +106,50 @@ class AdminEditEmployeePage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div className="page-container">
-                <h2>Edit Employee Account</h2>
-                <h3>{this.state.first_name} {this.state.last_name}</h3>
-                <form onSubmit={this.submit}>
-                    <label htmlFor="first_name">First Name:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="first_name" value={this.state.first_name} type="text" />
-                    <br />
-                    <label htmlFor="last_name">Last Name:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="last_name" value={this.state.last_name} type="text" />
-                    <br />
-                    <label htmlFor="email">Email:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="email" value={this.state.email} type="text" />
-                    <br />
-                    <label htmlFor="start_date">Start Date:</label>
-                    <br />
-                    <input onChange={this.handleChange} name="start_date" value={this.state.start_date} type="date" />
-                    <br />
-                    <label htmlFor="vacation_days">Vacation (days):</label>
-                    <br />
-                    <input onChange={this.handleChangeVacationDays} name="vacation_days" value={this.state.vacation_hours / 8.0} type="number" />
-                    <br />
-                    <label htmlFor="vacation_hours">Vacation (hours):</label>
-                    <br />
-                    <input onChange={this.handleChange} name="vacation_hours" value={this.state.vacation_hours} type="number" />
-                    <br />
-                    <label htmlFor="sick_days">Sick & Safe (days):</label>
-                    <br />
-                    <input onChange={this.handleChangeSickDays} name="sick_days" value={this.state.sick_hours / 8.0} type="number" />
-                    <br />
-                    <label htmlFor="sick_hours">Sick & Safe (hours):</label>
-                    <br />
-                    <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
-                    <br />
-                    <input type="submit" />
-                    <input onClick={this.cancel} type="button" value="Cancel" />
-                </form>
-                <Link className="edit-link" to={this.state.editURL}>Edit Employee Requests</Link>
-            </div>
+            <>
+                <Nav history={this.props.history} />
+                <div className="page-container">
+                    <h2>Edit Employee Account</h2>
+                    <h3>{this.state.first_name} {this.state.last_name}</h3>
+                    <form onSubmit={this.submit}>
+                        <label htmlFor="first_name">First Name:</label>
+                        <br />
+                        <input onChange={this.handleChange} name="first_name" value={this.state.first_name} type="text" />
+                        <br />
+                        <label htmlFor="last_name">Last Name:</label>
+                        <br />
+                        <input onChange={this.handleChange} name="last_name" value={this.state.last_name} type="text" />
+                        <br />
+                        <label htmlFor="email">Email:</label>
+                        <br />
+                        <input onChange={this.handleChange} name="email" value={this.state.email} type="text" />
+                        <br />
+                        <label htmlFor="start_date">Start Date:</label>
+                        <br />
+                        <input onChange={this.handleChange} name="start_date" value={this.state.start_date} type="date" />
+                        <br />
+                        <label htmlFor="vacation_days">Vacation (days):</label>
+                        <br />
+                        <input onChange={this.handleChangeVacationDays} name="vacation_days" value={this.state.vacation_hours / 8.0} type="number" />
+                        <br />
+                        <label htmlFor="vacation_hours">Vacation (hours):</label>
+                        <br />
+                        <input onChange={this.handleChange} name="vacation_hours" value={this.state.vacation_hours} type="number" />
+                        <br />
+                        <label htmlFor="sick_days">Sick & Safe (days):</label>
+                        <br />
+                        <input onChange={this.handleChangeSickDays} name="sick_days" value={this.state.sick_hours / 8.0} type="number" />
+                        <br />
+                        <label htmlFor="sick_hours">Sick & Safe (hours):</label>
+                        <br />
+                        <input onChange={this.handleChange} name="sick_hours" value={this.state.sick_hours} type="number" />
+                        <br />
+                        <input type="submit" />
+                        <input onClick={this.cancel} type="button" value="Cancel" />
+                    </form>
+                    <Link className="edit-link" to={this.state.editURL}>Edit Employee Requests</Link>
+                </div>
+            </>
         );
     }
 }

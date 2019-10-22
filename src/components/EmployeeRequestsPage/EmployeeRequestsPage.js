@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+
+import Nav from '../Nav/Nav';
 import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
 
 class EmployeeRequestsPage extends Component {
@@ -21,22 +23,26 @@ class EmployeeRequestsPage extends Component {
     // Show this component on the DOM
     render() {        
         return (
-            <div className="page-container">
-                <select onChange={this.handleYearChange} defaultValue="">
-                    <option value="">Recent Years</option>
-                    {this.props.reduxStore.userRequests.years.map((year, i) =>
-                        <option key={i}>{year}</option>
-                    )}
-                </select>
-                <RequestExpanderCollection
-                    pending={this.props.reduxStore.userRequests.pending}
-                    approved={this.props.reduxStore.userRequests.approved}
-                    denied={this.props.reduxStore.userRequests.denied}
-                    past={this.props.reduxStore.userRequests.past}
-                    requests={this.props.reduxStore.userRequests.requests}
-                    forAdmin={false}
-                />
-            </div>
+            <>
+                <Nav history={this.props.history} />
+                <div className="page-container">
+                    <h2>{this.props.reduxStore.user ? this.props.reduxStore.user.first_name + '\'s Requests' : 'Employee Requests'}</h2>
+                    <select onChange={this.handleYearChange} defaultValue="">
+                        <option value="">Recent Years</option>
+                        {this.props.reduxStore.userRequests.years.map((year, i) =>
+                            <option key={i}>{year}</option>
+                        )}
+                    </select>
+                    <RequestExpanderCollection
+                        pending={this.props.reduxStore.userRequests.pending}
+                        approved={this.props.reduxStore.userRequests.approved}
+                        denied={this.props.reduxStore.userRequests.denied}
+                        past={this.props.reduxStore.userRequests.past}
+                        requests={this.props.reduxStore.userRequests.requests}
+                        forAdmin={false}
+                    />
+                </div>
+            </>
         );
     }
 }

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import './ManageEmployeesPage.css';
 import EmployeeListRow from './EmployeeListRow/EmployeeListRow';
+import Nav from '../Nav/Nav';
 
 const styleDiv = {
     maxWidth: '1000px'
@@ -23,36 +24,39 @@ class ManageEmployeesPage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div className="page-container" style={styleDiv}>
-                <h2>Manage Employees</h2>
-                <button onClick={this.addEmployee}>
-                    Add New Employee
-                </button>
-                <div className="employee-list-wrapper">
-                    <div className="employee-list-div">
-                        <h2>List Employees</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Start Date</th>
-                                    <th>Vacation</th>
-                                    <th>Sick & Safe</th>
-                                    <th>Edit</th>
-                                    <th>Active</th>
-                                    {/* <th>Delete</th> */}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.props.employees.map(employee =>
-                                    <EmployeeListRow key={employee.id} employee={employee} />
-                                )}
-                            </tbody>
-                        </table>
+            <>
+                <Nav history={this.props.history} />
+                <div className="page-container" style={styleDiv}>
+                    <h2>Manage Employees</h2>
+                    <button onClick={this.addEmployee}>
+                        Add New Employee
+                    </button>
+                    <div className="employee-list-wrapper">
+                        <div className="employee-list-div">
+                            <h2>List Employees</h2>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Start Date</th>
+                                        <th>Vacation</th>
+                                        <th>Sick & Safe</th>
+                                        <th>Edit</th>
+                                        <th>Active</th>
+                                        {/* <th>Delete</th> */}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.props.employees.map(employee =>
+                                        <EmployeeListRow key={employee.id} employee={employee} />
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 }
