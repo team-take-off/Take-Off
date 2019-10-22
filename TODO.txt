@@ -1,12 +1,11 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Create class Moment to act as a wrapper for moment 
 Replace Accordion UI with Tabs 
 Look into structuring redux organizing state, normalizing state
 Fix SearchRequestsPage
 Combine addLeave() and subLeave() in additional time saga
-Removing insert into log table when refunding hours
+Remove insert into log table when refunding hours
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 

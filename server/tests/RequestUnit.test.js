@@ -68,8 +68,8 @@ describe('RequestUnit constructor function', () => {
 
 describe('RequestUnit function findUnits', () => {
     test('A span of one day produces an array of one unit', () => {
-        const start = moment('2019-10-22 09:00:00-05');
-        const end = moment('2019-10-22 17:00:00-05');
+        const start = moment('2019-10-22T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-22T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(1);
@@ -77,8 +77,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('A span of several days produces an array of the same number of units', () => {
-        const start = moment('2019-10-22 09:00:00-05');
-        const end = moment('2019-10-24 17:00:00-05');
+        const start = moment('2019-10-22T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-24T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(3);
@@ -88,8 +88,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('A span with leading afternoon', () => {
-        const start = moment('2019-10-22 13:00:00-05');
-        const end = moment('2019-10-23 17:00:00-05');
+        const start = moment('2019-10-22T13:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-23T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(2);
@@ -98,8 +98,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('A span with trailing morning', () => {
-        const start = moment('2019-10-22 09:00:00-05');
-        const end = moment('2019-10-23 13:00:00-05');
+        const start = moment('2019-10-22T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-23T13:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(2);
@@ -108,16 +108,16 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Leading and trailing weekends should be trimmed', () => {
-        const start = moment('2019-10-19 09:00:00-05');
-        const end = moment('2019-10-27 17:00:00-05');
+        const start = moment('2019-10-19T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-27T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(5);
     });
 
     test('Weekends in the middle of a span should be included as blanks', () => {
-        const start = moment('2019-10-18 09:00:00-05');
-        const end = moment('2019-10-21 17:00:00-05');
+        const start = moment('2019-10-18T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-21T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(4);
@@ -128,8 +128,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Weekends in the middle of a span should be included as blanks', () => {
-        const start = moment('2019-10-18 13:00:00-05');
-        const end = moment('2019-10-21 13:00:00-05');
+        const start = moment('2019-10-18T13:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-21T13:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(4);
@@ -140,8 +140,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Holidays (Chistmas Eve and Christmas) in the middle of a span should be included as blanks', () => {
-        const start = moment('2019-12-23 09:00:00-06');
-        const end = moment('2019-12-26 17:00:00-06');
+        const start = moment('2019-12-23T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-12-26T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(4);
@@ -152,8 +152,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Holidays (New Years Day) in the middle of a span should be included as blanks', () => {
-        const start = moment('2018-12-31 09:00:00-06');
-        const end = moment('2019-01-02 17:00:00-06');
+        const start = moment('2018-12-31T09:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-01-02T17:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(3);
@@ -163,8 +163,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Irregular spans from 8 AM to 6 PM should still work', () => {
-        const start = moment('2019-10-22 08:00:00-05');
-        const end = moment('2019-10-23 18:00:00-05');
+        const start = moment('2019-10-22T08:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-23T18:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(2);
@@ -173,8 +173,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Irregular spans from 8 AM to 2 PM should still work', () => {
-        const start = moment('2019-10-22 08:00:00-05');
-        const end = moment('2019-10-23 14:00:00-05');
+        const start = moment('2019-10-22T08:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-23T14:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(2);
@@ -183,8 +183,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Irregular spans from 12 PM to 6 PM should still work', () => {
-        const start = moment('2019-10-22 12:00:00-05');
-        const end = moment('2019-10-23 18:00:00-05');
+        const start = moment('2019-10-22T12:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-23T18:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(2);
@@ -193,8 +193,8 @@ describe('RequestUnit function findUnits', () => {
     });
 
     test('Irregular spans from 4 AM to 4 PM should still work', () => {
-        const start = moment('2019-10-22 04:00:00-05');
-        const end = moment('2019-10-23 16:00:00-05');
+        const start = moment('2019-10-22T04:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
+        const end = moment('2019-10-23T16:00:00Z', 'YYYY-MM-DDTHH:mm:ssZ');
         const unitArray = RequestUnit.findUnits(start, end);
 
         expect(unitArray.length).toEqual(2);
