@@ -4,7 +4,6 @@ const Collision = require('../classes/Collision');
 const Request = require('../classes/Request');
 const RequestStatus = require('../classes/RequestStatus');
 const RequestType = require('../classes/RequestType');
-const TransactionCodes = require('../constants/TransactionCodes');
 
 const GRACE_PERIOD = 5;
 
@@ -113,7 +112,7 @@ class RequestClient {
 
         const selectText = `
         SELECT
-            request.id,
+            request.id AS id,
             request.leave_type_id AS type,
             request.status_id AS status,
             request.start_datetime AS start_date,
@@ -146,7 +145,7 @@ class RequestClient {
     async getCollisions(unit_id) {
         const selectCollisions = `
         SELECT
-            request.id,
+            request.id AS id,
             request.leave_type_id AS type,
             request.status_id,
             request.status_id AS status,
@@ -162,7 +161,7 @@ class RequestClient {
         WHERE collision.request_2 = $1 AND request.active
         UNION
         SELECT
-            request.id,
+            request.id AS id,
             request.leave_type_id AS type,
             request.status_id,
             request.status_id AS status,
@@ -324,19 +323,20 @@ class RequestClient {
     }
 
     // Deletes a time-off request
-    async deleteRequest(request, user, transactionCode) {
+    async deleteRequest(request, refund) {
         const deleteRequest = `
         DELETE FROM request
         WHERE id = $1;
         `;
         await this.client.query(deleteRequest, [request.id]);
-        if (request.status !== RequestStatus.code.DENIED && transactionCode !== TransactionCodes.ADMIN_SPECIAL) {
-            await this.refundHours(request, user, transactionCode);
+
+        if (refund && request.status !== RequestStatus.code.DENIED) {
+            await this.refundHours(request);
         }
     }
 
     // Refund the total number of off-hours found in a batch of requests
-    async refundHours(request, user, transactionCode) {
+    async refundHours(request) {
         const hoursColumn = RequestType.columnName(request.type);
         const updateEmployee = `
         UPDATE employee
@@ -344,13 +344,6 @@ class RequestClient {
         WHERE id = $2
         `;
         await this.client.query(updateEmployee, [request.hours, request.employee]);
-        const logUpdate = `
-        INSERT INTO transaction_log
-            (author_id, employee_id, leave_hours, leave_type_id, transaction_type_id)
-        VALUES
-            ($1, $2, $3, $4, $5);
-        `;
-        await this.client.query(logUpdate, [user.id, request.employee, request.hours, request.type, transactionCode]);
     }
 }
 

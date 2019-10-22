@@ -2,10 +2,9 @@
  - Unit testing
  - Integration testing
 Replace Accordion UI with Tabs 
-Look into structuring redux organizing state, normalizing state
-Fix SearchRequestsPage
+Improve structure of redux, organizing state, normalizing state
 Combine addLeave() and subLeave() in additional time saga
-Remove insert into log table when refunding hours
+Fix bug in AdminEditRequestsPage
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 

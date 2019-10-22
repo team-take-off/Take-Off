@@ -53,12 +53,7 @@ INSERT INTO transaction_type
 	(id, val)
 VALUES
 	(1, 'automatic accrual'),
-	(2, 'automatic adjustment'),
-	(3, 'employee request'),
-	(4, 'employee cancel'),
-	(5, 'admin approve'),
-	(6, 'admin deny'),
-	(7, 'admin special');
+	(2, 'automatic adjustment');
 
 -- Employee data
 CREATE TABLE employee (

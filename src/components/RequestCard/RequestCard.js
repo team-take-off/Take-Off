@@ -155,7 +155,8 @@ class RequestCard extends Component {
     // Handles when the admin presses the 'Cancel' button.
     cancel = () => {
         if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
+            // const id = this.props.requestArray[0].batch_of_requests_id;
+            const id = this.props.request.id;
             const action = {
                 type: 'WITHDRAW_USER_REQUEST',
                 payload: {
@@ -169,6 +170,7 @@ class RequestCard extends Component {
 
     // Handles when an employee presses the 'Withdraw' button (labeled cancel).
     withdraw = () => {
+        // const id = this.props.requestArray[0].batch_of_requests_id;
         const id = this.props.request.id;
         const action = {
             type: 'WITHDRAW_USER_REQUEST',

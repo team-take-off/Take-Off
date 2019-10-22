@@ -175,7 +175,6 @@ router.post('/', rejectUnauthenticated, (req, res) => {
 // Update the status (pending, approved, denied) for a request
 router.put('/:id', rejectNonAdmin, (req, res) => {
     const id = req.params.id;
-    const user = new User(req.user);
     const newStatus = new RequestStatus(req.body.requestStatus);
 
     const client = new RequestController(pool);
@@ -187,7 +186,7 @@ router.put('/:id', rejectNonAdmin, (req, res) => {
             const currentStatus = request.status;
             await client.updateStatus(id, newStatus);
             if (newStatus.denied && newStatus.lookup !== currentStatus) {
-                await client.refundHours(request, user, TransactionCodes.ADMIN_DENY);
+                await client.refundHours(request);
                 await client.removeCollisions(request.id);
             }
             await client.commit();
@@ -213,15 +212,6 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
     const user = new User(req.user);
     const specialEdit = parseBoolean(req.query.specialEdit);
 
-    let transactionCode;
-    if (user.isAdministrator() && specialEdit) {
-        transactionCode = TransactionCodes.ADMIN_SPECIAL;
-    } else if (user.isAdministrator()) {
-        transactionCode = TransactionCodes.ADMIN_DENY;
-    } else {
-        transactionCode = TransactionCodes.EMPLOYEE_CANCEL;
-    }
-
     const client = new RequestController(pool);
     (async () => {
         await client.connect();
@@ -229,7 +219,8 @@ router.delete('/:id', rejectUnauthenticated, (req, res) => {
             await client.begin();
             const request = await client.getRequestData(id);
             if (user.isAdministrator() || (user.id === request.employee && request.in_future)) {
-                await client.deleteRequest(request, user, transactionCode);
+                const refund = true;
+                await client.deleteRequest(request, refund);
             } else {
                 throw new Error('Unautharized use of route DELETE /api/request/:id.');
             } 

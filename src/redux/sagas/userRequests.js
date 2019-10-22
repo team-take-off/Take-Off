@@ -49,8 +49,8 @@ function* addUserRequest(action) {
 function* withdrawUserRequest(action) {
     try {
         const user = action.payload.user;
-        const requestID = action.payload.id;
-        yield axios.delete(`api/request/${requestID}`);
+        const id = action.payload.id;
+        yield axios.delete(`api/request/${id}`);
         yield put({ type: 'FETCH_USER_INFO' });
         yield put({ type: 'FETCH_USER_REQUESTS', payload: { user } });
         yield put({ type: 'FETCH_REQUESTS' });
