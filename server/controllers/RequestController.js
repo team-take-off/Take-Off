@@ -105,7 +105,7 @@ class RequestClient {
         }
 
         const whereClause = `
-        WHERE request_status.id = $1
+        WHERE request.status_id = $1
         AND ($2::numeric IS NULL OR request.employee_id = $2)
         AND ($3::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $3)
         AND ${dateClause}
@@ -113,28 +113,18 @@ class RequestClient {
 
         const selectText = `
         SELECT
-            request.id AS id,
-            DATE(request_unit.start_datetime) AS date,
-            request_unit.start_datetime AS unit_start_date,
-            request_unit.end_datetime AS unit_end_date,
-            EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_fullday,
-            EXTRACT(HOUR FROM request_unit.start_datetime) = 9 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 13 AS is_morning,
-            EXTRACT(HOUR FROM request_unit.start_datetime) = 13 AND EXTRACT(HOUR FROM request_unit.end_datetime) = 17 AS is_afternoon,
-            request_unit.request_id,
+            request.id,
+            request.leave_type_id AS type,
+            request.status_id AS status,
             request.start_datetime AS start_date,
             request.end_datetime AS end_date,
-            request.placed_datetime AS date_requested,
             employee.id AS employee_id,
             employee.first_name,
             employee.last_name,
-            leave_type.val AS type,
-            request.leave_type_id AS type_id,
-            request_status.val AS status,
-            request.status_id
-        FROM employee 
-        JOIN request ON employee.id = request.employee_id
-        JOIN leave_type ON leave_type.id = request.leave_type_id
-        JOIN request_status ON request_status.id = request.status_id
+            request_unit.start_datetime AS unit_start_date,
+            request_unit.end_datetime AS unit_end_date
+        FROM request
+        JOIN employee ON employee.id = request.employee_id
         JOIN request_unit ON request.id = request_unit.request_id
         ${whereClause}
         ORDER BY request.start_datetime ASC;
@@ -156,41 +146,37 @@ class RequestClient {
     async getCollisions(unit_id) {
         const selectCollisions = `
         SELECT
-            request.id AS id,
-            employee.id AS employee_id,
-            employee.first_name,
-            employee.last_name,
-            leave_type.val AS type,
-            request_status.val AS status,
+            request.id,
+            request.leave_type_id AS type,
             request.status_id,
+            request.status_id AS status,
             request.start_datetime AS start_date,
             request.end_datetime AS end_date,
-            request.placed_datetime AS date_requested
+            request.placed_datetime,
+            employee.id AS employee_id,
+            employee.first_name,
+            employee.last_name
         FROM employee 
         JOIN request ON employee.id = request.employee_id
-        JOIN leave_type ON leave_type.id = request.leave_type_id
-        JOIN request_status ON request_status.id = request.status_id
         JOIN collision ON collision.request_1 = request.id
         WHERE collision.request_2 = $1 AND request.active
         UNION
         SELECT
-            request.id AS id,
-            employee.id AS employee_id,
-            employee.first_name,
-            employee.last_name,
-            leave_type.val AS type,
-            request_status.val AS status,
+            request.id,
+            request.leave_type_id AS type,
             request.status_id,
+            request.status_id AS status,
             request.start_datetime AS start_date,
             request.end_datetime AS end_date,
-            request.placed_datetime AS date_requested
+            request.placed_datetime,
+            employee.id AS employee_id,
+            employee.first_name,
+            employee.last_name
         FROM employee 
         JOIN request ON employee.id = request.employee_id
-        JOIN leave_type ON leave_type.id = request.leave_type_id
-        JOIN request_status ON request_status.id = request.status_id
         JOIN collision ON collision.request_2 = request.id
         WHERE collision.request_1 = $1 AND request.active
-        ORDER BY date_requested;
+        ORDER BY placed_datetime;
         `;
         const { rows } = await this.client.query(selectCollisions, [unit_id]);
         return rows;
