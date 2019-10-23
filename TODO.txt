@@ -9,7 +9,6 @@ Fix bug related to date clause in get request counts RequestController
 
 Have GET requests filter by date range instead of year model this after holidays router
 Have GET requests default to active unless a status filter is provided
-Match the date range for counts router
 
 Switch admin edit request history page to requests_refactor
 Switch admin inbox to requests_refactor

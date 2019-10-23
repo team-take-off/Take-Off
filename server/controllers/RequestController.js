@@ -58,19 +58,26 @@ class RequestClient {
 
     // Returns the number of time-off requests that satisfy all of the optional 
     // filter criteria
-    async getCount(employee, year, leave, status) {
-        const startDate = RequestClient.getFilterStartDate(year);
-        const endDate = RequestClient.getFilterEndDate(year);
+    async getCount(employee, status, leave, startDate, endDate) {
+        const active = status !== RequestStatus.DENIED ? true : false;
+        let queryParams = [active, employee, leave, status];
+
+        let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
+        if (startDate || endDate) {
+            dateClause = `(($5::timestamp IS NULL OR start_datetime <= $5) AND ($6::timestamp IS NULL OR end_datetime >= $6))`;
+            queryParams = [...queryParams, startDate, endDate];
+        }
 
         const selectText = `
         SELECT COUNT(id) AS count
         FROM request
-            WHERE ($1::numeric IS NULL OR employee_id = $1)
-            AND ($2::numeric IS NULL OR leave_type_id = $2)
-            AND ($3::numeric IS NULL OR status_id = $3)
-            AND (start_datetime <= $5 AND end_datetime >= $4);
+            WHERE (active = $1)
+            AND ($2::numeric IS NULL OR employee_id = $2)
+            AND ($3::numeric IS NULL OR leave_type_id = $3)
+            AND ($4::numeric IS NULL OR status_id = $4)
+            AND ${dateClause};
         `;
-        const { rows } = await this.client.query(selectText, [employee, leave, status, startDate, endDate]);
+        const { rows } = await this.client.query(selectText, queryParams);
         return rows[0].count;
     }
 
@@ -133,7 +140,7 @@ class RequestClient {
         const requests = Request.loadQuery(rows);
 
         for (let request of requests) {
-            if (request.status !== 'denied') {
+            if (request.status !== RequestStatus.DENIED) {
                 const collisionRows = await this.getCollisions(request.id);
                 const collisions = Collision.loadQuery(collisionRows);
                 request.collisions = collisions;

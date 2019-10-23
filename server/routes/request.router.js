@@ -6,11 +6,11 @@ const pool = require('../modules/pool');
 const router = express.Router();
 
 const Employee = require('../classes/Employee');
+const Moment = require('../classes/Moment');
 const Request = require('../classes/Request');
 const RequestController = require('../controllers/RequestController');
 const RequestStatus = require('../classes/RequestStatus');
 const RequestUnit = require('../classes/RequestUnit');
-const TransactionCodes = require('../constants/TransactionCodes');
 const User = require('../classes/User');
 
 const parseInteger = (input) => {
@@ -92,16 +92,17 @@ router.get('/year-available', rejectUnauthenticated, (req, res) => {
 // Returns number of requests that satisfy the optional filters
 router.get('/count', rejectUnauthenticated, (req, res) => {
     const employee = parseInteger(req.query.employee);
-    const year = parseInteger(req.query.year);
-    const leave = parseInteger(req.query.leave);
     const status = parseInteger(req.query.status);
+    const leave = parseInteger(req.query.leave);
+    const start = new Moment(req.query.startDate, Moment.format.HTTP);
+    const end = new Moment(req.query.endDate, Moment.format.HTTP);
 
     const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const count = await client.getCount(employee, year, leave, status);
+            const count = await client.getCount(employee, status, leave, start.formatDatabase(), end.formatDatabase());
             await client.commit();
             res.send({ count });
         } catch (error) {
