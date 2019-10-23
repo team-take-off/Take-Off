@@ -1,7 +1,9 @@
 import { all } from 'redux-saga/effects';
 import employees from './employees';
 import login from './login';
+import requestCounts from './requestCounts';
 import requests from './requests';
+import requests_refactor from './requests_refactor';
 import userRequests from './userRequests';
 import user from './user';
 
@@ -16,7 +18,9 @@ export default function* rootSaga() {
   yield all([
     employees(),
     login(),
+    requestCounts(),
     requests(),
+    requests_refactor(),
     userRequests(),
     user(),
   ]);

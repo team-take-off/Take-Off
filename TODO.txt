@@ -5,6 +5,7 @@ Replace Accordion UI with Tabs
 Improve structure of redux, organizing state, normalizing state
 Fix bug in AdminEditRequestsPage
 Fix bug in past?
+Fix bug related to date clause in get request counts RequestController
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 

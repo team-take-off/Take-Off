@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 
 import './RequestTabs.css';
+import RequestCard from '../RequestCard/RequestCard';
 
 const TABS = {
     pending: 1,
@@ -12,35 +12,25 @@ const TABS = {
 
 const RequestTabs = (props) => {
     const [activeTab, setActiveTab] = useState(TABS.pending);
-    const [counts, setCounts] = useState({ pending: null, approved: null, denied: null});
 
     useEffect(() => {
-        fetchCounts();
-    }, [counts]);
-
-    const fetchCounts = async () => {
-        try {
-            const employee = props.reduxStore.user.id;
-            const pending = await axios.get(`/api/request/count`, { params: { employee, status: 1 } });
-            const approved = await axios.get(`/api/request/count`, { params: { employee, status: 2 } });
-            const denied = await axios.get(`/api/request/count`, { params: { employee, status: 3 } });            
-            await setCounts({ pending: pending.data.count, approved: approved.data.count, denied: denied.data.count });
-        } catch(error) {
-            await console.log(error);
-            await alert('Unable to fetch request counts');
-        };
-    }
+        console.log('in useEffect()');
+        props.dispatch({ type: 'SET_FILTERS', payload: { employee: props.employee, status: activeTab, year: null } });
+    }, []);
 
     const activatePending = () => {
         setActiveTab(TABS.pending);
+        props.dispatch({ type: 'SET_STATUS_FILTER', payload: TABS.pending });
     }
 
     const activateApproved = () => {
         setActiveTab(TABS.approved);
+        props.dispatch({ type: 'SET_STATUS_FILTER', payload: TABS.approved });
     }
 
     const activateDenied = () => {
         setActiveTab(TABS.denied);
+        props.dispatch({ type: 'SET_STATUS_FILTER', payload: TABS.denied });
     }
 
     const pendingActive = () => {
@@ -70,15 +60,15 @@ const RequestTabs = (props) => {
                 <div className="tab-area">
                     <div onClick={activatePending} className={pendingActive() ? 'tab active-tab' : 'tab'}>
                         <h4>Pending</h4>
-                        <span className={counts.pending ? 'count-badge' : 'hidden-badge'}>{counts.pending}</span>
+                        <span className={props.counts.pending ? 'count-badge' : 'hidden-badge'}>{props.counts.pending}</span>
                     </div>
                     <div onClick={activateApproved} className={approvedActive() ? 'tab active-tab' : 'tab'}>
                         <h4>Approved</h4>
-                        <span className={counts.approved ? 'count-badge' : 'hidden-badge'}>{counts.approved}</span>
+                        <span className={props.counts.approved ? 'count-badge' : 'hidden-badge'}>{props.counts.approved}</span>
                     </div>
                     <div onClick={activateDenied} className={deniedActive() ? 'tab active-tab' : 'tab'}>
                         <h4>Denied</h4>
-                        <span className={counts.denied ? 'count-badge' : 'hidden-badge'}>{counts.denied}</span>
+                        <span className={props.counts.denied ? 'count-badge' : 'hidden-badge'}>{props.counts.denied}</span>
                     </div>
                 </div>
                 
@@ -87,14 +77,26 @@ const RequestTabs = (props) => {
                 </div>
             </div>
             <div className="card-area">
-
+                {props.requests.length > 0 && props.requests.map(request =>
+                    <RequestCard
+                        key={request.id}
+                        request={request}
+                        forAdmin={props.reduxStore.adminMode}
+                        past="false"
+                    />
+                )}
+                {props.requests.length === 0 && (<span>[ No Requests ]</span>)}
             </div>
         </div>
     );
 };
 
 const mapReduxStoreToProps = reduxStore => ({
-    reduxStore: reduxStore
+    reduxStore: reduxStore,
+    employee: reduxStore.user.id,
+    requests: reduxStore.requests_refactor,
+    filters: reduxStore.requestFilters,
+    counts: reduxStore.requestCounts
 });
 
 export default connect(mapReduxStoreToProps)(RequestTabs);

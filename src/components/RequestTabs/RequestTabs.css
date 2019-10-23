@@ -26,7 +26,7 @@ div.tab-area {
 }
 
 div.tab {
-    background-color: rgb(221, 221, 221);
+    background-color: rgb(201, 201, 201);
     color: #222d31;
     margin-left: 10px;
     padding: 0.6rem 20px;
@@ -54,6 +54,7 @@ div.active-tab {
     border-top: 5px solid rgb(0, 127, 255);
 
     border-radius: 0px;
+    padding-top: 0.4rem;
 }
 
 div.active-tab:hover {
@@ -91,16 +92,8 @@ div.filter-options-div:hover {
 }
 
 div.card-area {
-    min-height: 100px;
-    /* background-color: red; */
-
-    /* background-color: white;
-    border-bottom: 1px solid lightgray;
-    border-left: 1px solid lightgray;
-    border-right: 1px solid lightgray; */
-
-
     margin-top: 0;
+    padding-top: 2rem;
 }
 
 @media only screen and (max-width: 700px) {

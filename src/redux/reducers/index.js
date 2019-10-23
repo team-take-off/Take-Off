@@ -6,7 +6,10 @@ import enteredSickRequest from './enteredSickRequest';
 import enteredVacationRequest from './enteredVacationRequest';
 import errors from './errors';
 import loginMode from './loginMode';
+import requestCounts from './requestCounts';
+import requestFilters from './requestFilters';
 import requests from './requests';
+import requests_refactor from './requests_refactor';
 import user from './user';
 import userRequests from './userRequests';
 
@@ -24,7 +27,10 @@ const rootReducer = combineReducers({
   enteredVacationRequest,
   errors,
   loginMode,
+  requestCounts,
+  requestFilters,
   requests,
+  requests_refactor,
   user,
   userRequests,
 });
