@@ -1,0 +1,138 @@
+.tab-background-bar * {
+    margin: 0;
+    padding: 0;
+}
+
+div.tab-background-bar {
+    background-color: lightgray;
+
+    background-image: linear-gradient(white, rgb(238, 237, 237));
+    border-bottom: 1px solid lightgray;
+
+    margin-bottom: 0;
+    padding-top: 0.4rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+div.tab-area {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+div.tab {
+    background-color: rgb(221, 221, 221);
+    color: #222d31;
+    margin-left: 10px;
+    padding: 0.6rem 20px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+
+    cursor: pointer;
+}
+
+div.tab:hover {
+    background-color: rgb(230, 230, 230);
+    color: black;
+}
+
+div.active-tab {
+    background-color: white;
+    color: #444;
+    border-top: 5px solid rgb(0, 127, 255);
+    margin-bottom: -2px;
+    padding: 0.6rem 22px;
+
+    border-radius: 0px;
+}
+
+div.active-tab:hover {
+    background-color: white;
+}
+
+span.count-badge {
+    background-color: #222d31;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 0rem 8px;
+    border-radius: 100%;
+    margin-left: 18px;
+}
+
+div.active-tab span.count-badge {
+    background-color: rgb(0, 127, 255);
+}
+
+div.filter-options-div {
+    font-size: 1rem;
+    color: rgb(0, 127, 255);
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+div.filter-options-div:hover {
+    color: rgb(0, 98, 196);
+}
+
+div.card-area {
+    min-height: 100px;
+    /* background-color: red; */
+
+    /* background-color: white;
+    border-bottom: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    border-right: 1px solid lightgray; */
+
+
+    margin-top: 0;
+}
+
+@media only screen and (max-width: 700px) {
+    h2 {
+        margin-bottom: 0.4rem;
+    }
+
+    div.tab-area {
+        padding-left: 0px;
+    }
+
+    div.tab {
+        margin-left: 2px;
+        padding: 0.2rem 10px;
+    }
+
+    div.tab h4 {
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    div.active-tab {
+        border-top: 3px solid rgb(0, 127, 255);
+    }
+
+    span.count-badge {
+        font-size: 0.2rem;
+        font-weight: normal;
+        padding: 0rem 8px;
+        border-radius: 100%;
+        margin-left: 2px;
+        display: none; 
+    }
+
+    div.filter-options-div {
+        margin-right: 2px;
+        font-size: 0.4rem;
+    }
+}

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import Nav from '../Nav/Nav';
 import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
+import RequestTabs from '../RequestTabs/RequestTabs';
 
 class EmployeeRequestsPage extends Component {
     componentDidMount() {
@@ -27,6 +28,7 @@ class EmployeeRequestsPage extends Component {
                 <Nav history={this.props.history} />
                 <div className="page-container">
                     <h2>{this.props.reduxStore.user ? this.props.reduxStore.user.first_name + '\'s Requests' : 'Employee Requests'}</h2>
+                    <RequestTabs />
                     <select onChange={this.handleYearChange} defaultValue="">
                         <option value="">Recent Years</option>
                         {this.props.reduxStore.userRequests.years.map((year, i) =>
