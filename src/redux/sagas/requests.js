@@ -45,7 +45,6 @@ function* approveRequest(action) {
         const id = action.payload;
         yield axios.put(`api/request/${id}`, { requestStatus: 2 });
         yield put({ type: 'FETCH_REQUESTS' });
-        yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in POST:', error);
@@ -57,7 +56,6 @@ function* denyRequest(action) {
         const id = action.payload;
         yield axios.put(`api/request/${id}`, { requestStatus: 3 });
         yield put({ type: 'FETCH_REQUESTS' });
-        yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in DELETE:', error);
@@ -69,7 +67,6 @@ function* withdrawRequest(action) {
         const requestID = action.payload;
         yield axios.delete(`api/request/${requestID}`);
         yield put({ type: 'FETCH_REQUESTS' });
-        yield put({ type: 'FETCH_USER_REQUESTS' });
         yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in DELETE:', error);
@@ -87,7 +84,6 @@ function* deleteRequest(action) {
             }
         });
         yield put({ type: 'FETCH_REQUESTS', payload: { employee: employeeID } });
-        // yield put({ type: 'FETCH_USER_REQUESTS' });
         // yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in request saga deleteRequest():', error);

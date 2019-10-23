@@ -96,6 +96,11 @@ div.card-area {
     padding-top: 2rem;
 }
 
+span.no-requests-span {
+    margin-left: 40px;
+    color: #373d3f;
+}
+
 @media only screen and (max-width: 700px) {
     h2 {
         margin-bottom: 0.4rem;

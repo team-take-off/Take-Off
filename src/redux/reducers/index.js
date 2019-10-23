@@ -11,7 +11,6 @@ import requestFilters from './requestFilters';
 import requests from './requests';
 import requests_refactor from './requests_refactor';
 import user from './user';
-import userRequests from './userRequests';
 
 // rootReducer is the primary reducer for our entire project
 // It bundles up all of the other reducers so our project can use them.
@@ -32,7 +31,6 @@ const rootReducer = combineReducers({
   requests,
   requests_refactor,
   user,
-  userRequests,
 });
 
 export default rootReducer;

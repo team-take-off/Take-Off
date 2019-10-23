@@ -81,11 +81,11 @@ const RequestTabs = (props) => {
                     <RequestCard
                         key={request.id}
                         request={request}
-                        forAdmin={props.reduxStore.adminMode}
-                        past="false"
+                        forAdmin={props.forAdmin}
+                        past={false}
                     />
                 )}
-                {props.requests.length === 0 && (<span>[ No Requests ]</span>)}
+                {props.requests.length === 0 && (<span className="no-requests-span">[ No requests in this category ]</span>)}
             </div>
         </div>
     );

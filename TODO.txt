@@ -7,6 +7,19 @@ Fix bug in AdminEditRequestsPage
 Fix bug in past?
 Fix bug related to date clause in get request counts RequestController
 
+Have GET requests filter by date range instead of year model this after holidays router
+Have GET requests default to active unless a status filter is provided
+Match the date range for counts router
+
+Switch admin edit request history page to requests_refactor
+Switch admin inbox to requests_refactor
+Build filter options drop-down for RequestTabs
+
+Switch calendar page to use redux requests_refactor, filtered for active and +/- one month from currently displayed
+Display holidays on calendar page
+Reformat calendar entry to be [Full Name] - [Vacation/Sick] - [Pending (if applicable)]
+
+
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 
 Add vacation rules router on the server-side that allows querrying the vacation rules module from the client
