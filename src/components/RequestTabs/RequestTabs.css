@@ -30,6 +30,7 @@ div.tab {
     color: #222d31;
     margin-left: 10px;
     padding: 0.6rem 20px;
+    margin-bottom: -1px;
 
     display: flex;
     flex-direction: row;
@@ -51,8 +52,6 @@ div.active-tab {
     background-color: white;
     color: #444;
     border-top: 5px solid rgb(0, 127, 255);
-    margin-bottom: -2px;
-    padding: 0.6rem 22px;
 
     border-radius: 0px;
 }
@@ -64,15 +63,20 @@ div.active-tab:hover {
 span.count-badge {
     background-color: #222d31;
     color: white;
-    font-size: 0.8rem;
+    font-size: 12px;
     font-weight: bold;
-    padding: 0rem 8px;
-    border-radius: 100%;
+    padding: 0px 8px;
+    height: 16px;
+    border-radius: 8px;
     margin-left: 18px;
 }
 
 div.active-tab span.count-badge {
     background-color: rgb(0, 127, 255);
+}
+
+div.hidden-badge {
+    display: none;
 }
 
 div.filter-options-div {
