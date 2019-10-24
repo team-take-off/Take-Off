@@ -3,15 +3,10 @@ import { connect } from 'react-redux';
 
 import './RequestTabs.css';
 import RequestCard from '../RequestCard/RequestCard';
-
-const TABS = {
-    pending: 1,
-    approved: 2,
-    denied: 3
-};
+import RequestStatus from '../../classes/RequestStatus';
 
 const RequestTabs = (props) => {
-    const [activeTab, setActiveTab] = useState(TABS.pending);
+    const [activeTab, setActiveTab] = useState(RequestStatus.PENDING);
 
     useEffect(() => {
         if (props.forAdmin) {
@@ -22,36 +17,36 @@ const RequestTabs = (props) => {
     }, []);
 
     const activatePending = () => {
-        setActiveTab(TABS.pending);
-        props.dispatch({ type: 'SET_STATUS_FILTER', payload: TABS.pending });
+        setActiveTab(RequestStatus.PENDING);
+        props.dispatch({ type: 'SET_STATUS_FILTER', payload: RequestStatus.PENDING });
     }
 
     const activateApproved = () => {
-        setActiveTab(TABS.approved);
-        props.dispatch({ type: 'SET_STATUS_FILTER', payload: TABS.approved });
+        setActiveTab(RequestStatus.APPROVED);
+        props.dispatch({ type: 'SET_STATUS_FILTER', payload: RequestStatus.APPROVED });
     }
 
     const activateDenied = () => {
-        setActiveTab(TABS.denied);
-        props.dispatch({ type: 'SET_STATUS_FILTER', payload: TABS.denied });
+        setActiveTab(RequestStatus.DENIED);
+        props.dispatch({ type: 'SET_STATUS_FILTER', payload: RequestStatus.DENIED });
     }
 
     const pendingActive = () => {
-        if (activeTab === TABS.pending) {
+        if (activeTab === RequestStatus.PENDING) {
             return true;
         }
         return false;
     }
     
     const approvedActive = () => {
-        if (activeTab === TABS.approved) {
+        if (activeTab === RequestStatus.APPROVED) {
             return true;
         }
         return false;
     }
 
     const deniedActive = () => {
-        if (activeTab === TABS.denied) {
+        if (activeTab === RequestStatus.DENIED) {
             return true;
         }
         return false;

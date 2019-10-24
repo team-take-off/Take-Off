@@ -7,7 +7,6 @@ Fix bug in AdminEditRequestsPage
 Fix bug in past?
 Fix bug related to date clause in get request counts RequestController
 
-Switch admin inbox to requests_refactor
 Build filter options drop-down for RequestTabs
 
 Switch calendar page to use redux requests_refactor, filtered for active and +/- one month from currently displayed
