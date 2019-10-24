@@ -9,7 +9,6 @@ import loginMode from './loginMode';
 import requestCounts from './requestCounts';
 import requestFilters from './requestFilters';
 import requests from './requests';
-import requests_refactor from './requests_refactor';
 import user from './user';
 
 // rootReducer is the primary reducer for our entire project
@@ -29,7 +28,6 @@ const rootReducer = combineReducers({
   requestCounts,
   requestFilters,
   requests,
-  requests_refactor,
   user,
 });
 

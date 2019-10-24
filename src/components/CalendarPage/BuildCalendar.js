@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import BigCalendar from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import moment from 'moment';
@@ -9,19 +10,19 @@ class BuildAdminCalendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            calendar_events: [],
+            calendarEvents: [],
         };
-      }
+    }
+
+    componentDidMount() {
+        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true, startDate: '2018-10-26 01:00:00Z', endDate: '2020-10-26 01:00:00Z' } });
+        this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true } });
+    }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.requests !== this.props.requests) {
-            const approved = this.props.requests.approved;
-            const pending = this.props.requests.pending;
-            
-            for (let request of approved) {
-                this.insertRequest(request);
-            }
-            for (let request of pending) {
+
+        if (prevProps.requests !== this.props.requests) {            
+            for (let request of this.props.requests) {
                 this.insertRequest(request);
             }
         }
@@ -36,14 +37,14 @@ class BuildAdminCalendar extends Component {
         const lastUnit = request.units[request.units.length - 1];
 
         const calendarEvent = {
-            title: `${request.employee.firstName}: ${request.formatType()}`,
+            title: `${request.employee.firstName} ${request.employee.lastName}: ${request.formatType()} ${request.status.lookup === 2 ? ' (Pending)' : ''}`,
             start: moment(startUnit.date),
             end: moment(lastUnit.date).add(1, 'day')
         };
 
         this.setState(prevState => ({
             ...this.state,
-            calendar_events: [...prevState.calendar_events, calendarEvent]
+            calendarEvents: [...prevState.calendarEvents, calendarEvent]
         }));
     }
 
@@ -65,6 +66,11 @@ class BuildAdminCalendar extends Component {
         };
     }
 
+    handleNavigate = (event) => {
+        console.log(event);
+
+    }
+
     // Show this component on the DOM
     render() {
         const localizer = BigCalendar.momentLocalizer(moment);
@@ -73,15 +79,21 @@ class BuildAdminCalendar extends Component {
                 <div style={{ height: '100vh' }}>
                     <BigCalendar
                         localizer={localizer}
-                        events={this.state.calendar_events}
+                        events={this.state.calendarEvents}
                         step={30}
                         defaultView='month'
                         views={['month']}
                         eventPropGetter={(this.eventStyle)}
+                        onNavigate={this.handleNavigate}
                     />
                 </div>
             </div>
         );
     }
 }
-export default BuildAdminCalendar;
+
+const mapReduxStoreToProps = reduxStore => ({
+    requests: reduxStore.requests
+});
+
+export default connect(mapReduxStoreToProps)(BuildAdminCalendar);

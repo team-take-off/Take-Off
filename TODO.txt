@@ -11,7 +11,6 @@ Build filter options drop-down for RequestTabs
 
 Switch calendar page to use redux requests_refactor, filtered for active and +/- one month from currently displayed
 Display holidays on calendar page
-Reformat calendar entry to be [Full Name] - [Vacation/Sick] - [Pending (if applicable)]
 
 
 # Feature Node Cron Vacation

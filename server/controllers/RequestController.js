@@ -63,7 +63,7 @@ class RequestClient {
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
         if (startDate || endDate) {
-            dateClause = `(($5::timestamp IS NULL OR start_datetime <= $5) AND ($6::timestamp IS NULL OR end_datetime >= $6))`;
+            dateClause = `(($5::timestamp IS NULL OR request.start_datetime <= $5) AND ($6::timestamp IS NULL OR request.end_datetime >= $6))`;
             queryParams = [...queryParams, startDate, endDate];
         }
 
@@ -108,7 +108,7 @@ class RequestClient {
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
         if (startDate || endDate) {
-            dateClause = `(($5::timestamp IS NULL OR start_datetime <= $5) AND ($6::timestamp IS NULL OR end_datetime >= $6))`;
+            dateClause = `(($5::timestamp IS NULL OR request.start_datetime <= $5) AND ($6::timestamp IS NULL OR request.end_datetime >= $6))`;
             queryParams = [...queryParams, startDate, endDate];
         }
 

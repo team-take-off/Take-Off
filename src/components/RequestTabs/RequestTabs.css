@@ -83,6 +83,7 @@ div.hidden-badge {
 div.filter-options-div {
     font-size: 1rem;
     margin-right: 20px;
+    padding-bottom: 0.4rem;
 }
 
 p.filter-link {

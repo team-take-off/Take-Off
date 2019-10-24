@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
 
 import BuildCalendar from './BuildCalendar';
 import Nav from '../Nav/Nav';
 
-class AdminCalendarPage extends Component {
-    componentDidMount() { 
-        this.props.dispatch({type: 'FETCH_REQUESTS'});
-    }
-      
+class AdminCalendarPage extends Component {      
     // Show this component on the DOM
     render() {
         return (
@@ -22,8 +17,4 @@ class AdminCalendarPage extends Component {
     }
 }
 
-const mapReduxStoreToProps = reduxStore => ({
-    requests: reduxStore.requests
-});
-
-export default connect(mapReduxStoreToProps)(AdminCalendarPage);
+export default AdminCalendarPage;

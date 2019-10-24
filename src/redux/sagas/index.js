@@ -3,7 +3,6 @@ import employees from './employees';
 import login from './login';
 import requestCounts from './requestCounts';
 import requests from './requests';
-import requests_refactor from './requests_refactor';
 import user from './user';
 
 // rootSaga is the primary saga.
@@ -19,7 +18,6 @@ export default function* rootSaga() {
     login(),
     requestCounts(),
     requests(),
-    requests_refactor(),
     user(),
   ]);
 }

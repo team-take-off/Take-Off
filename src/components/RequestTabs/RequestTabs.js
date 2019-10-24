@@ -119,11 +119,17 @@ const RequestTabs = (props) => {
                 
                 <div className="filter-options-div">
                     <p onClick={toggleFilterPane} className="filter-link">▼ Filter Options</p>
-                    {filterOpen && <div className="filter-options-pane">
-                        <h3>Filter Options</h3>
-                        <p>Year:</p>
-                        <p onClick={toggleFilterPane} className="filter-link">Close</p>
-                    </div>}
+                    {filterOpen &&
+                        <div className="filter-options-pane">
+                            <h3>Filter Options</h3>
+                            {props.forAdmin &&
+                                <p>Employee:</p>
+                            }
+                            <p>Year:</p>
+                            <p>Vacation/Sick:</p>
+                            <p onClick={toggleFilterPane} className="filter-link">Close</p>
+                        </div>
+                    }
                 </div>
             </div>
             <div className="filter-display">
@@ -147,7 +153,7 @@ const RequestTabs = (props) => {
 const mapReduxStoreToProps = reduxStore => ({
     reduxStore: reduxStore,
     employee: reduxStore.user.id,
-    requests: reduxStore.requests_refactor,
+    requests: reduxStore.requests,
     filters: reduxStore.requestFilters,
     counts: reduxStore.requestCounts
 });
