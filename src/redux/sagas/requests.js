@@ -32,7 +32,7 @@ function* fetchRequests(action) {
 function* addRequest(action) {
     const employeeID = action.payload.employee;
     try {
-        yield axios.post('api/request/', action.payload);
+        // yield axios.post('api/request/', action.payload);
         yield put({ type: 'FETCH_REQUESTS', payload: { employee: employeeID } });
     } catch (error) {
         console.log('Error in saga addUserRequest(),', error);
@@ -67,6 +67,7 @@ function* withdrawRequest(action) {
         const requestID = action.payload;
         yield axios.delete(`api/request/${requestID}`);
         yield put({ type: 'FETCH_REQUESTS' });
+        
         yield put({ type: 'FETCH_USER_INFO' });
     } catch (error) {
         console.log('Error in DELETE:', error);

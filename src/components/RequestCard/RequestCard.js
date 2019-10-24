@@ -158,11 +158,8 @@ class RequestCard extends Component {
             // const id = this.props.requestArray[0].batch_of_requests_id;
             const id = this.props.request.id;
             const action = {
-                type: 'WITHDRAW_USER_REQUEST',
-                payload: {
-                    id,
-                    user: this.props.reduxStore.user.id
-                }
+                type: 'WITHDRAW_REQUEST',
+                payload: this.props.request.id
             };
             this.props.dispatch(action);
         }
@@ -171,13 +168,9 @@ class RequestCard extends Component {
     // Handles when an employee presses the 'Withdraw' button (labeled cancel).
     withdraw = () => {
         // const id = this.props.requestArray[0].batch_of_requests_id;
-        const id = this.props.request.id;
         const action = {
-            type: 'WITHDRAW_USER_REQUEST',
-            payload: {
-                id,
-                user: this.props.reduxStore.user.id
-            }
+            type: 'WITHDRAW_REQUEST',
+            payload: this.props.request.id
         };
         this.props.dispatch(action);
     }

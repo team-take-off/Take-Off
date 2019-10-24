@@ -13,8 +13,8 @@ let filters = DEFAULT_FILTERS;
 
 function* fetchCounts(action) {
     try {
-        const pending = yield axios.get(`/api/request/count`, { params: { ...filters, status: RequestStatus.APPROVED } });
-        const approved = yield axios.get(`/api/request/count`, { params: { ...filters, status: RequestStatus.PENDING } });
+        const pending = yield axios.get(`/api/request/count`, { params: { ...filters, status: RequestStatus.PENDING } });
+        const approved = yield axios.get(`/api/request/count`, { params: { ...filters, status: RequestStatus.APPROVED } });
         const denied = yield axios.get(`/api/request/count`, { params: { ...filters, status: RequestStatus.DENIED } });
 
         const counts = {

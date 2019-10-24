@@ -33,6 +33,7 @@ const parseBoolean = (input) => {
 router.get('/', rejectUnauthenticated, (req, res) => {
     const employee = parseInteger(req.query.employee);
     const status = parseInteger(req.query.status);
+    const active = parseBoolean(req.query.active);
     const leave = parseInteger(req.query.leave);
     const start = new Moment(req.query.startDate, Moment.format.HTTP);
     const end = new Moment(req.query.endDate, Moment.format.HTTP);
@@ -42,7 +43,7 @@ router.get('/', rejectUnauthenticated, (req, res) => {
         await client.connect();
         try {
             await client.begin();
-            const requests = await client.getRequests(employee, status, leave, start.formatDatabase(), end.formatDatabase());
+            const requests = await client.getRequests(employee, status, active, leave, start.formatDatabase(), end.formatDatabase());
             await client.commit();
             res.send(requests);
         } catch (error) {
@@ -93,6 +94,7 @@ router.get('/year-available', rejectUnauthenticated, (req, res) => {
 router.get('/count', rejectUnauthenticated, (req, res) => {
     const employee = parseInteger(req.query.employee);
     const status = parseInteger(req.query.status);
+    const active = parseBoolean(req.query.active);
     const leave = parseInteger(req.query.leave);
     const start = new Moment(req.query.startDate, Moment.format.HTTP);
     const end = new Moment(req.query.endDate, Moment.format.HTTP);
@@ -102,7 +104,7 @@ router.get('/count', rejectUnauthenticated, (req, res) => {
         await client.connect();
         try {
             await client.begin();
-            const count = await client.getCount(employee, status, leave, start.formatDatabase(), end.formatDatabase());
+            const count = await client.getCount(employee, status, active, leave, start.formatDatabase(), end.formatDatabase());
             await client.commit();
             res.send({ count });
         } catch (error) {

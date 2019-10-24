@@ -58,8 +58,7 @@ class RequestClient {
 
     // Returns the number of time-off requests that satisfy all of the optional 
     // filter criteria
-    async getCount(employee, status, leave, startDate, endDate) {
-        const active = status !== RequestStatus.DENIED ? true : false;
+    async getCount(employee, status, active, leave, startDate, endDate) {
         let queryParams = [active, employee, status, leave];
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
@@ -71,7 +70,7 @@ class RequestClient {
         const selectText = `
         SELECT COUNT(id) AS count
         FROM request
-            WHERE active = $1
+            WHERE ($1::boolean IS NULL OR active = $1)
             AND ($2::numeric IS NULL OR employee_id = $2)
             AND ($3::numeric IS NULL OR status_id = $3)
             AND ($4::numeric IS NULL OR leave_type_id = $4)
@@ -104,8 +103,7 @@ class RequestClient {
     }
 
     // Returns an array of requests that have a given status and year
-    async getRequests(employee, status, leave, startDate, endDate) {
-        const active = status !== RequestStatus.DENIED ? true : false;
+    async getRequests(employee, status, active, leave, startDate, endDate) {
         let queryParams = [active, employee, status, leave];
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
@@ -115,9 +113,9 @@ class RequestClient {
         }
 
         const whereClause = `
-        WHERE active = $1
-        AND ($2::numeric IS NULL OR request.status_id = $2)
-        AND ($3::numeric IS NULL OR request.employee_id = $3)
+        WHERE ($1::boolean IS NULL OR active = $1)
+        AND ($2::numeric IS NULL OR request.employee_id = $2)
+        AND ($3::numeric IS NULL OR request.status_id = $3)
         AND ($4::numeric IS NULL OR leave_type_id = $4)
         AND ${dateClause}
         `;

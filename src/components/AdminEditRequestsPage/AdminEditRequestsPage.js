@@ -56,7 +56,7 @@ class AdminEditRequestsPage extends Component {
     // server
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
-        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: { employee: this.props.match.params.id } });
+        this.props.dispatch({ type: 'SET_EMPLOYEE_FILTER', payload: this.props.match.params.id });
     }
 
     // If any of the input data changes reload the selected employee data that 
@@ -68,12 +68,7 @@ class AdminEditRequestsPage extends Component {
         if (prevProps.requestsRaw !== this.props.requestsRaw) {
             this.setState({
                 ...this.state,
-                requests: [
-                    ...this.props.requestsRaw.past,
-                    ...this.props.requestsRaw.denied,
-                    ...this.props.requestsRaw.pending,
-                    ...this.props.requestsRaw.approved
-                ]
+                requests: this.props.requestsRaw
             });
         }
     }
@@ -219,7 +214,6 @@ class AdminEditRequestsPage extends Component {
                     status: this.state.status
                 }
             };
-            console.log(action);
             this.props.dispatch(action);
             this.setState({
                 ...this.state,
@@ -348,7 +342,7 @@ class AdminEditRequestsPage extends Component {
 
 const mapStateToProps = reduxStore => ({
     employees: reduxStore.employees,
-    requestsRaw: reduxStore.requests
+    requestsRaw: reduxStore.requests_refactor
 });
 
 export default connect(mapStateToProps)(AdminEditRequestsPage);
