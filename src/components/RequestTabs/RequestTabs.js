@@ -14,8 +14,11 @@ const RequestTabs = (props) => {
     const [activeTab, setActiveTab] = useState(TABS.pending);
 
     useEffect(() => {
-        console.log('in useEffect()');
-        props.dispatch({ type: 'SET_FILTERS', payload: { employee: props.employee, status: activeTab, year: null } });
+        if (props.forAdmin) {
+            props.dispatch({ type: 'SET_FILTERS', payload: { employee: null, status: activeTab, year: null } });
+        } else {
+            props.dispatch({ type: 'SET_FILTERS', payload: { employee: props.employee, status: activeTab, year: null } });
+        }
     }, []);
 
     const activatePending = () => {

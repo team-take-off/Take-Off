@@ -42,17 +42,17 @@ class RequestClient {
 
     // Returns an array of unique years for time-off requests that meet optional
     // filter criteria
-    async getYears(employee, leave, status) {        
+    async getYears(employee, status, leave) {        
         const selectText = `
         SELECT DISTINCT EXTRACT(YEAR FROM request_unit.start_datetime) AS extract_year
         FROM request
         JOIN request_unit ON request.id = request_unit.request_id
             WHERE ($1::numeric IS NULL OR request.employee_id = $1)
-            AND ($2::numeric IS NULL OR request.leave_type_id = $2)
-            AND ($3::numeric IS NULL OR request.status_id = $3)
+            AND ($2::numeric IS NULL OR request.status_id = $2)
+            AND ($3::numeric IS NULL OR request.leave_type_id = $3)
         ORDER BY extract_year ASC;
         `;
-        const { rows } = await this.client.query(selectText, [employee, leave, status]);
+        const { rows } = await this.client.query(selectText, [employee, status, leave]);
         return rows.map(row => row.extract_year);
     }
 
@@ -60,7 +60,7 @@ class RequestClient {
     // filter criteria
     async getCount(employee, status, leave, startDate, endDate) {
         const active = status !== RequestStatus.DENIED ? true : false;
-        let queryParams = [active, employee, leave, status];
+        let queryParams = [active, employee, status, leave];
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
         if (startDate || endDate) {
@@ -73,8 +73,8 @@ class RequestClient {
         FROM request
             WHERE (active = $1)
             AND ($2::numeric IS NULL OR employee_id = $2)
-            AND ($3::numeric IS NULL OR leave_type_id = $3)
-            AND ($4::numeric IS NULL OR status_id = $4)
+            AND ($3::numeric IS NULL OR status_id = $3)
+            AND ($4::numeric IS NULL OR leave_type_id = $4)
             AND ${dateClause};
         `;
         const { rows } = await this.client.query(selectText, queryParams);

@@ -63,15 +63,15 @@ router.get('/', rejectUnauthenticated, (req, res) => {
 // Returns list of available years
 router.get('/year-available', rejectUnauthenticated, (req, res) => {
     const employee = parseInteger(req.query.employee);
-    const leave = parseInteger(req.query.leave);
     const status = parseInteger(req.query.status);
+    const leave = parseInteger(req.query.leave);
 
     const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const years = await client.getYears(employee, leave, status);
+            const years = await client.getYears(employee, status, leave);
             await client.commit();
             res.send(years);
         } catch (error) {
