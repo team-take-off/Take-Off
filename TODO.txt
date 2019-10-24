@@ -1,17 +1,12 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Replace Accordion UI with Tabs 
-Improve structure of redux, organizing state, normalizing state
-Fix bug in AdminEditRequestsPage
-Fix bug in past?
-Fix bug related to date clause in get request counts RequestController
-
+Fix bug in date range filtering for GET /api/request
+Fix bug in POST /api/request
+Fetch and display company holidays on calendar page
+Filter requests filtered for calendar to include active=true requests and +/- one month from current day
+Trigger re-fetching of requests firing with calendar onNavigate()
 Build filter options drop-down for RequestTabs
-
-Switch calendar page to use redux requests_refactor, filtered for active and +/- one month from currently displayed
-Display holidays on calendar page
-
 
 # Feature Node Cron Vacation
 Add vacation rules module on the server-side 

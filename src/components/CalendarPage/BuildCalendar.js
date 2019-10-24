@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+
+import RequestStatus from '../../classes/RequestStatus';
+import RequestType from '../../classes/RequestType';
+
 import BigCalendar from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 import moment from 'moment';
 moment.locale('en');
 BigCalendar.momentLocalizer(moment);
@@ -10,7 +15,7 @@ class BuildAdminCalendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            calendarEvents: [],
+            events: []
         };
     }
 
@@ -21,49 +26,30 @@ class BuildAdminCalendar extends Component {
 
     componentDidUpdate(prevProps, prevState) {
 
-        if (prevProps.requests !== this.props.requests) {            
+        if (prevProps.requests !== this.props.requests) {
+            const events = [];
+            const eventStyles = [];
+
             for (let request of this.props.requests) {
-                this.insertRequest(request);
+                const startMoment = moment(request.starDate);
+                const endMoment = moment(request.endDate);
+                const employee = `${request.employee.firstName} ${request.employee.lastName}`;
+                const requestType = request.formatType();
+                const pendingLabel = request.status.lookup === RequestStatus.PENDING ? ' (Pending)' : '';
+
+                const calendarEvent = {
+                    title: `${employee}: ${requestType} ${pendingLabel}`,
+                    type: request.type.lookup,
+                    start: startMoment,
+                    end: endMoment.add(1, 'day')
+                };
+                events.push(calendarEvent);
             }
+
+            this.setState({
+                events
+            });
         }
-    }
-
-    insertRequest = (request) => {
-        if (request.units.length === 0) {
-            return;
-        }
-
-        const startUnit = request.units[0];
-        const lastUnit = request.units[request.units.length - 1];
-
-        const calendarEvent = {
-            title: `${request.employee.firstName} ${request.employee.lastName}: ${request.formatType()} ${request.status.lookup === 2 ? ' (Pending)' : ''}`,
-            start: moment(startUnit.date),
-            end: moment(lastUnit.date).add(1, 'day')
-        };
-
-        this.setState(prevState => ({
-            ...this.state,
-            calendarEvents: [...prevState.calendarEvents, calendarEvent]
-        }));
-    }
-
-    // sortBatchByDate = (batch) => {
-    //     batch.sort((a, b) => {
-    //         a = moment(a.date);
-    //         b = moment(b.date);
-    //         return a.diff(b);
-    //     });
-    // }
-
-    eventStyle = (event, start, end, isSelected) => {        
-        var backgroundColor = event.title.includes('Vacation') ? '#88BB92' : '#F7934C';
-        var style = {
-            backgroundColor: backgroundColor
-        };
-        return {
-            style: style
-        };
     }
 
     handleNavigate = (event) => {
@@ -71,7 +57,29 @@ class BuildAdminCalendar extends Component {
 
     }
 
-    // Show this component on the DOM
+    eventProps = (event) => {
+        console.log(event);
+        if (event.type === RequestType.VACATION) {
+            return {
+                style: {
+                    backgroundColor: '#88BB92'
+                }
+            }
+        } else if (event.type === RequestType.SICK_AND_SAFE) {
+            return {
+                style: {
+                    backgroundColor: '#F7934C'
+                }
+            }
+        } else {
+            return {
+                style: {
+                    backgroundColor: '#4D7298'
+                }
+            }
+        }
+    }
+
     render() {
         const localizer = BigCalendar.momentLocalizer(moment);
         return (
@@ -79,11 +87,11 @@ class BuildAdminCalendar extends Component {
                 <div style={{ height: '100vh' }}>
                     <BigCalendar
                         localizer={localizer}
-                        events={this.state.calendarEvents}
+                        events={this.state.events}
                         step={30}
                         defaultView='month'
                         views={['month']}
-                        eventPropGetter={(this.eventStyle)}
+                        eventPropGetter={this.eventProps}
                         onNavigate={this.handleNavigate}
                     />
                 </div>
