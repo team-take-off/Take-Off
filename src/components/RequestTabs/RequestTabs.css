@@ -82,18 +82,57 @@ div.hidden-badge {
 
 div.filter-options-div {
     font-size: 1rem;
-    color: rgb(0, 127, 255);
     margin-right: 20px;
+}
+
+p.filter-link {
+    color: rgb(0, 127, 255);
     cursor: pointer;
 }
 
-div.filter-options-div:hover {
+p.filter-link:hover {
     color: rgb(0, 98, 196);
+    text-decoration: underline;
+}
+
+div.filter-options-pane {
+    width: 400px;
+
+    /* float: left; */
+    margin-left: -350px;
+    margin-top: 5px;
+    position: absolute;
+
+    line-height: 2.4rem;
+
+    color: black;
+    background-color: white;
+
+    -webkit-box-shadow: 10px 10px 14px -2px rgba(0,0,0,0.46);
+    -moz-box-shadow: 10px 10px 14px -2px rgba(0,0,0,0.46);
+    box-shadow: 10px 10px 14px -2px rgba(0,0,0,0.46);
+    border: 1px solid #222d31;
+    border-radius: 2px;
+    padding: 1.2rem 40px;
+
+}
+
+div.filter-display {
+    text-align: right;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #373d3f;
+    margin-right: 20px;
+}
+
+div.filter-display p {
+    margin-top: 0.8rem;
+    line-height: 0.8rem;;
 }
 
 div.card-area {
     margin-top: 0;
-    padding-top: 2rem;
+    padding-top: 0.4rem;
 }
 
 span.no-requests-span {

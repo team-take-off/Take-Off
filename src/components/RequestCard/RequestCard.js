@@ -156,7 +156,6 @@ class RequestCard extends Component {
     cancel = () => {
         if (this.props.requestArray.length !== 0) {
             // const id = this.props.requestArray[0].batch_of_requests_id;
-            const id = this.props.request.id;
             const action = {
                 type: 'WITHDRAW_REQUEST',
                 payload: this.props.request.id

@@ -1,7 +1,8 @@
 const DEFAULT_STATE = {
     employee: null,
     year: null,
-    status: null
+    status: null,
+    startDate: '2017-01-01'
 };
 
 const requestFilters = (state = DEFAULT_STATE, action) => {
