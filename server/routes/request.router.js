@@ -32,17 +32,17 @@ const parseBoolean = (input) => {
 // Returns an array all requested days off for all users
 router.get('/', rejectUnauthenticated, (req, res) => {
     const employee = parseInteger(req.query.employee);
-    const year = parseInteger(req.query.year);
-    const leave = parseInteger(req.query.leave);
     const status = parseInteger(req.query.status);
-    const past = parseBoolean(req.query.past);
+    const leave = parseInteger(req.query.leave);
+    const start = new Moment(req.query.startDate, Moment.format.HTTP);
+    const end = new Moment(req.query.endDate, Moment.format.HTTP);
 
     const client = new RequestController(pool);
     (async () => {
         await client.connect();
         try {
             await client.begin();
-            const requests = await client.getRequests(employee, year, leave, status, past);
+            const requests = await client.getRequests(employee, status, leave, start.formatDatabase(), end.formatDatabase());
             await client.commit();
             res.send(requests);
         } catch (error) {

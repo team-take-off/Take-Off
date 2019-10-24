@@ -7,8 +7,6 @@ Fix bug in AdminEditRequestsPage
 Fix bug in past?
 Fix bug related to date clause in get request counts RequestController
 
-Have GET /api/requests filter by date range instead of year
-
 Switch admin edit request history page to requests_refactor
 Switch admin inbox to requests_refactor
 Build filter options drop-down for RequestTabs

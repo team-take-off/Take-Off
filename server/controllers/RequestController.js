@@ -71,7 +71,7 @@ class RequestClient {
         const selectText = `
         SELECT COUNT(id) AS count
         FROM request
-            WHERE (active = $1)
+            WHERE active = $1
             AND ($2::numeric IS NULL OR employee_id = $2)
             AND ($3::numeric IS NULL OR status_id = $3)
             AND ($4::numeric IS NULL OR leave_type_id = $4)
@@ -104,16 +104,21 @@ class RequestClient {
     }
 
     // Returns an array of requests that have a given status and year
-    async getRequests(employee, year, leave, status, past) {
+    async getRequests(employee, status, leave, startDate, endDate) {
+        const active = status !== RequestStatus.DENIED ? true : false;
+        let queryParams = [active, employee, status, leave];
+
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
-        if (past) {
-            dateClause = `request.end_datetime < (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
+        if (startDate || endDate) {
+            dateClause = `(($5::timestamp IS NULL OR start_datetime <= $5) AND ($6::timestamp IS NULL OR end_datetime >= $6))`;
+            queryParams = [...queryParams, startDate, endDate];
         }
 
         const whereClause = `
-        WHERE request.status_id = $1
-        AND ($2::numeric IS NULL OR request.employee_id = $2)
-        AND ($3::numeric IS NULL OR EXTRACT(YEAR FROM request_unit.start_datetime) = $3)
+        WHERE active = $1
+        AND ($2::numeric IS NULL OR request.status_id = $2)
+        AND ($3::numeric IS NULL OR request.employee_id = $3)
+        AND ($4::numeric IS NULL OR leave_type_id = $4)
         AND ${dateClause}
         `;
 
@@ -136,7 +141,7 @@ class RequestClient {
         ORDER BY request.start_datetime ASC;
         `;
 
-        const { rows } = await this.client.query(selectText, [status, employee, year]);
+        const { rows } = await this.client.query(selectText, queryParams);
         const requests = Request.loadQuery(rows);
 
         for (let request of requests) {
