@@ -20,7 +20,7 @@ class BuildAdminCalendar extends Component {
     }
 
     componentDidMount() {
-        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true, startDate: '2018-10-26 01:00:00Z', endDate: '2020-10-26 01:00:00Z' } });
+        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true, startDate: '2018-10-26T01:00:00Z', endDate: '2019-10-26T01:00:00Z' } });
         this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true } });
     }
 
@@ -28,7 +28,6 @@ class BuildAdminCalendar extends Component {
 
         if (prevProps.requests !== this.props.requests) {
             const events = [];
-            const eventStyles = [];
 
             for (let request of this.props.requests) {
                 const startMoment = moment(request.starDate);

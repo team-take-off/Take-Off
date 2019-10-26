@@ -38,6 +38,9 @@ router.get('/', rejectUnauthenticated, (req, res) => {
     const start = new Moment(req.query.startDate, Moment.format.HTTP);
     const end = new Moment(req.query.endDate, Moment.format.HTTP);
 
+    console.log(start.formatDatabase());
+    console.log(end.formatDatabase());
+
     const client = new RequestController(pool);
     (async () => {
         await client.connect();

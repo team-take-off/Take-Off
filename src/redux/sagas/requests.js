@@ -109,6 +109,7 @@ function* editRequest(action) {
 function* setFilters(action) {
     try {
         filters = action.payload;
+        console.log(filters);
         yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
         console.log('Error in requests saga setFilters(): ', error);

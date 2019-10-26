@@ -4,7 +4,6 @@ import BuildCalendar from './BuildCalendar';
 import Nav from '../Nav/Nav';
 
 class AdminCalendarPage extends Component {      
-    // Show this component on the DOM
     render() {
         return (
             <>

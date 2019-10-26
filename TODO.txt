@@ -1,7 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Fix bug in date range filtering for GET /api/request
 Fix bug in POST /api/request
 Fetch and display company holidays on calendar page
 Filter requests filtered for calendar to include active=true requests and +/- one month from current day

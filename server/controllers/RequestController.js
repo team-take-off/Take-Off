@@ -63,7 +63,7 @@ class RequestClient {
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
         if (startDate || endDate) {
-            dateClause = `(($5::timestamp IS NULL OR request.start_datetime <= $5) AND ($6::timestamp IS NULL OR request.end_datetime >= $6))`;
+            dateClause = `(($5::timestamp IS NULL OR request.end_datetime >= $5) AND ($6::timestamp IS NULL OR request.start_datetime <= $6))`;
             queryParams = [...queryParams, startDate, endDate];
         }
 
@@ -108,7 +108,7 @@ class RequestClient {
 
         let dateClause = `request.end_datetime >= (CURRENT_DATE - integer '${GRACE_PERIOD}')`;
         if (startDate || endDate) {
-            dateClause = `(($5::timestamp IS NULL OR request.start_datetime <= $5) AND ($6::timestamp IS NULL OR request.end_datetime >= $6))`;
+            dateClause = `(($5::timestamp IS NULL OR request.end_datetime >= $5) AND ($6::timestamp IS NULL OR request.start_datetime <= $6))`;
             queryParams = [...queryParams, startDate, endDate];
         }
 
@@ -235,11 +235,7 @@ class RequestClient {
             SELECT id AS request_1, $1 AS request_2
             FROM request
             WHERE id != $1
-            AND (
-                start_datetime <= $2 AND end_datetime >= $2
-                OR start_datetime <= $3 AND end_datetime >= $3
-                OR $2 <= start_datetime AND $3 >= start_datetime
-            );
+            AND (end_datetime >= $2 AND start_datetime <= $3);
         `;
         await this.client.query(insertCollisionsText, [requestID, startDate, endDate]);
     };
