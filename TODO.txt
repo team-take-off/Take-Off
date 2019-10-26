@@ -2,7 +2,6 @@
  - Unit testing
  - Integration testing
 Fix bug in POST /api/request
-Fetch and display company holidays on calendar page
 Filter requests filtered for calendar to include active=true requests and +/- one month from current day
 Trigger re-fetching of requests firing with calendar onNavigate()
 Build filter options drop-down for RequestTabs

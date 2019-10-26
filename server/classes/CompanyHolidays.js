@@ -23,19 +23,29 @@ class CompanyHolidays {
         // Note: Library moment-holiday incorrectly finds 'Day after Thanksgiving'
         // for years where November 1st falls on Friday.
         if (queryDate.month() === 10 && queryDate.day() === 5 && queryDate.date() >= 23 && queryDate.date() < 30) {
-            return true;
+            return { title: 'Day After Thanksgiving', date: queryDate.format('YYYY-MM-DDTHH:mm:ssZ') };
         }
-        return queryDate.isHoliday(observedHolidays);
+        if (queryDate.isHoliday(observedHolidays)) {
+            for (let holidayString of observedHolidays) {
+                if (queryDate.isHoliday([holidayString])) {
+                    return { title: holidayString, date: queryDate.format('YYYY-MM-DDTHH:mm:ssZ') };
+                }
+            }
+        }
+        return false;
     }
 
     static listHolidays(startDate, endDate) {
-        let list = [];
-        let current = moment(startDate);
-        while (current.isBefore(endDate)) {
-            if (CompanyHolidays.isDayOff(current)) {
-                list.push(moment(current));
+        let currentMoment = moment(startDate.data);
+        const endMoment = moment(endDate.data);
+
+        let list = [];        
+        while (currentMoment.isBefore(endMoment)) {
+            const dayOff = CompanyHolidays.isDayOff(currentMoment)
+            if (dayOff) {
+                list.push(dayOff);
             }
-            current.add(1, 'days');
+            currentMoment.add(1, 'days');
         }
         return list;
     }

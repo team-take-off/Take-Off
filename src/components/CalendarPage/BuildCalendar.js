@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
 
 import RequestStatus from '../../classes/RequestStatus';
 import RequestType from '../../classes/RequestType';
@@ -18,24 +19,48 @@ class BuildAdminCalendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            events: []
+            events: [],
+            holidays: []
         };
     }
 
     componentDidMount() {
-        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true, startDate: '2019-10-26T00:00:00Z' } });
-        this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true } });
+        const filters = {
+            active: true,
+            startDate: '2019-10-01T09:00:00Z',
+            endDate: '2019-12-01T09:00:00Z',
+        };
+        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true,  } });
+        this.props.dispatch({ type: 'SET_FILTERS', payload: filters });
+        axios.get('/api/company-holidays', { params: filters }).then(response => {
+            this.setState({
+                ...this.state,
+                holidays: response.data
+            });
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
 
-        if (prevProps.requests !== this.props.requests) {
+        if (prevProps.requests !== this.props.requests || prevState.holidays !== this.state.holidays) {
             const events = [];
+
+            for (let holiday of this.state.holidays) {
+                const startMoment = moment(holiday.date, HTTP_FORMAT);
+                const endMoment = moment(holiday.date, HTTP_FORMAT);
+
+                const calendarEvent = {
+                    title: holiday.title,
+                    type: 'HOLIDAY',
+                    start: startMoment.format(CALENDAR_FORMAT),
+                    end: endMoment.format(CALENDAR_FORMAT)
+                };
+                events.push(calendarEvent);
+            }
 
             for (let request of this.props.requests) {
                 const startMoment = moment(request.startDate);
                 const endMoment = moment(request.endDate);
-                endMoment.add(1, 'day');
                 const employee = `${request.employee.firstName} ${request.employee.lastName}`;
                 const requestType = request.formatType();
                 const pendingLabel = request.status.lookup === RequestStatus.PENDING ? ' (Pending)' : '';
@@ -61,7 +86,6 @@ class BuildAdminCalendar extends Component {
     }
 
     eventProps = (event) => {
-        console.log(event);
         if (event.type === RequestType.VACATION) {
             return {
                 style: {
