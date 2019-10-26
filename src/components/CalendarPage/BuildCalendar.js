@@ -11,6 +11,9 @@ import moment from 'moment';
 moment.locale('en');
 BigCalendar.momentLocalizer(moment);
 
+const CALENDAR_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
+const HTTP_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ'
+
 class BuildAdminCalendar extends Component {
     constructor(props) {
         super(props);
@@ -20,7 +23,7 @@ class BuildAdminCalendar extends Component {
     }
 
     componentDidMount() {
-        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true, startDate: '2018-10-26T01:00:00Z', endDate: '2019-10-26T01:00:00Z' } });
+        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true, startDate: '2019-10-26T00:00:00Z' } });
         this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true } });
     }
 
@@ -30,8 +33,9 @@ class BuildAdminCalendar extends Component {
             const events = [];
 
             for (let request of this.props.requests) {
-                const startMoment = moment(request.starDate);
+                const startMoment = moment(request.startDate);
                 const endMoment = moment(request.endDate);
+                endMoment.add(1, 'day');
                 const employee = `${request.employee.firstName} ${request.employee.lastName}`;
                 const requestType = request.formatType();
                 const pendingLabel = request.status.lookup === RequestStatus.PENDING ? ' (Pending)' : '';
@@ -39,8 +43,8 @@ class BuildAdminCalendar extends Component {
                 const calendarEvent = {
                     title: `${employee}: ${requestType} ${pendingLabel}`,
                     type: request.type.lookup,
-                    start: startMoment,
-                    end: endMoment.add(1, 'day')
+                    start: startMoment.format(CALENDAR_FORMAT),
+                    end: endMoment.format(CALENDAR_FORMAT)
                 };
                 events.push(calendarEvent);
             }
