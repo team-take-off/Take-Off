@@ -3,18 +3,59 @@ import RequestUnit from "./RequestUnit";
 import moment from 'moment';
 
 class Request {
-    constructor(id, employeeID, firstName, lastName, type, status, startDate, endDate, dateRequested, units, collisions) {
+    constructor(id, employee, type, status, startDate, endDate, units, collisions) {
         this.id = id;
-        this.employeeID = employeeID;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.employee = employee;
         this.type = type;
         this.status = status;
         this.startDate = moment(startDate);
         this.endDate = moment(endDate);
-        this.dateRequested = moment(dateRequested);
         this.units = units;
         this.collisions = collisions;
+    }
+
+    formatType() {
+        if (this.type.lookup === 1) {
+            return 'Vacation';
+        } else if (this.type.lookup === 2) {
+            return 'Sick and Safe Leave';
+        } else {
+            return '[ Unknown Leave Type ]';
+        }
+    }
+
+    getSpanClass() {
+        if (this.type.lookup === 1) {
+            return 'vacation';
+        } else if (this.type.lookup === 2) {
+            return 'sick';
+        } else {
+            return '';
+        }
+    }
+
+    formatStatus() {
+        if (this.status === 1 || this.status.lookup === 1) {
+            return '(Pending)';
+        } else if (this.status === 2 || this.status.lookup === 2) {
+            return '(Approved)';
+        } else if (this.status === 3 || this.status.lookup === 3) {
+            return '(Denied)';
+        } else {
+            return '[ Unknown Status ]';
+        }
+    }
+
+    isPending() {
+        return this.status.lookup === 1;
+    }
+
+    isApproved() {
+        return this.status.lookup === 2;
+    }
+
+    isDenied() {
+        return this.status.lookup === 3;
     }
 
     static loadArray(array) {
@@ -24,18 +65,15 @@ class Request {
 
         return array.map(
             request => {
-                const units = RequestUnit.loadArray(request.request_units);
+                const units = RequestUnit.loadArray(request.units);
                 const collisions = Request.loadArray(request.collisions);
                 return new Request(
                     request.id,
-                    request.employee_id,
-                    request.first_name,
-                    request.last_name,
+                    request.employee,
                     request.type,
                     request.status,
-                    request.start_date,
-                    request.end_date,
-                    request.date_requested,
+                    request.startDate,
+                    request.endDate,
                     units,
                     collisions
                 );

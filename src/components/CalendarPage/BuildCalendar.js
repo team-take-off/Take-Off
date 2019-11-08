@@ -1,71 +1,112 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import axios from 'axios';
+
+import RequestStatus from '../../classes/RequestStatus';
+import RequestType from '../../classes/RequestType';
+
 import BigCalendar from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 import moment from 'moment';
 moment.locale('en');
 BigCalendar.momentLocalizer(moment);
+
+const CALENDAR_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
+const HTTP_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ'
 
 class BuildAdminCalendar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            calendar_events: [],
+            events: [],
+            holidays: []
         };
-      }
+    }
+
+    componentDidMount() {
+        const filters = {
+            active: true,
+            startDate: '2019-10-01T09:00:00Z',
+            endDate: '2019-12-01T09:00:00Z',
+        };
+        // this.props.dispatch({ type: 'SET_FILTERS', payload: { active: true,  } });
+        this.props.dispatch({ type: 'SET_FILTERS', payload: filters });
+        axios.get('/api/company-holidays', { params: filters }).then(response => {
+            this.setState({
+                ...this.state,
+                holidays: response.data
+            });
+        });
+    }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.requests !== this.props.requests) {
-            const approved = this.props.requests.approved;
-            const pending = this.props.requests.pending;
-            
-            for (let request of approved) {
-                this.insertRequest(request);
+
+        if (prevProps.requests !== this.props.requests || prevState.holidays !== this.state.holidays) {
+            const events = [];
+
+            for (let holiday of this.state.holidays) {
+                const startMoment = moment(holiday.date, HTTP_FORMAT);
+                const endMoment = moment(holiday.date, HTTP_FORMAT);
+
+                const calendarEvent = {
+                    title: holiday.title,
+                    type: 'HOLIDAY',
+                    start: startMoment.format(CALENDAR_FORMAT),
+                    end: endMoment.format(CALENDAR_FORMAT)
+                };
+                events.push(calendarEvent);
             }
-            for (let request of pending) {
-                this.insertRequest(request);
+
+            for (let request of this.props.requests) {
+                const startMoment = moment(request.startDate);
+                const endMoment = moment(request.endDate);
+                const employee = `${request.employee.firstName} ${request.employee.lastName}`;
+                const requestType = request.formatType();
+                const pendingLabel = request.status.lookup === RequestStatus.PENDING ? ' (Pending)' : '';
+
+                const calendarEvent = {
+                    title: `${employee}: ${requestType} ${pendingLabel}`,
+                    type: request.type.lookup,
+                    start: startMoment.format(CALENDAR_FORMAT),
+                    end: endMoment.format(CALENDAR_FORMAT)
+                };
+                events.push(calendarEvent);
+            }
+
+            this.setState({
+                events
+            });
+        }
+    }
+
+    handleNavigate = (event) => {
+        console.log(event);
+
+    }
+
+    eventProps = (event) => {
+        if (event.type === RequestType.VACATION) {
+            return {
+                style: {
+                    backgroundColor: '#88BB92'
+                }
+            }
+        } else if (event.type === RequestType.SICK_AND_SAFE) {
+            return {
+                style: {
+                    backgroundColor: '#F7934C'
+                }
+            }
+        } else {
+            return {
+                style: {
+                    backgroundColor: '#4D7298'
+                }
             }
         }
     }
 
-    insertRequest = (request) => {
-        if (request.units.length === 0) {
-            return;
-        }
-
-        const startUnit = request.units[0];
-        const lastUnit = request.units[request.units.length - 1];
-
-        const calendarEvent = {
-            title: `${request.firstName}: ${request.type}`,
-            start: moment(startUnit.date),
-            end: moment(lastUnit.date).add(1, 'day')
-        };
-
-        this.setState(prevState => ({
-            ...this.state,
-            calendar_events: [...prevState.calendar_events, calendarEvent]
-        }));
-    }
-
-    // sortBatchByDate = (batch) => {
-    //     batch.sort((a, b) => {
-    //         a = moment(a.date);
-    //         b = moment(b.date);
-    //         return a.diff(b);
-    //     });
-    // }
-
-    eventStyle = (event, start, end, isSelected) => {        
-        var backgroundColor = event.title.includes('Vacation') ? '#88BB92' : '#F7934C';
-        var style = {
-            backgroundColor: backgroundColor
-        };
-        return {
-            style: style
-        };
-    }
-
-    // Show this component on the DOM
     render() {
         const localizer = BigCalendar.momentLocalizer(moment);
         return (
@@ -73,15 +114,21 @@ class BuildAdminCalendar extends Component {
                 <div style={{ height: '100vh' }}>
                     <BigCalendar
                         localizer={localizer}
-                        events={this.state.calendar_events}
+                        events={this.state.events}
                         step={30}
                         defaultView='month'
                         views={['month']}
-                        eventPropGetter={(this.eventStyle)}
+                        eventPropGetter={this.eventProps}
+                        onNavigate={this.handleNavigate}
                     />
                 </div>
             </div>
         );
     }
 }
-export default BuildAdminCalendar;
+
+const mapReduxStoreToProps = reduxStore => ({
+    requests: reduxStore.requests
+});
+
+export default connect(mapReduxStoreToProps)(BuildAdminCalendar);

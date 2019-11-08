@@ -1,10 +1,4 @@
-const DEFAULT_STATE = {
-    years: [],
-    pending: [],
-    approved: [],
-    denied: [],
-    past: []
-};
+const DEFAULT_STATE = [];
 
 const requests = (state = DEFAULT_STATE, action) => {
     switch (action.type) {

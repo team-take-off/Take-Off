@@ -40,7 +40,7 @@ passport.use(new GoogleStrategy({
         //console.log("THIS IS THE PROFILE PIC", profile.photos[0].value );
         let user = {};
         //selecting the user from database and setting them as this session's user
-        pool.query("SELECT * FROM employee WHERE email = $1",
+        pool.query("SELECT * FROM employee WHERE LOWER(email) = LOWER($1)",
             [profile.emails[0].value], // TODO: Check e-mails at other indexes
             function (err, result) {
                 if (err) {

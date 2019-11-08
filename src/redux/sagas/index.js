@@ -1,9 +1,8 @@
 import { all } from 'redux-saga/effects';
-import additionalTime from './additionalTime';
 import employees from './employees';
 import login from './login';
+import requestCounts from './requestCounts';
 import requests from './requests';
-import userRequests from './userRequests';
 import user from './user';
 
 // rootSaga is the primary saga.
@@ -15,11 +14,10 @@ import user from './user';
 // and login triggers setting the user
 export default function* rootSaga() {
   yield all([
-    additionalTime(),
     employees(),
     login(),
+    requestCounts(),
     requests(),
-    userRequests(),
     user(),
   ]);
 }

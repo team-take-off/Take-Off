@@ -1,7 +1,9 @@
 DROP TABLE IF EXISTS transaction_log;
 DROP TABLE IF EXISTS collision;
+DROP INDEX IF EXISTS unit_request_idx;
 DROP TABLE IF EXISTS request_unit;
-DROP TABLE IF EXISTS time_off_request;
+DROP INDEX IF EXISTS request_employee_idx;
+DROP TABLE IF EXISTS request;
 DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS employee_role;
 DROP TABLE IF EXISTS leave_type;
@@ -14,10 +16,10 @@ CREATE TABLE employee_role (
 	, title VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO employee_role
-	(title)
+	(id, title)
 VALUES
-	('admin'),
-	('employee');
+	(1, 'admin'),
+	(2, 'employee');
 
 -- Type of leave
 CREATE TABLE leave_type (
@@ -25,23 +27,22 @@ CREATE TABLE leave_type (
 	, val VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO leave_type
-	(val)
+	(id, val)
 VALUES
-	('Vacation'),
-	('Sick and Safe Leave');
+	(1, 'Vacation'),
+	(2, 'Sick and Safe Leave');
 
 -- Status of a request for time off
 CREATE TABLE request_status (
 	id SERIAL PRIMARY KEY
 	, val VARCHAR(20) NOT NULL UNIQUE
-	, active INT NOT NULL
 );
 INSERT INTO request_status
-	(val, active)
+	(id, val)
 VALUES
-	('pending', 1),
-	('approved', 1),
-	('denied', 0);
+	(1, 'pending'),
+	(2, 'approved'),
+	(3, 'denied');
 
 -- Types of a transactions in the log table
 CREATE TABLE transaction_type (
@@ -49,15 +50,10 @@ CREATE TABLE transaction_type (
 	, val VARCHAR(20) NOT NULL UNIQUE
 );
 INSERT INTO transaction_type
-	(val)
+	(id, val)
 VALUES
-	('automatic accrual'),
-	('automatic adjustment'),
-	('employee request'),
-	('employee cancel'),
-	('admin approve'),
-	('admin deny'),
-	('admin special');
+	(1, 'automatic accrual'),
+	(2, 'automatic adjustment');
 
 -- Employee data
 CREATE TABLE employee (
@@ -73,34 +69,36 @@ CREATE TABLE employee (
 );
 
 -- An employee's request for time off
-CREATE TABLE time_off_request (
+CREATE TABLE request (
 	id SERIAL PRIMARY KEY
 	, employee_id INTEGER NOT NULL REFERENCES employee(id)
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
-	, request_status_id INTEGER NOT NULL REFERENCES request_status(id)
-	, active INT NOT NULL DEFAULT 1
-	, start_datetime TIMESTAMPTZ NOT NULL
-	, end_datetime TIMESTAMPTZ NOT NULL
-	, placed_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	, status_id INTEGER NOT NULL REFERENCES request_status(id)
+	, active BOOLEAN NOT NULL DEFAULT TRUE
+	, start_datetime TIMESTAMP NOT NULL
+	, end_datetime TIMESTAMP NOT NULL
+	, placed_datetime TIMESTAMP NOT NULL DEFAULT NOW()
 	, CONSTRAINT end_after_start CHECK(end_datetime >= start_datetime)
-	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&, int4range(0, active, '()') WITH &&)
-	, CONSTRAINT denied_status_implies_not_active CHECK((request_status_id != 3 AND active = 1) OR (request_status_id = 3 AND active = 0))
+	, CONSTRAINT exclude_overlapping_requests EXCLUDE USING gist(int4range(employee_id, employee_id, '[]') WITH =, tsrange(start_datetime, end_datetime) WITH &&) WHERE (active)
+	, CONSTRAINT denied_status_implies_not_active CHECK((status_id != 3 AND active = TRUE) OR (status_id = 3 AND active = FALSE))
 );
+CREATE INDEX request_employee_idx ON request(employee_id);
 
 -- A single discrete unit with a time off request (usually a day or half day)
 CREATE TABLE request_unit (
 	id SERIAL PRIMARY KEY
-	, time_off_request_id INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE
-	, start_datetime TIMESTAMPTZ NOT NULL
-	, end_datetime TIMESTAMPTZ NOT NULL
+	, request_id INTEGER NOT NULL REFERENCES request(id) ON DELETE CASCADE
+	, start_datetime TIMESTAMP NOT NULL
+	, end_datetime TIMESTAMP NOT NULL
 	, CONSTRAINT end_after_start CHECK(end_datetime > start_datetime)
-	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(time_off_request_id, time_off_request_id, '[]') WITH =, tstzrange(start_datetime, end_datetime) WITH &&)
+	, CONSTRAINT exclude_overlapping_units EXCLUDE USING gist(int4range(request_id, request_id, '[]') WITH =, tsrange(start_datetime, end_datetime) WITH &&)
 );
+CREATE INDEX unit_request_idx ON request_unit(request_id);
 
 -- Overlap between different employees' requests
 CREATE TABLE collision (
-	request_1 INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE
-	, request_2 INTEGER NOT NULL REFERENCES time_off_request(id) ON DELETE CASCADE 
+	request_1 INTEGER NOT NULL REFERENCES request(id) ON DELETE CASCADE
+	, request_2 INTEGER NOT NULL REFERENCES request(id) ON DELETE CASCADE 
 	, PRIMARY KEY (request_1, request_2)
 );
 
@@ -112,5 +110,5 @@ CREATE TABLE transaction_log (
 	, leave_hours INTEGER NOT NULL
 	, leave_type_id INTEGER NOT NULL REFERENCES leave_type(id)
 	, transaction_type_id INTEGER NOT NULL REFERENCES transaction_type(id)
-	, transaction_datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()
+	, transaction_datetime TIMESTAMP NOT NULL DEFAULT NOW()
 );

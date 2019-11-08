@@ -9,6 +9,7 @@
 .nav {
   overflow: hidden;
   background-color: #222d31;
+  min-width: 100vw;
 }
 
 .counter-balance {

@@ -14,8 +14,8 @@ const rejectUnauthenticated = (req, res, next) => {
 };
 
 const rejectNonAdmin = (req, res, next) => {
-  const employee = new Employee(req.user);
-  if (req.isAuthenticated() && employee.isAdministrator()) {
+  const user = new User(req.user);
+  if (req.isAuthenticated() && user.isAdministrator()) {
     next();
   } else {
     res.sendStatus(403);

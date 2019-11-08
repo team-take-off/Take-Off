@@ -6,9 +6,10 @@ import enteredSickRequest from './enteredSickRequest';
 import enteredVacationRequest from './enteredVacationRequest';
 import errors from './errors';
 import loginMode from './loginMode';
+import requestCounts from './requestCounts';
+import requestFilters from './requestFilters';
 import requests from './requests';
 import user from './user';
-import userRequests from './userRequests';
 
 // rootReducer is the primary reducer for our entire project
 // It bundles up all of the other reducers so our project can use them.
@@ -24,9 +25,10 @@ const rootReducer = combineReducers({
   enteredVacationRequest,
   errors,
   loginMode,
+  requestCounts,
+  requestFilters,
   requests,
   user,
-  userRequests,
 });
 
 export default rootReducer;

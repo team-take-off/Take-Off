@@ -1,9 +1,11 @@
 class DateRange {
     constructor(units) {
-        this.units = units;
-        this.units.sort((left, right) => {
-            return left.date.diff(right.date);
-        });
+        if (units) {
+            this.units = units;
+            this.units.sort((left, right) => {
+                return left.date.diff(right.date);
+            });
+        }
     }
 
     getUnit(index) {

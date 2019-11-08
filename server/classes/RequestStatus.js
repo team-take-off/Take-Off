@@ -6,6 +6,7 @@ const code = {
 
 class RequestStatus {
     constructor(lookup) {
+        this.lookup = lookup;
         this.pending = false;
         this.approved = false;
         this.denied = false;
@@ -17,6 +18,10 @@ class RequestStatus {
         } else if (lookup === code.DENIED) {
             this.denied = true;
         }
+    }
+
+    getJSON() {
+        return this.lookup;
     }
 }
 

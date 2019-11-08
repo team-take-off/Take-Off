@@ -32,11 +32,11 @@ class Nav extends Component {
             if (this.props.user.role_id === 1 && this.props.adminMode) {
                 return (
                     <div className={classnames(classes.desktop, "nav-right")}>
-                        <Link className="nav-link" to="/admin/home">Home</Link>
+                        <Link className="nav-link" to="/admin/home">Admin Inbox</Link>
                         <Link className="nav-link" to="/calendar">Calendar</Link>
                         <Link className="nav-link" to="/admin/manage_employees">Manage Employees</Link>
-                        <Link className="nav-link" to="/admin/search_requests">Search Requests</Link>
-                        <ModeButton className="nav-link" />
+                        {/* <Link className="nav-link" to="/admin/search_requests">Search Requests</Link> */}
+                        <ModeButton history={this.props.history} className="nav-link" />
                         <LogOutButton className="nav-link" />
                     </div>
                 );
@@ -46,7 +46,7 @@ class Nav extends Component {
                         <Link className="nav-link" to="/home">Home</Link>
                         <Link className="nav-link" to="/my_requests">My Requests</Link>
                         <Link className="nav-link" to="/calendar">Calendar</Link>
-                        {this.props.user.role_id === 1 && <ModeButton className="nav-link" />}
+                        {this.props.user.role_id === 1 && <ModeButton history={this.props.history} className="nav-link" />}
                         <LogOutButton className="nav-link" />
                     </div>
                 )

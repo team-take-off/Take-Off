@@ -1,24 +1,19 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
-import BuildCalendar from './BuildCalendar';
 
-class AdminCalendarPage extends Component {
-    componentDidMount() { 
-        this.props.dispatch({type: 'FETCH_REQUESTS'});
-    }
-      
-    // Show this component on the DOM
+import BuildCalendar from './BuildCalendar';
+import Nav from '../Nav/Nav';
+
+class AdminCalendarPage extends Component {      
     render() {
         return (
-            <div>
-                <BuildCalendar requests={this.props.requests} />
-            </div>
+            <>
+                <Nav history={this.props.history} />
+                <div>
+                    <BuildCalendar requests={this.props.requests} />
+                </div>
+            </>
         );
     }
 }
 
-const mapReduxStoreToProps = reduxStore => ({
-    requests: reduxStore.requests
-});
-
-export default connect(mapReduxStoreToProps)(AdminCalendarPage);
+export default AdminCalendarPage;

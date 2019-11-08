@@ -2,9 +2,8 @@ const moment = require('moment');
 const Employee = require('./Employee');
 const RequestStatus = require('./RequestStatus');
 const RequestType = require('./RequestType');
-const RequestUnit = require('./RequestUnit');
 
-class Request {
+class Collision {
     constructor(id, employee, typeID, statusID, startDate, endDate) {
         this.id = id;
         this.employee = employee;
@@ -12,16 +11,6 @@ class Request {
         this.status = new RequestStatus(statusID);
         this.startDate = moment(startDate);
         this.endDate = moment(endDate);
-        this.units = [];
-        this.collisions = [];
-    }
-
-    addUnit(unit) {
-        this.units.push(unit.getJSON());
-    }
-
-    setUnits(units) {
-        this.units = units;
     }
 
     static loadQuery(rows) {
@@ -29,18 +18,13 @@ class Request {
         const groupArray = [];
 
         for (let row of rows) {
-            const id = row.id;
+            const id = row.time_off_request_id;
             const index = uniqueGroupIDs.indexOf(id);
             if (index < 0) {
                 uniqueGroupIDs.push(id);
-                const unit = new RequestUnit(row.request_unit_id, row.unit_start_date, row.unit_end_date);
                 const employee = new Employee(row.employee_id, row.first_name, row.last_name);
-                const request = new Request(id, employee, row.type, row.status, row.start_date, row.end_date);
-                request.addUnit(unit);
-                groupArray.push(request);
-            } else {
-                const unit = new RequestUnit(row.request_unit_id, row.unit_start_date, row.unit_end_date);
-                groupArray[index].addUnit(unit);
+                const collision = new Collision(id, employee, row.type_id, row.status_id, row.start_date, row.end_date);
+                groupArray.push(collision.getJSON());
             }
         }
         return groupArray;
@@ -53,12 +37,9 @@ class Request {
             type: this.type.getJSON(),
             status: this.status.getJSON(),
             startDate: this.startDate.format(),
-            endDate: this.endDate.format(),
-            dateRequested: this.dateRequested.format(),
-            units: this.units,
-            collisions: []
+            endDate: this.endDate.format()
         };
     }
 }
 
-module.exports = Request;
+module.exports = Collision;

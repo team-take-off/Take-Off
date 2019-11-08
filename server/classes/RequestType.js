@@ -5,12 +5,22 @@ const code = {
 
 class RequestType {
     constructor(lookup) {
-        this.columnName = undefined;
+        this.lookup = lookup;
+        this.columnName = RequestType.columnName(lookup);
+    }
+
+    static columnName(lookup) {
         if (lookup === code.VACATION) {
-            this.columnName = 'vacation_hours';
+            return 'vacation_hours';
         } else if (lookup === code.SICK_AND_SAFE) {
-            this.columnName = 'sick_hours';
+            return 'sick_hours';
+        } else {
+            return undefined;
         }
+    }
+
+    getJSON() {
+        return this.lookup;
     }
 }
 

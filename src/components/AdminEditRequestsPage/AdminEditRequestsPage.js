@@ -4,8 +4,9 @@ import moment from 'moment';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import DateRange from '../../classes/DateRange';
 import './AdminEditRequestsPage.css';
+import DateRange from '../../classes/DateRange';
+import Nav from '../Nav/Nav';
 
 const START_HOUR = 9;
 const MIDDAY_HOUR = 13;
@@ -55,7 +56,7 @@ class AdminEditRequestsPage extends Component {
     // server
     componentDidMount() {
         this.props.dispatch({ type: 'FETCH_EMPLOYEES' });
-        this.props.dispatch({ type: 'FETCH_REQUESTS', payload: { employee: this.props.match.params.id } });
+        this.props.dispatch({ type: 'SET_EMPLOYEE_FILTER', payload: this.props.match.params.id });
     }
 
     // If any of the input data changes reload the selected employee data that 
@@ -67,12 +68,7 @@ class AdminEditRequestsPage extends Component {
         if (prevProps.requestsRaw !== this.props.requestsRaw) {
             this.setState({
                 ...this.state,
-                requests: [
-                    ...this.props.requestsRaw.past,
-                    ...this.props.requestsRaw.denied,
-                    ...this.props.requestsRaw.pending,
-                    ...this.props.requestsRaw.approved
-                ]
+                requests: this.props.requestsRaw
             });
         }
     }
@@ -99,7 +95,10 @@ class AdminEditRequestsPage extends Component {
     deleteRequest = (id) => {
         this.props.dispatch({
             type: 'DELETE_REQUEST',
-            payload: id
+            payload: {
+                id: id,
+                employee: this.props.match.params.id
+            }
         });
     }
 
@@ -199,19 +198,22 @@ class AdminEditRequestsPage extends Component {
     submit = (event) => {
         event.preventDefault();
         if (this.readyToSubmit()) {
+            const startDate = this.state.startDate;
             const startHour = getStartHour(this.state.startDayType);
+            const endDate = this.state.endDate;
             const endHour = getEndHour(this.state.endDayType);
+            const startMoment = moment(`${startDate} ${startHour} +0000`, 'YYYY-MM-DD HH Z').utc();
+            const endMoment = moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z').utc();
             const action = {
                 type: 'ADD_REQUEST',
                 payload: {
                     employee: this.state.id,
-                    typeID: this.state.leaveType,
-                    startDate: moment(this.state.startDate).set('hour', startHour),
-                    endDate: moment(this.state.endDate).set('hour', endHour),
+                    type: this.state.leaveType,
+                    startDate: startMoment.format(),
+                    endDate: endMoment.format(),
                     status: this.state.status
                 }
             };
-            console.log(action);
             this.props.dispatch(action);
             this.setState({
                 ...this.state,
@@ -228,116 +230,119 @@ class AdminEditRequestsPage extends Component {
     // Show this component on the DOM
     render() {
         return (
-            <div className="page-container">
-                <h2>Edit Employee Requests</h2>
-                <h3>{this.state.first_name} {this.state.last_name}</h3>
-                <div className="request-history-pane">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Leave Type</th>
-                                <th>Date Range</th>
-                                <th>Request Status</th>
-                                <th>Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.requests.map(request =>
-                                <tr key={request.id} className="request-row">
-                                    <td>{request.type === 'Vacation' ? 'Vacation' : 'Sick & Safe'}</td>
-                                    <td>{(new DateRange(request.units)).format('LL')}</td>
-                                    <td>{request.status}</td>
+            <>
+                <Nav history={this.props.history} />
+                <div className="page-container">
+                    <h2>Edit Employee Requests</h2>
+                    <h3>{this.state.first_name} {this.state.last_name}</h3>
+                    <div className="request-history-pane">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th>Date Range</th>
+                                    <th>Request Status</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.state.requests.map(request =>
+                                    <tr key={request.id} className="request-row">
+                                        <td>{request.formatType()}</td>
+                                        <td>{(new DateRange(request.units)).format('LL')}</td>
+                                        <td>{request.formatStatus()}</td>
+                                        <td>
+                                            <IconButton onClick={this.deleteRequest.bind(this, request.id)} aria-label="Delete">
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    <form className="request-form" onSubmit={this.submit}>
+                        <table>
+                            <tbody>
+                                <tr>
                                     <td>
-                                        <IconButton onClick={this.deleteRequest.bind(this, request.id)} aria-label="Delete">
-                                            <DeleteIcon />
-                                        </IconButton>
+                                        <label htmlFor="leave_type">Leave Type:</label>
+                                    </td>
+                                    <td>
+                                        <select name="leave_type" onChange={this.selectLeaveType} value={this.state.leaveType}>
+                                            <option disabled value="">-- select --</option>
+                                            <option value="1">Vacation</option>
+                                            <option value="2">Sick and Safe</option>
+                                        </select>
                                     </td>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <td>
+                                        <label htmlFor="start_date">Start Date:</label>
+                                    </td>
+                                    <td>
+                                        <input
+                                            onChange={this.setStartDate}
+                                            name="start_date"
+                                            type="date"
+                                            value={this.state.startDate}
+                                        />
+                                        <select onChange={this.setStartDayType} value={this.state.startDayType}>
+                                            <option value="fullday">Full Day</option>
+                                            <option value="morning">Morning</option>
+                                            <option value="afternoon">Afternoon</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label htmlFor="end_date">End Date:</label>
+                                    </td>
+                                    <td>
+                                        <input
+                                            onChange={this.setEndDate}
+                                            name="end_date"
+                                            type="date"
+                                            value={this.state.endDate}
+                                        />
+                                        <select onChange={this.setEndDayType} value={this.state.endDayType} disabled={this.state.startDate === this.state.endDate}>
+                                            <option value="fullday">Full Day</option>
+                                            <option value="morning">Morning</option>
+                                            <option value="afternoon">Afternoon</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label htmlFor="end_date">Status:</label>
+                                    </td>
+                                    <td>
+                                        <select onChange={this.setStatus} value={this.state.status}>
+                                            <option disabled value="">-- select --</option>
+                                            <option value="1">Pending</option>
+                                            <option value="2">Approved</option>
+                                            <option value="3">Denied</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <input type="submit" value="Add Request" disabled={!this.readyToSubmit()} />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
                 </div>
-                <form className="request-form" onSubmit={this.submit}>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <label htmlFor="leave_type">Leave Type:</label>
-                                </td>
-                                <td>
-                                    <select name="leave_type" onChange={this.selectLeaveType} value={this.state.leaveType}>
-                                        <option disabled value="">-- select --</option>
-                                        <option value="1">Vacation</option>
-                                        <option value="2">Sick and Safe</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="start_date">Start Date:</label>
-                                </td>
-                                <td>
-                                    <input
-                                        onChange={this.setStartDate}
-                                        name="start_date"
-                                        type="date"
-                                        value={this.state.startDate}
-                                    />
-                                    <select onChange={this.setStartDayType} value={this.state.startDayType}>
-                                        <option value="fullday">Full Day</option>
-                                        <option value="morning">Morning</option>
-                                        <option value="afternoon">Afternoon</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="end_date">End Date:</label>
-                                </td>
-                                <td>
-                                    <input
-                                        onChange={this.setEndDate}
-                                        name="end_date"
-                                        type="date"
-                                        value={this.state.endDate}
-                                    />
-                                    <select onChange={this.setEndDayType} value={this.state.endDayType} disabled={this.state.startDate === this.state.endDate}>
-                                        <option value="fullday">Full Day</option>
-                                        <option value="morning">Morning</option>
-                                        <option value="afternoon">Afternoon</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="end_date">Status:</label>
-                                </td>
-                                <td>
-                                    <select onChange={this.setStatus} value={this.state.status}>
-                                        <option disabled value="">-- select --</option>
-                                        <option value="1">Pending</option>
-                                        <option value="2">Approved</option>
-                                        <option value="3">Denied</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <input type="submit" value="Add Request" disabled={!this.readyToSubmit()} />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
-            </div>
+            </>
         );
     }
 }
 
 const mapStateToProps = reduxStore => ({
     employees: reduxStore.employees,
-    requestsRaw: reduxStore.requests
+    requestsRaw: reduxStore.requests_refactor
 });
 
 export default connect(mapStateToProps)(AdminEditRequestsPage);

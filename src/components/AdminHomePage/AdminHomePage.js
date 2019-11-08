@@ -1,31 +1,18 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 
-import RequestExpanderCollection from '../RequestExpanderCollection/RequestExpanderCollection';
+import Nav from '../Nav/Nav';
+import RequestTabs from '../RequestTabs/RequestTabs';
 
-class AdminHomePage extends Component {
-    componentDidMount() {
-        this.props.dispatch({type: 'FETCH_REQUESTS'});
-    }
-
-    // Show this component on the DOM
-    render() {
-        return (
+const AdminHomePage = (props) => {
+    return (
+        <>
+            <Nav history={props.history} />
             <div className="page-container">
-                <RequestExpanderCollection 
-                    pending={this.props.reduxStore.requests.pending}
-                    approved={this.props.reduxStore.requests.approved}
-                    denied={this.props.reduxStore.requests.denied}
-                    past={this.props.reduxStore.requests.past}
-                    forAdmin={true}
-                />
+                <h2>Admin Inbox</h2>
+                <RequestTabs forAdmin={true} />
             </div>
-        );
-    }
-} 
+        </>
+    );
+}
 
-const mapReduxStoreToProps = reduxStore => ({
-    reduxStore
-});
-
-export default connect(mapReduxStoreToProps)(AdminHomePage);
+export default AdminHomePage;

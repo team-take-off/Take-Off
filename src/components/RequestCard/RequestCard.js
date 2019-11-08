@@ -8,6 +8,7 @@ import './RequestCard.css';
 import DateRange from '../../classes/DateRange';
 // import EditDialog from './EditDialog';
 import Request from '../../classes/Request';
+import RequestUnit from '../../classes/RequestUnit';
 
 class RequestCard extends Component {
 
@@ -18,8 +19,8 @@ class RequestCard extends Component {
     // Display the employee's name if possible
     renderName = () => {
         const request = this.props.request;
-        if (request.firstName && request.lastName) {
-            return `${request.firstName} ${request.lastName}`;
+        if (request.employee.firstName && request.employee.lastName) {
+            return `${request.employee.firstName} ${request.employee.lastName}`;
         } else {
             return '[Unknown Name]';
         }
@@ -47,20 +48,12 @@ class RequestCard extends Component {
                 blocks += ' ◩';
             } else if (unit.dayType.description === 'afternoon') {
                 blocks += ' ◪';
+            } else if (unit.dayType.description === 'blank') {
+                blocks += ' □';
             }
         }
 
-        if (request.type === 'Sick and Safe Leave') {
-            return (<span className="sick">{request.type}: {blocks}</span>);
-        } else if (request.type === 'Vacation') {
-            return (<span className="vacation">{request.type}: {blocks}</span>);
-        } else {
-            return (
-                <span>
-                    {request.type}
-                </span>
-            );
-        }
+        return (<span className={request.getSpanClass()}>{request.formatType()}: {blocks}</span>);
     }
 
     // Renders an unordered list of conflicts with this request. Only applies if
@@ -74,11 +67,12 @@ class RequestCard extends Component {
                     <ul>
                         {collisions.map(
                             (collision, index) => {
-                                const firstName = collision.firstName;
-                                const lastName = collision.lastName;
-                                const dateRange = collision.startDate.format('LL') + ' — ' + collision.endDate.format('LL');
-                                const approved = collision.status === 'approved' ? '(Approved)' : '(Pending)';
-                                return (<li key={index}>{firstName} {lastName} - {dateRange} - {approved}</li>);
+                                const firstName = collision.employee.firstName;
+                                const lastName = collision.employee.lastName;
+                                const collisionUnits = [new RequestUnit(1, collision.startDate, true, false, false, false), new RequestUnit(1, collision.endDate, true, false, false, false)];
+                                const dateRange = new DateRange(collisionUnits);
+                                const status = collision.formatStatus();
+                                return (<li key={index}>{firstName} {lastName} - {dateRange.format('LL')} - {status}</li>);
                             }
                         )}
                     </ul>
@@ -91,7 +85,7 @@ class RequestCard extends Component {
     // Renders a cancel button on already approved cards.
     renderAdminButtons = () => {
         if (this.props.forAdmin && !this.props.past) {
-            if (this.props.request.status === 'pending') {
+            if (this.props.request.isPending()) {
                 return (
                     <div className="request-card-buttons">
                         <button onClick={this.deny}>
@@ -161,10 +155,10 @@ class RequestCard extends Component {
     // Handles when the admin presses the 'Cancel' button.
     cancel = () => {
         if (this.props.requestArray.length !== 0) {
-            const id = this.props.requestArray[0].batch_of_requests_id;
+            // const id = this.props.requestArray[0].batch_of_requests_id;
             const action = {
-                type: 'WITHDRAW_USER_REQUEST',
-                payload: id
+                type: 'WITHDRAW_REQUEST',
+                payload: this.props.request.id
             };
             this.props.dispatch(action);
         }
@@ -172,10 +166,10 @@ class RequestCard extends Component {
 
     // Handles when an employee presses the 'Withdraw' button (labeled cancel).
     withdraw = () => {
-        const id = this.props.request.id;
+        // const id = this.props.requestArray[0].batch_of_requests_id;
         const action = {
-            type: 'WITHDRAW_USER_REQUEST',
-            payload: id
+            type: 'WITHDRAW_REQUEST',
+            payload: this.props.request.id
         };
         this.props.dispatch(action);
     }
