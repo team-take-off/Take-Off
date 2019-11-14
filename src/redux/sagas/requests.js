@@ -93,7 +93,6 @@ function* deleteRequest(action) {
 
 function* editRequest(action) {
     try {
-        console.log(action.payload);
         yield axios.put('/api/admin/request/edit', {
             id: action.payload.bundleId,
             newDates: action.payload.dates,
@@ -109,7 +108,6 @@ function* editRequest(action) {
 function* setFilters(action) {
     try {
         filters = action.payload;
-        console.log(filters);
         yield put({ type: 'FETCH_REQUESTS' });
     } catch (error) {
         console.log('Error in requests saga setFilters(): ', error);
