@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import ConfigIcon from '@material-ui/icons/Tune';
 
 import './RequestTabs.css';
 import RequestCard from '../RequestCard/RequestCard';
@@ -78,23 +79,23 @@ const RequestTabs = (props) => {
         if (filters.startDate && filters.endDate) {
             const startMoment = moment(filters.startDate);
             const endMoment = moment(filters.endDate);
-            datesParagraph = (<p>From {startMoment.format('LL')} to {endMoment.format('LL')}</p>);
+            datesParagraph = (<p>Results from {startMoment.format('LL')} to {endMoment.format('LL')}</p>);
         } else if (filters.endDate) {
             const endMoment = moment(filters.endDate);
-            datesParagraph = (<p>Until {endMoment.format('LL')}</p>);
+            datesParagraph = (<p>Results upto {endMoment.format('LL')}</p>);
         } else if (filters.startDate) {
             const startMoment = moment(filters.startDate);
-            datesParagraph = (<p>From {startMoment.format('LL')} forward</p>);
+            datesParagraph = (<p>Results from {startMoment.format('LL')} onward</p>);
         } else {
             const currentMoment = moment();
             currentMoment.subtract(5, 'day');
-            datesParagraph = (<p>From {currentMoment.format('LL')} forward</p>);
+            datesParagraph = (<p>Results from {currentMoment.format('LL')} onward</p>);
         }
 
         return (
             <>
-                {employeeParagraph}
                 {datesParagraph}
+                {employeeParagraph}
             </>
         );
     }
@@ -118,16 +119,20 @@ const RequestTabs = (props) => {
                 </div>
                 
                 <div className="filter-options-div">
-                    <p onClick={toggleFilterPane} className="filter-link">▼ Filter Options</p>
+                    <p onClick={toggleFilterPane} className="filter-link"><ConfigIcon /></p>
                     {filterOpen &&
                         <div className="filter-options-pane">
-                            <h3>Filter Options</h3>
+                            <h4>Filter Configuration</h4>
+                        <div className="filter-display">
+                                {renderFilterOptions(props.filters)}
+                            </div>
+
                             {props.forAdmin &&
                                 <p>Employee:</p>
                             }
                             <p>Year:</p>
                             <p>Vacation/Sick:</p>
-                            <p onClick={toggleFilterPane} className="filter-link">Close</p>
+                        <button onClick={toggleFilterPane}>[&times;] Close</button>
                         </div>
                     }
                 </div>
