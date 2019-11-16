@@ -1,7 +1,6 @@
 # Refactor API endpoints
  - Unit testing
  - Integration testing
-Fix bug in POST /api/request
 Build filter options drop-down for RequestTabs
 
 # Feature Node Cron Vacation
