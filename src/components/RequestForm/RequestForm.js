@@ -83,7 +83,7 @@ class RequestForm extends Component {
         const endMoment = moment(`${endDate} ${endHour} +0000`, 'YYYY-MM-DD HH Z').utc();
 
         const action = {
-            type: 'ADD_USER_REQUEST',
+            type: 'ADD_REQUEST',
             payload: {
                 user: this.props.reduxStore.user.id,
                 type: this.props.typeid,

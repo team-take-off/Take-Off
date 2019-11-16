@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 const ModeButton = (props) => {
-    console.log(props);
     const clickHandler = () => {
         if (props.adminMode) {
             props.dispatch({ type: 'ADMIN_MODE_TOGGLE' });

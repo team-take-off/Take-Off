@@ -3,17 +3,17 @@ import React, { Component } from 'react';
 import BuildCalendar from './BuildCalendar';
 import Nav from '../Nav/Nav';
 
-class AdminCalendarPage extends Component {      
+class CalendarPage extends Component {      
     render() {
         return (
             <>
                 <Nav history={this.props.history} />
                 <div>
-                    <BuildCalendar requests={this.props.requests} />
+                    <BuildCalendar />
                 </div>
             </>
         );
     }
 }
 
-export default AdminCalendarPage;
+export default CalendarPage;

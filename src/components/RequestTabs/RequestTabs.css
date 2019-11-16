@@ -100,7 +100,7 @@ div.filter-options-pane {
     width: 400px;
 
     /* float: left; */
-    margin-left: -350px;
+    margin-left: -420px;
     margin-top: 5px;
     position: absolute;
 
@@ -109,13 +109,38 @@ div.filter-options-pane {
     color: black;
     background-color: white;
 
-    -webkit-box-shadow: 10px 10px 14px -2px rgba(0,0,0,0.46);
-    -moz-box-shadow: 10px 10px 14px -2px rgba(0,0,0,0.46);
-    box-shadow: 10px 10px 14px -2px rgba(0,0,0,0.46);
-    border: 1px solid #222d31;
-    border-radius: 2px;
-    padding: 1.2rem 40px;
+    box-shadow: 2px 2px 9px -1px rgba(0,0,0,0.25);
+    border: 3px solid #222d31;
+    border-radius: 10px;
+    padding: 0.8rem 30px 1.6rem 30px;
+}
 
+.filter-options-pane button {
+    float: right;
+    padding: 0.2rem 15px;
+
+    outline: none;
+    border: 2px solid #888;
+    box-shadow: 2px 1px 2px 1px rgba(0,0,0,0.1);
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+
+    /* color: ghostwhite; */
+    background-color: rgb(0, 127, 255);
+    border: 2px solid rgb(0, 127, 255);
+}
+
+.filter-options-pane button *:first-child {
+    margin-right: 10px;
+}
+
+.filter-options-pane button:hover {
+    color: white;
+    background-color: rgb(0, 98, 196);
+    border: 2px solid rgb(1, 74, 148);
 }
 
 div.filter-display {
@@ -129,6 +154,10 @@ div.filter-display {
 div.filter-display p {
     margin-top: 0.8rem;
     line-height: 0.8rem;;
+}
+
+.filter-options-pane .filter-display {
+    text-align: left;
 }
 
 div.card-area {

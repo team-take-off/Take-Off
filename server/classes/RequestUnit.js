@@ -82,7 +82,7 @@ class RequestUnit {
 
         while (current.isBefore(this.endDate)) {
             if (current.day() === day.SUNDAY || current.day() === day.SATURDAY || CompanyHolidays.isDayOff(current)) {
-                units.push(new RequestUnit());
+                // units.push(new RequestUnit());
                 advanceTime(current);
                 continue;
             }
